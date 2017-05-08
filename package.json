@@ -1,0 +1,12 @@
+{
+  "name": "boilerplate",
+  "private": true,
+  "scripts": {
+    "start": "meteor run"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.23.0",
+    "bcrypt": "^0.8.7",
+    "moment": "^2.18.1"
+  }
+}

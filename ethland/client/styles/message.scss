@@ -1,0 +1,25 @@
+.message {
+    margin: 91px auto;
+    text-align: center;
+    &-text {
+        font-size: 16px;
+        line-height: 27px;
+        margin: 0;
+        & b {
+            font-size: 19px;
+        }
+        &-small {
+            font-size: 14px;
+            line-height: 20px;
+            margin-top: 27px;
+            & b {
+                font-size: 16px;
+            }
+        }
+    }
+}
+
+.input-text {
+    margin: 14px 0;
+    line-height: 1.5;
+}

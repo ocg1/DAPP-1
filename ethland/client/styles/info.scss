@@ -1,0 +1,25 @@
+@import 'base';
+
+.info {
+    width: 707px;
+    height: 210px;
+    border-radius: 11px;
+    background-color: $secondary-color;
+    margin: 102px auto;
+    &-key {
+        margin: 8px 7px 8px 22px;
+        font-size: 14px;
+        width: 156px;
+        display: inline-block;
+        &:first-child {
+            margin-top: 26px;
+        }
+    }
+    &-value {
+        display: inline-block;
+        width: 501px;
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: -0.7px;
+    }
+}

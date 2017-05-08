@@ -1,0 +1,1 @@
+template \loading -> i class:'spin fa-2x'

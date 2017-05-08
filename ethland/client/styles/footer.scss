@@ -1,0 +1,32 @@
+@import 'base';
+
+.footer {
+    &-nav {
+        width: 100%;
+        text-align: center;
+        padding-top: 20px;
+    }
+    &-link {
+        margin: 0 85px;
+        text-decoration: none;
+        color: black;
+        @media only screen and (max-width: 680px) {
+            margin: 0 34px;
+        }
+        &:hover {
+            color: #ffffff;
+            transition: all 200ms ease-in-out;
+        }
+    }
+    &-inscription {
+        text-align: center;
+        margin-top: 28px;
+        font-size: 8px;
+        color: black;
+        & a {
+            color: $primary-color;
+            text-decoration: none;
+        }
+    }
+
+}

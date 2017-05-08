@@ -1,0 +1,173 @@
+@import 'base';
+
+.loan-wrapper {
+    clear: both;
+    overflow: hidden;
+}
+
+.loan-title {
+    font-size: 14px;
+    line-height: 1.1;
+    color: $primary-color;
+    margin: 51px 0 30px 68px;
+}
+
+.input {
+    border: none;
+    font-size: 13px;
+    color: #787878;
+    width: 296px;
+    border-bottom: solid 1px $footer-color;
+    background-color: transparent;
+    &:focus {
+        outline: none;
+    }
+
+    &-wrapper {
+        float: left;
+    }
+    &-box {
+        position: relative;
+        width: 536px;
+        height: 488px;
+        margin: 30px 34px 54px 68px;
+        border-radius: 9px;
+        background-color: $secondary-color;
+        box-shadow: 1px 1px 7px 0 rgba(0, 0, 0, 0.3);
+        transition: all 500ms ease-in-out;
+        @media only screen and (max-width: 612px) {
+            width: 472px;
+        }
+    }
+    &-key {
+        display: inline-block;
+        font-size: 14px;
+        letter-spacing: -0.2px;
+        text-align: right;
+        width: 166px;
+        margin: 9px 17px 9px 20px;
+        transition: all 500ms ease-in-out;
+        @media only screen and (max-width: 612px) {
+            width: 102px;
+        }
+        &:first-child {
+            margin-top: 29px;
+        }
+    }
+    &-img-dot {
+        width: 5px;
+        height: 5px;
+        position: absolute;
+        top: 220px;
+        left: 124px;
+    }
+    &-img-pin {
+        width: 10px;
+        height: 10px;
+        margin: 0 2px;
+    }
+    &-primary-short {
+        letter-spacing: -0.6px;
+        color: $primary-color;
+    }
+    &-submit {
+        width: 120px;
+        margin-top: 40px;
+    }
+}
+
+.block-scheme {
+    margin-top: 54px;
+    position: relative;
+    float: left;
+    height: 531px;
+    width: 273px;
+    @media only screen and (max-width: 925px) {
+        margin: 0 0 54px 68px;
+    }
+    &-element {
+        width: 120px;
+        height: 42px;
+        border-radius: 68px;
+        border: solid 1px $primary-color;
+        font-size: 12px;
+        text-align: center;
+        line-height: 42px;
+        &-highlighted {
+            font-weight: bold;
+            background-color: $primary-color;
+            box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.5);
+            color: $text-color;
+        }
+        &-success {
+            background-color: $secondary-color;
+            font-weight: bold;
+            color: $primary-color;
+        }
+        &-failure {
+            background-color: #ffd2cb;
+            font-weight: bold;
+        }
+        &-branch {
+            position: absolute;
+            left: 154px;
+            bottom: 0px;
+        }
+    }
+    &-line {
+        position: relative;
+        height: 65px;
+        width: 59px;
+        margin: 2px 0 2px 0;
+        border-right: solid 1px $primary-color;
+        &-inscription {
+            float: left;
+            height: 28px;
+            width: 94px;
+            background-color: #ffffff;
+            margin-left: 12px;
+            margin-top: 18px;
+            text-align: center;
+            font-size: 10px;
+            line-height: 1.14;
+            padding: 3px 0 3px 0;
+            &-second {
+                margin-top: 0;
+            }
+            &-branch {
+                margin-left: 46px;
+                padding: 10px 0 10px 0;
+                height: 46px;
+            }
+        }
+        &-long {
+            height: 110px;
+            &-branch {
+                position: absolute;
+                left: 124px;
+                bottom: 42px;
+                width: 91px;
+                height: 135px;
+                border-top: solid 1px $primary-color;
+                border-top-right-radius: 9px;
+            }
+        }
+        &-arrow {
+            position: absolute;
+            top: 58px;
+            width: 0;
+            height: 0;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+            border-top: 8px solid $primary-color;
+            margin-left: 55.5px;
+            &-long {
+                top: 93px;
+            }
+            &-branch {
+                top: 127px;
+                left: 32px;
+            }
+        }
+    }
+}

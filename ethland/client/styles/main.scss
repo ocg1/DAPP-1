@@ -1,0 +1,117 @@
+@import 'base';
+
+.card {
+    float: left;
+    width: 332px;
+    height: 234px;
+    cursor: pointer;
+    border-radius: 9px;
+    background-color: $secondary-color;
+    margin: 27px;
+
+    &:hover {
+        box-shadow: 1px 1px 10px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    @media only screen and (max-width: 600px) {
+        margin: 14px;
+    }
+    &-wrapper {
+        position: relative;
+        overflow: hidden;
+        margin: 27px 103px;
+        @media only screen and (max-width: 993px) {
+            margin: 27px 0;
+        }
+        &-aligned {
+            width: 773px;
+            margin: 0 auto;
+            @media only screen and (max-width: 773px) {
+                width: 386px;
+            }
+            @media only screen and (max-width: 600px) {
+                width: 360px;
+                margin: 0 27px;
+            }
+        }
+    }
+    &-header {
+        height: 54px;
+        border-radius: 9px 9px 0 0;
+        background-color: $primary-color;
+        &-amount {
+            font-size: 19px;
+            font-weight: bold;
+            margin: 17px 15px 15px 20px;
+            float: left;
+            color: $text-color;
+        }
+        &-inscription {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 20px 22px 18px 15px;
+            float: right;
+            color: $text-color;
+        }
+    }
+    &-body {
+        margin: 16px 18px 18px 18px;
+        position: relative;
+    }
+    &-key {
+        margin: 0;
+        font-size: 14px;
+        &-inscription {
+            text-align: center;
+            font-size: 18px;
+            margin: 23px 0;
+        }
+    }
+    &-value {
+        margin: 3px 0 13px 0;
+        font-size: 14px;
+        color: $primary-color;
+    }
+    &-state {
+        width: 123px;
+    }
+    &-button {
+        width: 79px;
+        height: 39px;
+        border-radius: 9px;
+        color: $text-color;
+        font-size: 14px;
+        font-weight: bold;
+        border-style: none;
+        outline:none;
+        cursor: pointer;
+        margin: 0 0 0 20px;
+    }
+}
+
+.img-dot {
+    width: 7px;
+    height: 7px;
+    position: absolute;
+    top: 5px;
+    left: -11px;
+}
+
+.arrow {
+    position: absolute;
+    top: 49%;
+    width: 10px;
+    height: 16px;
+    &-left {
+        left: 0;
+        @media only screen and (max-width: 993px) {
+            left: 5%;
+        }
+    }
+    &-right {
+        right: 0;
+        @media only screen and (max-width: 993px) {
+            right: 5%;
+        }
+    }
+}

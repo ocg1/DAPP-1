@@ -1,0 +1,92 @@
+@import url(https://fonts.googleapis.com/css?family=PT+Sans);
+
+/*base colors*/
+
+$primary-color: #1e64c8;
+$secondary-color: rgba(30, 100, 200, 0.1);
+$footer-color: #c8c8c8;
+$text-color: #ffffff;
+
+/*base fonts*/
+
+$font-main: 'PT Sans', sans-serif;
+
+html {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    min-height:100%;
+    position: relative;
+    font-family: $font-main;
+    font-size: 12px;
+    margin: 0;
+    min-width: 570px;
+}
+
+main {
+    padding-bottom: 80px;
+    height: 100%;
+    max-width: 980px;
+    min-width: 570px;
+    margin: 0 auto;
+}
+
+header {
+    min-width: 570px;
+    background-color: $primary-color;
+    height: 54px;
+    box-shadow: 0 4px 6px -2px rgba(0,0,0,0.3);
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-width: 570px;
+    background-color: $footer-color;
+    height: 80px;
+}
+
+p {
+    font-size: 14px;
+}
+
+/*helpers*/
+
+.font-weight-normal {
+    font-weight: normal;
+}
+
+.float-left {
+    float: left;
+}
+
+.bgc-primary {
+    background-color: $primary-color;
+}
+
+.bgc-hover:hover {
+    background-color: #78c8f5!important;
+    transition: all 200ms ease-in-out;
+}
+
+.bgc-footer {
+    background-color: $footer-color;
+}
+
+.font-color-primary {
+    color: $primary-color;
+}
+
+.text-aligned {
+    text-align: center;
+}
