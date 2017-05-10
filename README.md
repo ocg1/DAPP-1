@@ -1,1 +1,1 @@
-# IcoMatiq
+# Ethlend (meteor DAPP)
