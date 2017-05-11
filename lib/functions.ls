@@ -80,8 +80,6 @@
     ), 30)
 
 
-
-
 @conscb =-> 
     if &0 => console.log \err: &0
     if &1 => console.log \res: &1
@@ -89,3 +87,15 @@
 @simple-cb =->
     if &0 => new Error &0
     if &1 => &1    
+
+@state-int-to-str =-> switch it
+    | 0=> 'no data'
+    | 1=> 'waiting for tokens'
+    | 2=> \cancelled
+    | 3=> 'waiting for lender'
+    | 4=> \funded
+    | 5=> \default
+    | 6=> \closed
+    | _=> \----
+
+@big-zero = \0x0000000000000000000000000000000000000000
