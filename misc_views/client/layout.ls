@@ -18,8 +18,12 @@ template \layout ->
                         a class:'nav-link with-icon' href:\/new-loan-request, "New Loan Request"
                     div class:\nav-link-wrapper,
                         a class:\nav-link href:\/info, "Info"
+#       CHECK FOR WEB3 do
+            if web3?
+                unless web3?eth?defaultAccount => location.reload()
+                SI @lookupTemplate \yield
+            else SI @lookupTemplate \loading
 
-            SI @lookupTemplate \yield
         footer do
             div class:\footer-nav,
                 a class:\footer-link href:\/main, "Home"
@@ -28,3 +32,8 @@ template \layout ->
             p class:\footer-inscription, "EthLend ©2017 Created by ",
                 a href:'', "Chain.Cloud"
 
+
+
+# Template.layout.rendered=~>
+#     console.log web3.eth.defaultAccount
+#     
