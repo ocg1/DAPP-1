@@ -2,13 +2,14 @@
 
 .info {
     width: 707px;
-    height: 210px;
+    height: 255px;
     border-radius: 11px;
     background-color: $secondary-color;
     margin: 102px auto;
     &-key {
         margin: 8px 7px 8px 22px;
         font-size: 14px;
+        font-weight: bold;
         width: 156px;
         display: inline-block;
         &:first-child {

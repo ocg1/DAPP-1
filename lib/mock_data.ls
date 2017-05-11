@@ -7,3 +7,5 @@
 	lender:		 	\0x + get-id!
 	state:		 	\funded
 	created:		\2017/04/24
+
+@get-mock-data-arr =-> [get-mock-data! for n from 1 to 20]
