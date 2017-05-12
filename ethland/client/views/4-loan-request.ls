@@ -19,26 +19,28 @@ red-pin   =-> img class:\input-img-pin src:\/img/red_pin.svg   alt:''
 red-dot   =-> img class:\input-img-dot src:\/img/red_dot.svg   alt:''
 
 input-unit =-> section style:'height:40px',
-    h3 class:\input-key, it.name
+     
+    h3 class:\input-key, 
+        if it.red-dot   => red-dot!
+        it.name
     input style:'max-height:40px' class:"input #{it.class}" placeholder:it?placeholder, value:it?value, disabled:it.disabled
     if it.green-pin => grn-pin!        
-    if it.red-pin   => red-pin!        
-    if it.red-dot   => red-dot!    
+    if it.red-pin   => red-pin!           
 
 input-box =~> div class:\input-box, 
     map input-unit, [
-        *name:'Eth amount' placeholder:'00.00 Eth'               value:state.get(\lr-WantedWei)
-        *name:'Days to lend'                                     value:state.get(\lr-DaysToLen)
-        *name:'Token amount' placeholder:'00.00 Eth'             value:state.get(\lr-TokenAmount)
-        *name:'Premium amount' placeholder:'00.00 Eth'           value:state.get(\lr-PremiumWei)
-        *name:'Token name'                                       value:state.get(\lr-TokenName)
-        *class:'input-primary-short' name:'Borrower'             value:state.get(\lr-Borrower),                  disabled:true red-pin:true
-        *class:'input-primary-short' name:'Lender'               value:state.get(\lr-Lender),                    disabled:true red-pin:true
-        *class:'input-primary-short' name:'Token smart contract' value:state.get(\lr-TokenSmartcontractAddress), disabled:true red-pin:true
-        *name:'Token info link (optional)'                       value:state.get(\lr-TokenInfoLink)
+        *name:'Eth amount' placeholder:'00.00 Eth'               value:state.get(\lr-WantedWei),                 disabled:(!state.get(\IamBorrower) || state.get(\lr-State))
+        *name:'Days to lend'                                     value:state.get(\lr-DaysToLen),                 disabled:(!state.get(\IamBorrower) || state.get(\lr-State))
+        *name:'Token amount' placeholder:'00.00 Eth'             value:state.get(\lr-TokenAmount),               disabled:(!state.get(\IamBorrower) || state.get(\lr-State))
+        *name:'Premium amount' placeholder:'00.00 Eth'           value:state.get(\lr-PremiumWei),                disabled:(!state.get(\IamBorrower) || state.get(\lr-State))
+        *name:'Token name'                                       value:state.get(\lr-TokenName),                 disabled:(!state.get(\IamBorrower) || state.get(\lr-State))
+        *class:'input-primary-short' name:'Borrower'             value:state.get(\lr-Borrower),                  disabled:true red-dot:state.get(\IamBorrower)
+        *class:'input-primary-short' name:'Lender'               value:state.get(\lr-Lender),                    disabled:true red-dot:state.get(\IamLender) 
+        *class:'input-primary-short' name:'Token smart contract' value:state.get(\lr-TokenSmartcontractAddress), disabled:true 
+        *name:'Token info link (optional)'                       value:state.get(\lr-TokenInfoLink),             disabled:!state.get(\IamBorrower) 
     ]
     div class:\text-aligned,
-        button class:'card-button bgc-primary', 'Set data'
+        button class:'card-button bgc-primary' disabled:(!state.get(\IamBorrower) || state.get(\lr-State)), 'Set data'
 
 block-scheme =-> D \block-scheme,
     div class:'block-scheme-element block-scheme-element-highlighted', "No data"
@@ -71,7 +73,7 @@ block-scheme =-> D \block-scheme,
     div class:'block-scheme-element block-scheme-element-branch block-scheme-element-failure', "Default"
 
 
-Template.loan_request.created  =->
+Template.loan_request.created=->
     state.set \address     (Router.current!originalUrl |> split \/ |> last )
     state.set \loan-wrapper-class, \hidden
     state.set \loading-class,      ''
@@ -85,27 +87,22 @@ Template.loan_request.created  =->
         state.set \loading-class, \hidden
         state.set \lr, &1
 
-        if &1.WantedWei                 != 0 =>         state.set \lr-WantedWei                 &1?WantedWei                      
-        if &1.DaysToLen                 != 0 =>         state.set \lr-DaysToLen                 &1?DaysToLen                      
-        if &1.TokenAmount               != 0 =>         state.set \lr-TokenAmount               &1?TokenAmount                        
-        if &1.PremiumWei                != 0 =>         state.set \lr-PremiumWei                &1?PremiumWei                                               
+        if &1.WantedWei                 != 0 =>        state.set \lr-WantedWei                 &1?WantedWei                      
+        if &1.DaysToLen                 != 0 =>        state.set \lr-DaysToLen                 &1?DaysToLen                      
+        if &1.TokenAmount               != 0 =>        state.set \lr-TokenAmount               &1?TokenAmount                        
+        if &1.PremiumWei                != 0 =>        state.set \lr-PremiumWei                &1?PremiumWei                                               
         if &1.Borrower                  != big-zero => state.set \lr-Borrower                  &1?Borrower                       
         if &1.Lender                    != big-zero => state.set \lr-Lender                    &1?Lender                         
         if &1.TokenSmartcontractAddress != big-zero => state.set \lr-TokenSmartcontractAddress &1?TokenSmartcontractAddress                      
-        state.set \lr-TokenName      &1?TokenName
+        state.set \lr-State         &1?State
+        state.set \lr-TokenName     &1?TokenName
         state.set \lr-TokenInfoLink &1?TokenInfoLink                      
+        state.set \IamLender        (state.get(\defaultAccount)==state.get(\lr-Lender))       
+        state.set \IamBorrower      (state.get(\defaultAccount)==state.get(\lr-Borrower))            
 
-
-
-Template.loan_request.rendered =->    
+Template.loan_request.rendered =->
     # state.set \IamLender   (state.get \defaultAccount == state.get \address)
     # state.set \IamBorrower (state.get \defaultAccount == state.get \address)
-    
-
-    console.log \defaultAccount: state.get \defaultAccount
-    console.log \address: state.get \address
-    console.log \IamLender: state.get \IamLender
-    console.log \IamBorrower: state.get \IamBorrower
 
 Template.loan_request.events do 
     'click button':->

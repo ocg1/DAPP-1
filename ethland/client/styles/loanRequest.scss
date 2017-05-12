@@ -57,9 +57,9 @@
     &-img-dot {
         width: 5px;
         height: 5px;
-        position: absolute;
-        top: 220px;
-        left: 124px;
+        position: relative;
+        right:5px;
+        bottom:1px;
     }
     &-img-pin {
         width: 10px;
