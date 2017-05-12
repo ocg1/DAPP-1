@@ -13,16 +13,19 @@ template \layout ->
                     div class:'nav-link-wrapper selected',
                         a class:\nav-link href:\/main, "All Loan Requests"
                     div class:\nav-link-wrapper,
-                        a class:\nav-link href:\/loan-request/1, "Funded Loan Requests"
+                        a class:\nav-link href:\/main, "Funded Loan Requests"
                     div class:\nav-link-wrapper,
+                        span class:"glyphicon glyphicon-plus-sign" aria-hidden:"true" style:'color:white; position:relative; left:15px; top:2px;'
                         a class:'nav-link with-icon' href:\/new-loan-request, "New Loan Request"
                     div class:\nav-link-wrapper,
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             if web3?
-                unless web3?eth?defaultAccount => SI @lookupTemplate \reload
-                else SI @lookupTemplate \yield
-            else SI @lookupTemplate \loading
+                Meteor.setTimeout((~> 
+                    unless web3?eth?defaultAccount => SI Template.reload),30)
+                state.set \defaultAccount web3?eth?defaultAccount
+                SI @lookupTemplate \yield
+            else Template.no_metamask
 
         footer do
             div class:\footer-nav,
@@ -37,6 +40,12 @@ Template.layout.events do
     'click .nav-link-wrapper':->
         $(\.selected).remove-class(\selected)
         $(event.target).add-class(\selected)
+
+    # 'mouseover .nav-link-wrapper':->
+    #     $(\.selected).remove-class(\selected)
+    #     $(event.target).add-class(\selected)
+
+
 
 
 # Template.layout.rendered=~>

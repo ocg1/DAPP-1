@@ -10,10 +10,11 @@ template \mainTemplate -> main_blaze do
 
 @card-template =-> D \card,
     div class:\card-header,
-        if it.WantedWei
+        if it.WantedWei => div class:\card-header,
             h3 class:\card-header-amount, "#{it.WantedWei} Eth"
             h3 class:\card-header-inscription, "#{it?TokenAmount} Aeternity Tokens"
-        else h3 class:\card-header-amount, "Data must be set by the Borrower"
+        else div class:\card-header, 
+            h3 class:\card-header-amount, "Data must be set by the Borrower"
 
     div class:\card-body,
         if web3.eth.defaultAccount == it.Borrower

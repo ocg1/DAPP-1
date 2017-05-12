@@ -2,7 +2,7 @@
 
 @SiteQ   =-> /^[\S]+\.[\S]+$/gi.test it
 @IntQ    =-> /^[0-9\.]+$/gi.test it
-@EthQ    =-> /^(0x)?[0-9a-fA-F]{40}$/i.test it
+@EthQ    =-> /^(0x)?[0-9a-zA-Z]{42}$/i.test it
 
 @EmailQ  =-> /^[\S]+\@[\S]+\.[\S]+$/gi.test it
 
