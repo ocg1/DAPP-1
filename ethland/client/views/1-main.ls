@@ -8,7 +8,7 @@ template \mainTemplate -> main_blaze do
         a href:'', img class:"#{state.get \arrows-class } arrow arrow-left"  src:\/img/left.svg  alt:''
         a href:'', img class:"#{state.get \arrows-class } arrow arrow-right" src:\/img/right.svg alt:''
 
-@card-template =-> D \card,
+@card-template =-> div class:\card link:it.id,
     div class:\card-header,
         if it.WantedWei => div class:\card-header,
             h3 class:\card-header-amount, "#{it.WantedWei} Eth"
@@ -37,36 +37,49 @@ empty-list =-> div style:'padding:100px' class:\container ,
         get-all-lr-data(&1)(cb)
 
 @progress-bar =(percent)-> div style:'padding:100px; padding-right:120px' class:"#{state.get \progress-class } container" ,
-    h1 style:'font-size:50px; display:block', 'Data recieving...'
-    p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please wait for the data to be downloaded from the Ethereum network. '
+    h1 style:'font-size:50px; display:block', 'Recieving... data'
+    p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please wait for the data to be downloaded from the Ethereum network'
     div class:\progress style:'width:70%',
         div class:"progress-bar progress-bar-striped active" role:"progressbar" aria-valuenow:"#percent" aria-valuemin:"0" aria-valuemax:"100" style:"width:#{state.get \percent }%"
         span class:"sr-only", "#{state.get \percent } Complete"
 
 @create-quartet=(start,cb)-> # TODO: свернуть рукурентно
     out = []
+    
+
     if state.get(\percent)==0 => ledger.getLr start, ->
         if &1 == big-zero => return cb(null,out)
+        id = &1
         get-all-lr-data(&1) ->
             if state.get(\percent)==0 => state.set \percent 25
             console.log state.get(\percent)
+            &1.id = id
             out.push &1
+           
             ledger.getLr start+1, ->
                 if &1 == big-zero => return cb(null,out)
+                id = &1
                 get-all-lr-data(&1) ->
                     if state.get(\percent)==25 => state.set \percent 50
                     console.log state.get(\percent)
+                    &1.id = id
                     out.push &1
+             
                     ledger.getLr start+2, ->
                         if &1 == big-zero => return cb(null,out)
+                        id = &1
                         get-all-lr-data(&1) ->
                             if state.get(\percent)==50 =>state.set \percent 75
                             console.log state.get(\percent)
+                            &1.id = id
                             out.push &1
+                  
                             ledger.getLr start+3, ->
                                 if &1 == big-zero => return cb(null,out)
+                                id = &1
                                 get-all-lr-data(&1) ->
                                     if state.get(\percent)==75 =>state.set \percent 100
+                                    &1.id = id
                                     out.push &1
                                     state.set \progress-class \hidden
                                     state.set \arrows-class ''
@@ -93,3 +106,7 @@ Template.mainTemplate.created =->
 Template.mainTemplate.events do
     'click .arrow-right':-> 
     'click .arrow-left' :-> 
+    'click .card' :-> 
+        address = \/loan-request/ + $(event.target).attr(\link)
+        console.log \address: address
+        Router.go address
