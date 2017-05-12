@@ -2,7 +2,7 @@ Router.route \new_loan_request, path:\new-loan-request template:\newLoanRequest
 
 template \newLoanRequest -> main_blaze D \message,
 
-    button class:'new-loan-request', 'New loan request',
+    button class:'new-loan-request', 'New loan request'
 
     p style:\font-size:20px,
         "This includes " b '0.2 ETH'; " platform fees and can take 3-5 minutes"
