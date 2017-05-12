@@ -23,8 +23,8 @@ Template.newLoanRequest.events do
             gas:   2900000
         }
         web3.eth.sendTransaction transact, (err,res)-> 
-            if err => console.log err
-            if res => Router.go \/loan-request/ + res
+            if err => console.log \err:   err
+            if res => console.log \thash: res
         
 
 

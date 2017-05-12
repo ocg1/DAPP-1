@@ -45,7 +45,7 @@ map init(lr), [
 #             gas:   2900000
 #         },conscb)
 
-@get-all-lr-data =(address)->(cb)->
+@get-all-lr-data =(address)->(cb)-> #TODO: надо будет параллельно обрабатывать эти запросы.
 	out = {}
 	lr.getWantedWei(address) ->  
 		out.WantedWei = &1.c.0       
@@ -66,6 +66,27 @@ map init(lr), [
 									lr.getLender(address) ->
 										out.Lender = &1
 										lr.getTokenAmount(address) ->
-											out.TokenAmount = &1
+											out.TokenAmount = &1.c.0;
 											cb(null,out)
 
+
+# setData (
+# 1000000000000000000,    		# uint wanted_wei_, 
+# 100,    						# uint token_amount_, 
+# 1000000000,    				    # uint premium_wei_, 
+# \token-shpoken,    			    # string token_name_, 
+# \token-shpoken-infolink,    	# string token_infolink_, 
+# config.ETH_MAIN_ADDRESS,    	# address token_smartcontract_address_, 
+# 12  						    # uint days_to_lend_
+# )
+
+# lr.setData('0x9fb3a816ece6eaa498c73f87f6f4a1258be4302b')(
+# 	1000000000000000000,   
+# 	100,                    
+# 	1000000000,             
+# 	'token-shpoken',            
+# 	'token-shpoken-infolink',
+# 	config.ETH_MAIN_ADDRESS,
+# 	12, 
+#	conscb                      
+# )
