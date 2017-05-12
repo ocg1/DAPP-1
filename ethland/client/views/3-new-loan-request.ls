@@ -7,7 +7,7 @@ template \newLoanRequest -> main_blaze D \message,
 
     p style:\font-size:20px,
         'New ' b 'Loan Request'; ' will be then available in ’All Loan Requests’ window.'
-    button class:'new-loan-request', 'New loan request',
+    button class:'new-loan-request', 'New loan request'
 
 
 
@@ -34,12 +34,6 @@ Template.newLoanRequest.events do
 #     12, 
 #     conscb                      
 # )
-
-# 1. Добавить возможность добавлять данные по форме и кнопке 'Set data'
-# 2. Сделать так, чтобы диаграмма изменяла состояние
-# 3. Добавить обработчики ввода в loan-request, все эти кружочки и прочее
-
-
 
 # Template.newLoanRequest.events do
 #     'click .new-loan-request':->
