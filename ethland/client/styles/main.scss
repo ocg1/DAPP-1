@@ -11,6 +11,9 @@
 
     &:hover {
         box-shadow: 1px 1px 10px 0 rgba(0, 0, 0, 0.3);
+        outline: none;
+        text-decoration: none;
+        // color: $text-color;
     }
 
     @media only screen and (max-width: 600px) {

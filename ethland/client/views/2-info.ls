@@ -2,26 +2,26 @@ Router.route \info, path: \info
 
 template \info -> main_blaze {}, 
     D \info,
-        h4 class:\info-key, "Eth is enabled:"
+        h4 class:\info-key, "Eth is enabled"
         p class:\info-value, config.SMART_CONTRACTS_ENABLED
 
-        h4 class:\info-key, "Eth node:"
+        h4 class:\info-key, "Eth node"
         p class:\info-value, config.ETH_NODE
 
-        h4 class:\info-key, "Eth main account:"
+        h4 class:\info-key, "Eth main account"
         p class:'info-value defaultAccount', ''
 
-        h4 class:\info-key, "Eth main account link:"
+        h4 class:\info-key, "Eth main account link"
         p class:'info-value font-color-primary',
             a class:\account-link href:'', ''
 
-        h4 class:\info-key, "Main balance:"
+        h4 class:\info-key, "Main balance"
         p class:'info-value balance', ''
 
-        h4 class:\info-key, "Ledger contract address:"
+        h4 class:\info-key, "Ledger contract address"
         p class:\info-value, config.ETH_MAIN_ADDRESS
 
-        h4 class:\info-key, "Ledger contract link:"
+        h4 class:\info-key, "Ledger contract link"
         p class:'info-value font-color-primary',
             a href:config.ETH_MAIN_ADDRESS_LINK, config.ETH_MAIN_ADDRESS_LINK
 

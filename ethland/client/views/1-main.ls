@@ -8,7 +8,7 @@ template \mainTemplate -> main_blaze do
         a href:'', img class:"#{state.get \arrows-class } arrow arrow-left"  src:\/img/left.svg  alt:''
         a href:'', img class:"#{state.get \arrows-class } arrow arrow-right" src:\/img/right.svg alt:''
 
-@card-template =-> div class:\card link:it.id,
+@card-template =-> a class:\card href:"/loan-request/#{it?id}",
     div class:\card-header,
         if it.WantedWei => div class:\card-header,
             h3 class:\card-header-amount, "#{it.WantedWei} Eth"
@@ -106,7 +106,7 @@ Template.mainTemplate.created =->
 Template.mainTemplate.events do
     'click .arrow-right':-> 
     'click .arrow-left' :-> 
-    'click .card' :-> 
-        address = \/loan-request/ + $(event.target).attr(\link)
-        console.log \address: address
-        Router.go address
+    # 'click .card' :-> 
+    #     address = \/loan-request/ + $(event.target).attr(\link)
+    #     console.log \address: address
+    #     Router.go address

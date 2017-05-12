@@ -85,15 +85,15 @@ Template.loan_request.created  =->
         state.set \loading-class, \hidden
         state.set \lr, &1
 
-        state.set \lr-WantedWei                 &1?WantedWei                      
-        state.set \lr-DaysToLen                 &1?DaysToLen                      
-        state.set \lr-TokenAmount               &1?TokenAmount                        
-        state.set \lr-PremiumWei                &1?PremiumWei                         
-        state.set \lr-TokenName                 &1?TokenName                      
-        state.set \lr-Borrower                  &1?Borrower                       
-        state.set \lr-Lender                    &1?Lender                         
-        state.set \lr-TokenSmartcontractAddress &1?TokenSmartcontractAddress                      
-        state.set \lr-TokenInfoLink             &1?TokenInfoLink                      
+        if &1.WantedWei                 != 0 =>         state.set \lr-WantedWei                 &1?WantedWei                      
+        if &1.DaysToLen                 != 0 =>         state.set \lr-DaysToLen                 &1?DaysToLen                      
+        if &1.TokenAmount               != 0 =>         state.set \lr-TokenAmount               &1?TokenAmount                        
+        if &1.PremiumWei                != 0 =>         state.set \lr-PremiumWei                &1?PremiumWei                                               
+        if &1.Borrower                  != big-zero => state.set \lr-Borrower                  &1?Borrower                       
+        if &1.Lender                    != big-zero => state.set \lr-Lender                    &1?Lender                         
+        if &1.TokenSmartcontractAddress != big-zero => state.set \lr-TokenSmartcontractAddress &1?TokenSmartcontractAddress                      
+        state.set \lr-TokenName      &1?TokenName
+        state.set \lr-TokenInfoLink &1?TokenInfoLink                      
 
 
 

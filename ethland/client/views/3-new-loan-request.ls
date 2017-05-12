@@ -24,7 +24,20 @@ Template.newLoanRequest.events do
             if err => console.log \err:   err
             if res => console.log \thash: res
         
+# lr.setData('0x9fb3a816ece6eaa498c73f87f6f4a1258be4302b')(
+#     1000000000000000000,   
+#     100,                    
+#     1000000000,             
+#     'token-shpoken',            
+#     'token-shpoken-infolink',
+#     config.ETH_MAIN_ADDRESS,
+#     12, 
+#     conscb                      
+# )
 
+# 1. Добавить возможность добавлять данные по форме и кнопке 'Set data'
+# 2. Сделать так, чтобы диаграмма изменяла состояние
+# 3. Добавить обработчики ввода в loan-request, все эти кружочки и прочее
 
 
 
