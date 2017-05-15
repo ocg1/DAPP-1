@@ -70,23 +70,6 @@ map init(lr), [
 											cb(null,out)
 
 
-# setData (
-# 1000000000000000000,    		# uint wanted_wei_, 
-# 100,    						# uint token_amount_, 
-# 1000000000,    				    # uint premium_wei_, 
-# \token-shpoken,    			    # string token_name_, 
-# \token-shpoken-infolink,    	# string token_infolink_, 
-# config.ETH_MAIN_ADDRESS,    	# address token_smartcontract_address_, 
-# 12  						    # uint days_to_lend_
-# )
 
-# lr.setData('0x9fb3a816ece6eaa498c73f87f6f4a1258be4302b')(
-# 	1000000000000000000,   
-# 	100,                    
-# 	1000000000,             
-# 	'token-shpoken',            
-# 	'token-shpoken-infolink',
-# 	config.ETH_MAIN_ADDRESS,
-# 	12, 
-#	conscb                      
-# )
+# TODO: Как получать funded-loan-request`ы? Нужен метод, который возвращает массив вида [1, 12, 14, 57, ...]
+# 		то есть те номера lr, которые funded. Нужно передеплоить контракт, видимо.

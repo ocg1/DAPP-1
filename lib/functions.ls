@@ -54,8 +54,17 @@
         id += String.fromCharCode charset[pos]
     return String(id)
 
-@validate-val-with =(o,test)-> 
-    unless test o.val! => o.parent!addClass \validation-error else o.parent!removeClass \validation-error 
+# @validate-val-with =(o,test)-> 
+#     name = o.attr(\ident)
+
+#     # ident = $(event.target).attr(\ident)
+#     # $(event.target) `validate-val-with` IntQ
+#     state.set "#{name}" o.val!     
+#     if not test o.val! 
+#         state.set("#{name}-rpin" true); state.set("#{name}-gpin" false)
+#     else state.set("#{name}-rpin" false); state.set("#{name}-gpin" true)
+#     global[name].focus!
+#     return
 
 @push-to-state =->
     current = state.get &0
@@ -99,3 +108,16 @@
     | _=> \----
 
 @big-zero = \0x0000000000000000000000000000000000000000
+
+
+get-it-tail =-> it|> join '' |> chars |> tail
+get-it-head =-> it|> join '' |> chars |> first
+
+get-num =-> 
+    [get-it-head(it)] ++ ['.'] ++ get-it-tail([it]) |> join ''
+
+
+@convert-big-number =->
+    +get-num(it.c)*10^(it.e*it.s)
+
+@state-null =-> state.set it, null
