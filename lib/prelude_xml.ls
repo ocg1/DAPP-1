@@ -8,3 +8,5 @@ each blaze__init, <[ b input link h5 h6 strong img meta source br hr div span a 
 @header_blaze = HTML[\HEADER]
 
 @D =( cls, ...args)-> div class:cls, args
+
+@P =( cls, ...args)-> p class:cls, args	
