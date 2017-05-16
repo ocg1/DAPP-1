@@ -27,6 +27,7 @@ template \info -> main_blaze {},
 
 
 Template.info.created=~>
+    state.set \selected-class \info 
     if !web3 => console.log \oops
     getB =-> web3.eth.getBalance(it, (err,res)~> 
         if res => $(\.balance).html("#{res.c.1} (Wei)"); console.log res

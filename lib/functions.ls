@@ -83,7 +83,7 @@
     else 
         state.set(\inc_lookup (state.get(\inc_lookup)||1)+1)
         console.log state.get(\inc_lookup)
-        if state.get(\inc_lookup) > 20 => location.reload()
+        if state.get(\inc_lookup) > 20 => return #location.reload()
         lookup(obj,func)
         
     ), 30)

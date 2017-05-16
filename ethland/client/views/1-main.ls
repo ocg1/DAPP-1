@@ -3,10 +3,11 @@ Router.route \mainTemplate, path: \/main/:page
 template \mainTemplate -> main_blaze do
     D \card-wrapper D \card-wrapper-aligned,
         progress-bar!
-        map card-template, state.get(\quartet)||[]
+        D "#{state.get \quartet-class }",
+            map card-template, state.get(\quartet)||[]
     
-        a href:'', img class:"#{state.get \left-arrow-class } arrow arrow-left"  src:\/img/left.svg  alt:''
-        a href:'', img class:"#{state.get \right-arrow-class } arrow arrow-right" src:\/img/right.svg alt:''
+        a href:"/main/#{+state.get(\page)-1}", img class:"#{state.get \left-arrow-class } arrow arrow-left"  src:\/img/left.svg  alt:''
+        a href:"/main/#{+state.get(\page)+1}", img class:"#{state.get \right-arrow-class } arrow arrow-right" src:\/img/right.svg alt:''
 
 @card-template =-> a class:\card href:"/loan-request/#{it?id}",
     div class:\card-header,
@@ -45,8 +46,6 @@ empty-list =-> div style:'padding:100px' class:\container ,
 
 @create-quartet=(start,cb)-> # TODO: свернуть рукурентно
     out = []
-    
-
     if state.get(\percent)==0 => ledger.getLr start, ->
         if &1 == big-zero => return cb(null,out)
         id = &1
@@ -83,16 +82,22 @@ empty-list =-> div style:'padding:100px' class:\container ,
                                     out.push &1
                                     return cb(null,out)
 
-create-quartet-page=(start)-> create-quartet start, (err,res)->
-    state.set \progress-class \hidden
-    if +state.get(\page)>1 => state.set \left-arrow-class ''  
-    state.set \right-arrow-class ''  
+create-quartet-page=(start)->
+    state.set \left-arrow-class  \hidden
+    state.set \right-arrow-class \hidden
+    state.set \percent 0
 
-    state.set \quartet res
+    create-quartet start, (err,res)->
+        state.set \quartet-class ''
+        state.set \progress-class \hidden
+        if +state.get(\page)>1 => state.set \left-arrow-class ''  
+        state.set \right-arrow-class ''  
+        state.set \quartet res
 
 Template.mainTemplate.rendered =->
     
 Template.mainTemplate.created =->
+    state.set \selected-class \main
     state.set \page (Router.current!originalUrl |> split \/ |> last )    
 
     if state.get(\percent)==0 or !state.get(\percent)
@@ -100,20 +105,34 @@ Template.mainTemplate.created =->
         state.set \right-arrow-class \hidden
         state.set \percent 0
 
-    ledger.getLrCount ->
-        return &0 if &0
-        total-reqs = &1.c.0
-        state.set \totalReqs total-reqs
-        create-quartet-page((state.get(\page)-1)*4)    
+    rerender!  
     # state.set \currentQuartet 1
     # state.set \requests get-mock-data-arr!
 
+@rerender =~> ledger.getLrCount ->
+    return &0 if &0
+    total-reqs = &1.c.0
+    state.set \totalReqs total-reqs
+    create-quartet-page((state.get(\page)-1)*4)   
+
+
+
 Template.mainTemplate.events do
     'click .arrow-right':-> 
-        document.location.href =  \/main/ + (+state.get(\page)+1)
+        state.set \quartet-class \hidden 
+        state.set \progress-class ''
+        state.set \percent 0
+
+        state.set \page (+state.get(\page)+1)
+        rerender!
     'click .arrow-left' :-> 
-        if state.get(\page)>1
-            document.location.href =  \/main/ + (+state.get(\page)-1)    
+        if +state.get(\page)<2 => event.prevent-default; return
+        state.set \percent 0
+        state.set \quartet-class \hidden 
+        state.set \progress-class ''
+
+        state.set \page (+state.get(\page)-1)
+        rerender!
         
 
     # 'click .card' :-> 
