@@ -31,12 +31,27 @@ input-box =~> div class:\input-box,
         *c:'lr-TokenName'                                     n:'Token name'                 d:disableQ!,                                
         *c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower),
         *c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender),  
-        *c:'lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
+        *c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
         *c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!,                                
     ]
     div class:\text-aligned,
-        D "set-data-text #{if !state.get(\IamBorrower) => \hidden }", "Please, enter the data" 
-        button class:'card-button bgc-primary set-data' disabled:(!state.get(\IamBorrower) || !!state.get(\lr-State)), 'Set data'
+        if state.get(\lr-State)==0 && state.get(\IamBorrower) => D \text-s,
+            D "set-data-text", "Please, enter the data" 
+            button class:'card-button bgc-primary loan-button set-data', 'Set data'
+        if state.get(\lr-State)==0 && !state.get(\IamBorrower) => D \text-s,
+            D "set-data-text", "Borrower should set the data" 
+            button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
+
+        if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
+            D "transfer-data-text", "Please, transfer 1000 tokens to this Loan Request address - 0xd2a7cc5d43fa6a354549dcef499018454af1842a and click on Tokens Transferred button"
+            button class:'card-button bgc-primary loan-button transfer-tokens', 'Tokens transferred'
+        if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
+            D "transfer-data-text", "Borrower should transfer 1000 tokens to this Loan Request address - 0xd2a7cc5d43fa6a354549dcef499018454af1842a"
+            button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, 'Tokens transferred'
+
+
+
+
 
 block-scheme =-> D \block-scheme,
     D "block-scheme-element #{highlightQ(0)}", 'No data'
@@ -47,23 +62,24 @@ block-scheme =-> D \block-scheme,
     D \block-scheme-line,
         P \block-scheme-line-inscription, "Borrower transfers ", br!, \tokens
         D \block-scheme-line-arrow
-    D "block-scheme-element #{highlightQ(2)}", 'Waiting For Lender'
+    D "block-scheme-element #{highlightQ(3)}", 'Waiting For Lender'
     D \block-scheme-line,
         P \block-scheme-line-inscription, "Lender sends ", br!, \money
         D \block-scheme-line-arrow
-    D "block-scheme-element #{highlightQ(3)}", \Funded
+    D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
         P \block-scheme-line-inscription, 'Borrower gets his', br!, 'tokens back'
         P 'block-scheme-line-inscription block-scheme-line-inscription-second', "Lender gets money + ", br!, \premium
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
-    D "#{highlightQ(4)} block-scheme-element block-scheme-element-success", \Finished
+    D "#{highlightQ(5)} block-scheme-element block-scheme-element-success", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
         P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, \tokens
         D 'block-scheme-line-arrow block-scheme-line-arrow-branch'
-    D "#{highlightQ(5)} block-scheme-element block-scheme-element-branch block-scheme-element-failure", \Default
+    D "#{highlightQ(2)} block-scheme-element block-scheme-element-branch block-scheme-element-failure", \Default
 
 
 Template.loan_request.created=->
+    state.set \selected-class \loan
     map state-null, [
         *\lr-WantedWei
         *\lr-DaysToLen
@@ -126,10 +142,17 @@ Template.loan_request.events do
                 res.premium,             
                 res.tokname,            
                 res.link,
-                config.ETH_MAIN_ADDRESS,
+                res.smart,
                 res.days, 
                 set-data-cb                      
             )  
+
+
+
+    'click .transfer-tokens':->
+        lr.checkTokens(state.get(\address)) conscb
+
+
 
     'input .input':~> 
         $T = $(event.target)
@@ -161,13 +184,6 @@ Template.loan_request.events do
 Everything_is_ok=->
     ok = true
     test =-> if it is false => ok := false
-            # elem.parents(\section).find(\.gpin).remove-class(\hidden)
-            # elem.parents(\section).find(\.rpin).add-class(\hidden)
-            # state.set("#{name}-rpin" true); state.set("#{name}-gpin" false)
-            
-        # else 
-            # elem.parents(\section).find(\.gpin).add-class(\hidden)
-            # elem.parents(\section).find(\.rpin).remove-class(\hidden)
 
     for el in $(\.input)
         cls = $(el).attr(\class) |> split ' ' |> last
@@ -181,15 +197,22 @@ Everything_is_ok=->
     console.log \ok: ok
     ok
 
-
 check-set-data-out =(out,cb)->  # TODO: чекать данные, соответствующе подсвечивать, если что неправильно
     cb(null, out)
 
-set-data-cb =(err,res)-> # TODO: коллбэк для сет дата. Надо будет перезагружать страницу, наверное, 
-    location.reload!
-    res                  #       или показывать loading до тех пор, пока изменения не вступят в силу.
-
+set-data-cb =(err,res)->
+    # location.reload!
+    res                  
 
 @disableQ =-> (!state.get(\IamBorrower) || !!state.get(\lr-State))
 
 @highlightQ =-> if it is state.get \lr-State then \block-scheme-element-highlighted else ''
+
+
+# Если я Borrower:
+# 1) Показать подсказку - "Please, transfer 1000 tokens to this Loan Request address - 0xd2a7cc5d43fa6a354549dcef499018454af1842a and click on Tokens Transferred button"
+# 2) Кнопка "Tokens Transferred" должна вызывать метод у контракта checkTokens()
+
+# Если я не Borrower:
+# 1) Показать "Borrower should transfer 1000 tokens to this Loan Request address - 0xd2a7cc5d43fa6a354549dcef499018454af1842a"
+# 2) Кнопка "Tokens Transferred" в disabled состоянии

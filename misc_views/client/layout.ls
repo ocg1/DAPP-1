@@ -5,7 +5,7 @@ template \layout ->
             title {}, "EthLend"
         body do
             header_blaze do
-                a class:\logo href:\/main,
+                a class:\logo href:\/main/1,
                     img class:\logo-image src:\/img/logo.svg alt:'EthLend logo'
                 h1 class:\site-name,
                     a class:\home-link href:\/main/1, "EthLend"
@@ -17,17 +17,14 @@ template \layout ->
                     D "nav-link-wrapper #{if state.get(\selected-class)==\new-loan => \selected  }",
                         span class:"glyphicon glyphicon-plus-sign" aria-hidden:"true" style:'color:white; position:relative; left:15px; top:2px;'
                         a class:'nav-link with-icon' href:\/new-loan-request, "New Loan Request"
-                    D "nav-link-wrapper #{if state.get(\selected-class)==\info => \selected }",
+                    D "nav-link-wrapper #{if state.get(\selected-class)==\info => \selected } #{if state.get(\selected-class)==\loan => \pseudo-selected }",
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             if web3?
-                    if not web3?eth?defaultAccount => SI Template.reload
-                    else
-                        state.set \defaultAccount web3?eth?defaultAccount
-                        SI @lookupTemplate \yield
-
-                
-                
+                Meteor.setTimeout((~> 
+                    unless web3?eth?defaultAccount => SI Template.reload),30)
+                state.set \defaultAccount web3?eth?defaultAccount
+                SI @lookupTemplate \yield
             else Template.no_metamask
 
         footer do

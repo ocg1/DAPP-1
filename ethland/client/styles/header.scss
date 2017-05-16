@@ -66,6 +66,17 @@
     border-bottom: solid 3px #ffffff;
 }
 
+.pseudo-selected{
+    border-bottom: solid 3px rgba(255,255,255,0);
+    position: relative;
+    color: red;
+
+}
+
+
+
+
+
 .with-icon {
     padding-left: 20px;
 }
