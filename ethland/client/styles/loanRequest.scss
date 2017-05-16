@@ -162,10 +162,10 @@
             border-top: 10px solid $primary-color;
             margin-left: 55.5px;
             &-long {
-                top: 93px;
+                top: 103px;
             }
             &-branch {
-                top: 127px;
+                top: 126px;
                 left: 32px;
             }
         }
@@ -182,4 +182,10 @@
 .set-data:disabled{
     // display:none;
     background-color:rgb(180,180,180)
+}
+
+.set-data-text{
+    position: relative;
+    top: 40px;
+    left: 10px
 }

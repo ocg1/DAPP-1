@@ -110,14 +110,18 @@
 @big-zero = \0x0000000000000000000000000000000000000000
 
 
-get-it-tail =-> it|> join '' |> chars |> tail
-get-it-head =-> it|> join '' |> chars |> first
+@get-it-tail =-> 
+    it|> join '' |> chars |> tail
+@get-it-head =-> 
+    it|> join '' |> chars |> first
 
-get-num =-> 
-    [get-it-head(it)] ++ ['.'] ++ get-it-tail([it]) |> join ''
+@get-num =-> 
+    ( [get-it-head(it)] ++ ['.'] ++ get-it-tail(it) )|> join ''
 
 
 @convert-big-number =->
     +get-num(it.c)*10^(it.e*it.s)
 
 @state-null =-> state.set it, null
+
+@yesno =-> if it then \Yes else \No

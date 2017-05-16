@@ -24,17 +24,18 @@ input-unit =-> section style:'height:40px',
 
 input-box =~> div class:\input-box, 
     map input-unit, [
-        *c:'lr-WantedWei'                 n:'Eth amount'                 d:disableQ!, placeholder:'00.00 Eth',       
-        *c:'lr-DaysToLen'                      n:'Days to lend'               d:disableQ!,                                
-        *c:'lr-TokenAmount'                 n:'Token amount'               d:disableQ!, placeholder:'00.00 Eth',       
-        *c:'lr-PremiumWei'                   n:'Premium amount'             d:disableQ!, placeholder:'00.00 Eth',       
-        *c:'lr-TokenName'                   n:'Token name'                 d:disableQ!,                                
-        *c:'lr-Borrower input-primary-short'   n:'Borrower'                   d:true      red-dot:state.get(\IamBorrower),
-        *c:'lr-Lender input-primary-short'   n:'Lender'                     d:true      red-dot:state.get(\IamLender),  
-        *c:'lr-TokenSmartcontractAddress input-primary-short' n:'Token smart contract'       d:true                                      
-        *c:'lr-TokenInfoLink'                      n:'Token info link (optional)' d:disableQ!,                                
+        *c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'00.00 Eth',       
+        *c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!,                                
+        *c:'lr-TokenAmount'                                   n:'Token amount'               d:disableQ!, placeholder:'0',       
+        *c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'00.00 Eth',       
+        *c:'lr-TokenName'                                     n:'Token name'                 d:disableQ!,                                
+        *c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower),
+        *c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender),  
+        *c:'lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
+        *c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!,                                
     ]
     div class:\text-aligned,
+        D "set-data-text #{if !state.get(\IamBorrower) => \hidden }", "Please, enter the data" 
         button class:'card-button bgc-primary set-data' disabled:(!state.get(\IamBorrower) || !!state.get(\lr-State)), 'Set data'
 
 block-scheme =-> D \block-scheme,
@@ -151,6 +152,7 @@ Template.loan_request.events do
         case \lr-TokenAmount => test IntQ $T.val!
         case \lr-PremiumWei  => test IntQ $T.val!
         case \lr-TokenName   => test $T.val!length > 3
+        case \lr-TokenSmartcontractAddress => test EthQ $T.val!
 
         if Everything_is_ok! => $(\.set-data).remove-attr \disabled
         else $(\.set-data).attr \disabled, \disabled
@@ -175,6 +177,7 @@ Everything_is_ok=->
         case \lr-TokenAmount => test IntQ $(el).val!
         case \lr-PremiumWei  => test IntQ $(el).val!
         case \lr-TokenName   => test $(el).val!length > 3
+        case \lr-TokenSmartcontractAddress => test EthQ $(el).val!
     console.log \ok: ok
     ok
 
@@ -183,6 +186,7 @@ check-set-data-out =(out,cb)->  # TODO: чекать данные, соотве�
     cb(null, out)
 
 set-data-cb =(err,res)-> # TODO: коллбэк для сет дата. Надо будет перезагружать страницу, наверное, 
+    location.reload!
     res                  #       или показывать loading до тех пор, пока изменения не вступят в силу.
 
 

@@ -8,12 +8,12 @@ template \layout ->
                 a class:\logo href:\/main,
                     img class:\logo-image src:\/img/logo.svg alt:'EthLend logo'
                 h1 class:\site-name,
-                    a class:\home-link href:\/main, "EthLend"
+                    a class:\home-link href:\/main/1, "EthLend"
                 nav class:\navigation,
                     D "nav-link-wrapper #{if state.get(\selected-class)==\main => \selected  }",
-                        a class:\nav-link href:\/main, "All Loan Requests"
+                        a class:\nav-link href:\/main/1, "All Loan Requests"
                     D "nav-link-wrapper #{if state.get(\selected-class)==\funded => \selected  }",
-                        a class:\nav-link href:\/main, "Funded Loan Requests"
+                        a class:\nav-link href:\/main/1, "Funded Loan Requests"
                     D "nav-link-wrapper #{if state.get(\selected-class)==\new-loan => \selected  }",
                         span class:"glyphicon glyphicon-plus-sign" aria-hidden:"true" style:'color:white; position:relative; left:15px; top:2px;'
                         a class:'nav-link with-icon' href:\/new-loan-request, "New Loan Request"
@@ -21,19 +21,22 @@ template \layout ->
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             if web3?
-                Meteor.setTimeout((~> 
-                    unless web3?eth?defaultAccount => SI Template.reload),30)
-                state.set \defaultAccount web3?eth?defaultAccount
-                SI @lookupTemplate \yield
+                    if not web3?eth?defaultAccount => SI Template.reload
+                    else
+                        state.set \defaultAccount web3?eth?defaultAccount
+                        SI @lookupTemplate \yield
+
+                
+                
             else Template.no_metamask
 
         footer do
             div class:\footer-nav,
-                a class:\footer-link href:\/main, "Home"
+                a class:\footer-link href:\/main/1, "Home"
                 a class:\footer-link href:'', "About EthLеnd"
                 a class:\footer-link href:'', "FAQs"
             p class:\footer-inscription, "EthLend ©2017 Created by ",
-                a href:'', "Chain.Cloud"
+                a href:'http://Chain.Cloud', "Chain.Cloud"
 
 
 Template.layout.events do 

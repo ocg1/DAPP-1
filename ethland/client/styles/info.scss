@@ -1,11 +1,12 @@
 @import 'base';
 
 .info {
-    width: 707px;
-    height: 255px;
+
+    width: 607px;
+    height: 195px;
     border-radius: 11px;
     background-color: $secondary-color;
-    margin: 102px auto;
+    margin: 122px auto;
     &-key {
         margin: 8px 7px 8px 22px;
         font-size: 14px;
@@ -18,7 +19,7 @@
     }
     &-value {
         display: inline-block;
-        width: 501px;
+        width: 301px;
         margin: 0;
         font-size: 14px;
         letter-spacing: -0.7px;
