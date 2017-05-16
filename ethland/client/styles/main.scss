@@ -79,7 +79,7 @@
         width: 123px;
     }
     &-button {
-        width: 79px;
+        width: 150px;
         height: 39px;
         border-radius: 9px;
         color: $text-color;
@@ -88,7 +88,7 @@
         border-style: none;
         outline:none;
         cursor: pointer;
-        margin: 0 0 0 20px;
+        // margin: 0 0 0 20px;
     }
 }
 
@@ -103,10 +103,17 @@
 .arrow {
     position: absolute;
     top: 49%;
-    width: 10px;
+    width: 20px;
     height: 16px;
+
+    border-style: none;
+    background-color: white;
+    font-size: 15px;
+    color: rgb(56,121,217);
+
+
     &-left {
-        left: 0;
+        left: -5px;
         @media only screen and (max-width: 993px) {
             left: 5%;
         }

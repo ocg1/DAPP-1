@@ -13,7 +13,7 @@ template \mainTemplate -> main_blaze do
     div class:\card-header,
         if it.WantedWei => div class:\card-header,
             h3 class:\card-header-amount, "#{it.WantedWei} Eth"
-            h3 class:\card-header-inscription, "#{it?TokenName}"
+            h3 class:\card-header-inscription, "#{it?TokenName} (#{it?TokenAmount})"
         else if it.Borrower == web3?eth?defaultAccount => div class:\card-header, 
             h3 class:\card-header-amount, "Please, set the data"
 
