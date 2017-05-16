@@ -1,12 +1,12 @@
-Router.route \mainTemplate, path: \main
+Router.route \mainTemplate, path: \/main/:page
 
 template \mainTemplate -> main_blaze do
     D \card-wrapper D \card-wrapper-aligned,
         progress-bar!
         map card-template, state.get(\quartet)||[]
     
-        a href:'', img class:"#{state.get \arrows-class } arrow arrow-left"  src:\/img/left.svg  alt:''
-        a href:'', img class:"#{state.get \arrows-class } arrow arrow-right" src:\/img/right.svg alt:''
+        a href:'', img class:"#{state.get \left-arrow-class } arrow arrow-left"  src:\/img/left.svg  alt:''
+        a href:'', img class:"#{state.get \right-arrow-class } arrow arrow-right" src:\/img/right.svg alt:''
 
 @card-template =-> a class:\card href:"/loan-request/#{it?id}",
     div class:\card-header,
@@ -81,31 +81,41 @@ empty-list =-> div style:'padding:100px' class:\container ,
                                     if state.get(\percent)==75 =>state.set \percent 100
                                     &1.id = id
                                     out.push &1
-                                    state.set \progress-class \hidden
-                                    state.set \arrows-class ''
                                     return cb(null,out)
 
-create-quartet-page=(start=0)-> create-quartet start, (err,res)->
+create-quartet-page=(start)-> create-quartet start, (err,res)->
+    state.set \progress-class \hidden
+    if +state.get(\page)>1 => state.set \left-arrow-class ''  
+    state.set \right-arrow-class ''  
+
     state.set \quartet res
 
 Template.mainTemplate.rendered =->
     
 Template.mainTemplate.created =->
+    state.set \page (Router.current!originalUrl |> split \/ |> last )    
+
     if state.get(\percent)==0 or !state.get(\percent)
-        state.set \arrows-class \hidden
+        state.set \left-arrow-class  \hidden
+        state.set \right-arrow-class \hidden
         state.set \percent 0
 
     ledger.getLrCount ->
         return &0 if &0
         total-reqs = &1.c.0
         state.set \totalReqs total-reqs
-        create-quartet-page!    
+        create-quartet-page((state.get(\page)-1)*4)    
     # state.set \currentQuartet 1
     # state.set \requests get-mock-data-arr!
 
 Template.mainTemplate.events do
     'click .arrow-right':-> 
+        document.location.href =  \/main/ + (+state.get(\page)+1)
     'click .arrow-left' :-> 
+        if state.get(\page)>1
+            document.location.href =  \/main/ + (+state.get(\page)-1)    
+        
+
     # 'click .card' :-> 
     #     address = \/loan-request/ + $(event.target).attr(\link)
     #     console.log \address: address
