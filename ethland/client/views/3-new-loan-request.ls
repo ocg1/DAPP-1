@@ -25,6 +25,7 @@ Template.newLoanRequest.events do
 
 
 Template.newLoanRequest.created =->
+    state.set \selected-class \new-loan
     state.set \message-class \hidden
     state.set \loading-class ''
         

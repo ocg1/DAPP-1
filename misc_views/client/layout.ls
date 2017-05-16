@@ -10,14 +10,14 @@ template \layout ->
                 h1 class:\site-name,
                     a class:\home-link href:\/main, "EthLend"
                 nav class:\navigation,
-                    div class:'nav-link-wrapper selected',
+                    D "nav-link-wrapper #{if state.get(\selected-class)==\main => \selected  }",
                         a class:\nav-link href:\/main, "All Loan Requests"
-                    div class:\nav-link-wrapper,
+                    D "nav-link-wrapper #{if state.get(\selected-class)==\funded => \selected  }",
                         a class:\nav-link href:\/main, "Funded Loan Requests"
-                    div class:\nav-link-wrapper,
+                    D "nav-link-wrapper #{if state.get(\selected-class)==\new-loan => \selected  }",
                         span class:"glyphicon glyphicon-plus-sign" aria-hidden:"true" style:'color:white; position:relative; left:15px; top:2px;'
                         a class:'nav-link with-icon' href:\/new-loan-request, "New Loan Request"
-                    div class:\nav-link-wrapper,
+                    D "nav-link-wrapper #{if state.get(\selected-class)==\info => \selected }",
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             if web3?
@@ -48,6 +48,14 @@ Template.layout.events do
 
 
 
-# Template.layout.rendered=~>
-#     console.log web3.eth.defaultAccount
-#     
+Template.layout.rendered=->
+    console.log web3.eth.defaultAccount
+    state.set \addr (Router.current!originalUrl |> split \/)
+
+    state.set \addr-last (state.get(\addr) |> last )
+    state.set \addr-prelast (state.get(\addr) |> initial |> last )
+
+    state.set \main-class     if (state.get(\addr-prelast)==\main)          => \selected else ''
+    state.set \info-class     if (state.get(\addr-last)==\info)             => \selected else ''
+    state.set \new-loan-class if (state.get(\addr-last)==\new-loan-request) => \selected else ''
+    
