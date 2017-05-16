@@ -6,14 +6,17 @@ template \mainTemplate -> main_blaze do
         D "#{state.get \quartet-class }",
             map card-template, state.get(\quartet)||[]
     
-        a href:"/main/#{+state.get(\page)-1}", img class:"#{state.get \left-arrow-class } arrow arrow-left"  src:\/img/left.svg  alt:''
-        a href:"/main/#{+state.get(\page)+1}", img class:"#{state.get \right-arrow-class } arrow arrow-right" src:\/img/right.svg alt:''
+        button class:"#{state.get \left-arrow-class } arrow arrow-left glyphicon glyphicon-chevron-left" disabled:!!state.get(\left-arrow-class)
+        button class:"#{state.get \right-arrow-class } arrow arrow-right glyphicon glyphicon-chevron-right"
 
 @card-template =-> a class:\card href:"/loan-request/#{it?id}",
     div class:\card-header,
         if it.WantedWei => div class:\card-header,
             h3 class:\card-header-amount, "#{it.WantedWei} Eth"
-            h3 class:\card-header-inscription, "#{it?TokenAmount} Aeternity Tokens"
+            h3 class:\card-header-inscription, "#{it?TokenName}"
+        else if it.Borrower == web3?eth?defaultAccount => div class:\card-header, 
+            h3 class:\card-header-amount, "Please, set the data"
+
         else div class:\card-header, 
             h3 class:\card-header-amount, "Data must be set by the Borrower"
 
@@ -91,6 +94,7 @@ create-quartet-page=(start)->
         state.set \quartet-class ''
         state.set \progress-class \hidden
         if +state.get(\page)>1 => state.set \left-arrow-class ''  
+        else state.set \left-arrow-class \disabled
         state.set \right-arrow-class ''  
         state.set \quartet res
 
@@ -119,19 +123,25 @@ Template.mainTemplate.created =->
 
 Template.mainTemplate.events do
     'click .arrow-right':-> 
+        state.set \left-arrow-class  \hidden
+        state.set \right-arrow-class \hidden    
         state.set \quartet-class \hidden 
         state.set \progress-class ''
         state.set \percent 0
 
         state.set \page (+state.get(\page)+1)
+        Router.go "/main/#{state.get(\page)}" 
         rerender!
     'click .arrow-left' :-> 
+        state.set \left-arrow-class  \hidden
+        state.set \right-arrow-class \hidden    
         if +state.get(\page)<2 => event.prevent-default; return
         state.set \percent 0
         state.set \quartet-class \hidden 
         state.set \progress-class ''
 
         state.set \page (+state.get(\page)-1)
+        Router.go "/main/#{state.get(\page)}" 
         rerender!
         
 
