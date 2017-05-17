@@ -191,10 +191,10 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: (+state.get(\NeededSumByLender) + +state.get(\lr-WantedWei))*10^18
+            value: ( +state.get('lr').WantedWei + state.get(\NeededSumByLender) )*10^18
             gas:   2900000
         }
-        # console.log \transact: transact
+        console.log \transact: transact
         web3.eth.sendTransaction transact, goto-success-cb
 
     'click .return-tokens':->
