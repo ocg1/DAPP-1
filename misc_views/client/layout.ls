@@ -13,7 +13,7 @@ template \layout ->
                     D "nav-link-wrapper #{if state.get(\selected-class)==\main => \selected  }",
                         a class:\nav-link href:\/main/1, "All Loan Requests"
                     D "nav-link-wrapper #{if state.get(\selected-class)==\funded => \selected  }",
-                        a class:\nav-link href:\/main/1, "Funded Loan Requests"
+                        a class:\nav-link href:\/funded/1, "Funded Loan Requests"
                     D "nav-link-wrapper #{if state.get(\selected-class)==\new-loan => \selected  }",
                         span class:"glyphicon glyphicon-plus-sign" aria-hidden:"true" style:'color:white; position:relative; left:15px; top:2px;'
                         a class:'nav-link with-icon' href:\/new-loan-request, "New Loan Request"

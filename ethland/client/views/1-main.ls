@@ -1,13 +1,12 @@
 Router.route \mainTemplate, path: \/main/:page
 
 template \mainTemplate -> main_blaze do
-    D \card-wrapper D \card-wrapper-aligned,
+    D \card-wrapper,
         progress-bar!
-        D "#{state.get \quartet-class }",
-            map card-template, state.get(\quartet)||[]
-    
-        button class:"#{state.get \left-arrow-class } arrow arrow-left glyphicon glyphicon-chevron-left" disabled:!!state.get(\left-arrow-class)
-        button class:"#{state.get \right-arrow-class } arrow arrow-right glyphicon glyphicon-chevron-right"
+        D "card-wrapper-aligned #{state.get \quartet-class }",
+            D \div, map card-template, state.get(\quartet)||[]
+            button class:"#{if state.get(\page)==\1 => \disabled } arrow arrow-left glyphicon glyphicon-chevron-left" disabled:(state.get(\page)==\1)
+            button class:"arrow arrow-right glyphicon glyphicon-chevron-right"
 
 @card-template =-> a class:\card href:"/loan-request/#{it?id}",
     div class:\card-header,
@@ -25,10 +24,11 @@ template \mainTemplate -> main_blaze do
             img class:\img-dot src:\/img/red_dot.svg alt:''
         h4 class:\card-key, "Borrower"
         p class:\card-value, it.Borrower
-        
-        if it?State == 0 || it?State == 1
-            h4 class:'card-key font-weight-normal', "Lender",
-                p class:\card-value, if it.Lender != big-zero => it.Lender else \–––
+        if it?State == 0 || it?State == 1 || it?State == 4 => D \div-lender,
+            if web3.eth.defaultAccount == it.Lender
+                img class:\img-dot src:\/img/red_dot.svg alt:''
+            h4 class:'card-key font-weight-normal', "Lender" 
+            p class:\card-value, if it.Lender != big-zero => it.Lender else \–––
         if it?State == 3
             h4 class:"card-key-inscription" style:'color:black', "Get +#{it?PremiumWei} Eth Premium!"
         # if it?State == 3
@@ -92,32 +92,25 @@ empty-list =-> div style:'padding:100px' class:\container ,
                                     return cb(null,out)
 
 create-quartet-page=(start)->
-    state.set \left-arrow-class  \hidden
-    state.set \right-arrow-class \hidden
     state.set \percent 0
 
     create-quartet start, (err,res)->
         state.set \quartet-class ''
         state.set \progress-class \hidden
-        if +state.get(\page)>1 => state.set \left-arrow-class ''  
-        else state.set \left-arrow-class \disabled
-        state.set \right-arrow-class ''  
         state.set \quartet res
 
 Template.mainTemplate.rendered =->
     
 Template.mainTemplate.created =->
     state.set \selected-class \main
+    state.set \quartet-class \hidden 
+    state.set \progress-class ''         
     state.set \page (Router.current!originalUrl |> split \/ |> last )    
 
     if state.get(\percent)==0 or !state.get(\percent)
-        state.set \left-arrow-class  \hidden
-        state.set \right-arrow-class \hidden
         state.set \percent 0
 
     rerender!  
-    # state.set \currentQuartet 1
-    # state.set \requests get-mock-data-arr!
 
 @rerender =~> ledger.getLrCount ->
     return &0 if &0
@@ -125,12 +118,8 @@ Template.mainTemplate.created =->
     state.set \totalReqs total-reqs
     create-quartet-page((state.get(\page)-1)*4)   
 
-
-
 Template.mainTemplate.events do
     'click .arrow-right':-> 
-        state.set \left-arrow-class  \hidden
-        state.set \right-arrow-class \hidden    
         state.set \quartet-class \hidden 
         state.set \progress-class ''
         state.set \percent 0
@@ -138,9 +127,7 @@ Template.mainTemplate.events do
         state.set \page (+state.get(\page)+1)
         Router.go "/main/#{state.get(\page)}" 
         rerender!
-    'click .arrow-left' :-> 
-        state.set \left-arrow-class  \hidden
-        state.set \right-arrow-class \hidden    
+    'click .arrow-left' :->    
         if +state.get(\page)<2 => event.prevent-default; return
         state.set \percent 0
         state.set \quartet-class \hidden 

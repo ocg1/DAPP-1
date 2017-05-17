@@ -8,7 +8,7 @@ template \newLoanRequest -> main_blaze do
 
         p style:\font-size:20px,
             'New ' b 'Loan Request'; ' will be then available in ’All Loan Requests’ window.'
-        button class:'new-loan-request', 'New loan request'
+        button class:'new-loan-request card-button bgc-primary', 'New loan request'
 
 Template.newLoanRequest.events do
     'click .new-loan-request':->
@@ -21,7 +21,10 @@ Template.newLoanRequest.events do
         }
         web3.eth.sendTransaction transact, (err,res)-> 
             if err => console.log \err:   err
-            if res => console.log \thash: res
+            if res 
+                console.log \thash: res
+                Router.go \success
+
 
 
 Template.newLoanRequest.created =->
