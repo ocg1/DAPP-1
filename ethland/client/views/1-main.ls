@@ -47,7 +47,7 @@ empty-list =-> div style:'padding:100px' class:\container ,
         get-all-lr-data(&1)(cb)
 
 @progress-bar =(percent)-> div style:'padding:100px; padding-right:120px' class:"#{state.get \progress-class } container" ,
-    h1 style:'font-size:50px; display:block', 'Receiving data'
+    h1 style:'font-size:50px; display:block', 'Receiving data...'
     p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please wait for the data to be downloaded from the Ethereum network'
     div class:\progress style:'width:70%',
         div class:"progress-bar progress-bar-striped active" role:"progressbar" aria-valuenow:"#percent" aria-valuemin:"0" aria-valuemax:"100" style:"width:#{state.get \percent }%"
