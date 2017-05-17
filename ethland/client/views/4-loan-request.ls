@@ -36,28 +36,53 @@ input-box =~> div class:\input-box,
     ]
     div class:\text-aligned,
         if state.get(\lr-State)==0 && state.get(\IamBorrower) => D \text-s,
-            D "set-data-text", "Please, enter the data" 
+            D "loan-prebutton-text", "Please, enter the data" 
             button class:'card-button bgc-primary loan-button set-data', 'Set data'
         if state.get(\lr-State)==0 && !state.get(\IamBorrower) => D \text-s,
-            D "set-data-text", "Borrower should set the data" 
+            D "loan-prebutton-text", "Borrower should set the data" 
             button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
 
         if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
-            D "transfer-data-text", "Please, transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address } and click on Tokens Transferred button"
+            D "loan-prebutton-text", "Please, transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address } and click on Tokens Transferred button"
             button class:'card-button bgc-primary loan-button transfer-tokens', 'Tokens transferred'
         if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
-            D "transfer-data-text", "Borrower should transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address }"
+            D "loan-prebutton-text", "Borrower should transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address }"
             button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, 'Tokens transferred'
 
         if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
-            D "transfer-data-text", 
+            D "loan-prebutton-text", 
                 "Please send #{state.get('lr').WantedWei + state.get(\NeededSumByLender)} Eth to #{state.get \address }"
                 br!
                 "to fund this Loan Request. This includes #{state.get(\NeededSumByLender)||'xxx' } Eth platform fee."
 
             button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
 
+        if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
+            D "loan-prebutton-text", "To return tokens please send #{state.get('lr').WantedWei + state.get(\NeededSumByLender)} Eth to #{state.get \address }. This includes #{state.get(\NeededSumByLender)} Eth premium"
+            button class:'card-button bgc-primary loan-button return-tokens', 'Return tokens'
+        if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
+            D "loan-prebutton-text", "Borrower should now return #{state.get('lr').WantedWei + state.get(\NeededSumByLender)} Eth in order to return tokens back"
+            button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
+        if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
+            D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can get his tokens"
+            button class:'card-button bgc-primary loan-button get-tokens', 'Get tokens'
 
+
+    # Если я Borrower -> 
+    # 1) Показать надпись "To return tokens please send 2.02 Eth to 0x4256c2a59387df22f0dab5da6f06018552985f0a. This includes 0.02 Eth premium"
+    # 2) Показать кнопку "Send back Eth. Return tokens"
+
+    # По нажатию посылать деньги от текущего юзера (borrower'а) в контракт LR.
+
+    # Если я не Borrower ->
+    # 1) Показать надпись "Borrower should now return 2.02 Eth in order to return tokens back"
+    # 2) Показать кнопку "Send back Eth. Return tokens" (disabled)
+
+    # Если я Lender ->
+    # 1) Показать надпись "If time has passed but borrower hasn't returned the loan - you can get his tokens"
+    # 2) Показать кнопку "Get tokens"
+
+    # По нажатию вызывать метод requestDefault.
 
 
 block-scheme =-> D \block-scheme,
@@ -162,7 +187,7 @@ Template.loan_request.events do
     'click .transfer-tokens':->
         lr.checkTokens(state.get(\address)) goto-success-cb
 
-    'click .lender-pay':->
+    'click .lender-pay':->   
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
@@ -171,6 +196,20 @@ Template.loan_request.events do
         }
         # console.log \transact: transact
         web3.eth.sendTransaction transact, goto-success-cb
+
+    'click .return-tokens':->
+        transact = {
+            from:  web3.eth.defaultAccount
+            to:    state.get(\address)
+            value: (+state.get(\lr-PremiumWei) + +state.get(\lr-WantedWei))*10^18
+            gas:   2900000
+        }
+        # console.log \transact: transact
+        web3.eth.sendTransaction transact, goto-success-cb
+
+    'click .get-tokens':->
+        lr.requestDefault(state.get(\address)) goto-success-cb
+
 
     'input .input':~> 
         $T = $(event.target)
@@ -225,12 +264,3 @@ set-data-cb =(err,res)->
 @disableQ =-> (!state.get(\IamBorrower) || !!state.get(\lr-State))
 
 @highlightQ =-> if it is state.get \lr-State then \block-scheme-element-highlighted else ''
-
-
-# Если я Borrower:
-# 1) Показать подсказку - "Please, transfer 1000 tokens to this Loan Request address - 0xd2a7cc5d43fa6a354549dcef499018454af1842a and click on Tokens Transferred button"
-# 2) Кнопка "Tokens Transferred" должна вызывать метод у контракта checkTokens()
-
-# Если я не Borrower:
-# 1) Показать "Borrower should transfer 1000 tokens to this Loan Request address - 0xd2a7cc5d43fa6a354549dcef499018454af1842a"
-# 2) Кнопка "Tokens Transferred" в disabled состоянии
