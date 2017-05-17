@@ -25,9 +25,15 @@ template \mainTemplate -> main_blaze do
             img class:\img-dot src:\/img/red_dot.svg alt:''
         h4 class:\card-key, "Borrower"
         p class:\card-value, it.Borrower
-            
-        h4 class:'card-key font-weight-normal', "Lender"
-            p class:\card-value, if it.Lender != big-zero => it.Lender else \–––
+        
+        if it?State == 0 || it?State == 1
+            h4 class:'card-key font-weight-normal', "Lender",
+                p class:\card-value, if it.Lender != big-zero => it.Lender else \–––
+        if it?State == 3
+            h4 class:"card-key-inscription" style:'color:black', "Get +#{it?PremiumWei} Eth Premium!"
+        # if it?State == 3
+        #     button class:'card-button bgc-primary fund-button' style:"width:100px;margin-left:70px" id:it?id, 'Fund'
+
         div class:'card-state float-left',
             h4 class:'card-key font-weight-normal', "State"
             p class:\card-value, state-int-to-str it?State
@@ -144,8 +150,15 @@ Template.mainTemplate.events do
         Router.go "/main/#{state.get(\page)}" 
         rerender!
         
+    # 'click .funded-button':->
+    #     lr.getNeededSumByLender( $(event.target).attr(\id) ) (err,res)->   
+    #         transact = {
+    #             from:  web3.eth.defaultAccount
+    #             to:    $(event.target).attr(\id)
+    #             value: res
+    #             gas:   2900000
+    #         }
 
-    # 'click .card' :-> 
-    #     address = \/loan-request/ + $(event.target).attr(\link)
-    #     console.log \address: address
-    #     Router.go address
+    #         web3.eth.sendTransaction transact, (err,res)-> 
+    #             if err => console.log \err:   err
+    #             if res => console.log \res:   res
