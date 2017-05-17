@@ -6,7 +6,7 @@ template \loan_request -> main_blaze do
 
     D "loan-wrapper #{state.get \loan-wrapper-class }",
         D \input-wrapper,
-            h2 class:\loan-title, "Loan Request  #{state.get \address }"
+            a target:\__blank class:\loan-title href:"https://kovan.etherscan.io/address/#{state.get \address }", "Loan Request  #{state.get \address }"
             input-box!
         block-scheme!
 
@@ -43,12 +43,15 @@ input-box =~> div class:\input-box,
             button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
 
         if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
-            D "transfer-data-text", "Please, transfer 1000 tokens to this Loan Request address - 0xd2a7cc5d43fa6a354549dcef499018454af1842a and click on Tokens Transferred button"
+            D "transfer-data-text", "Please, transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address } and click on Tokens Transferred button"
             button class:'card-button bgc-primary loan-button transfer-tokens', 'Tokens transferred'
         if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
-            D "transfer-data-text", "Borrower should transfer 1000 tokens to this Loan Request address - 0xd2a7cc5d43fa6a354549dcef499018454af1842a"
+            D "transfer-data-text", "Borrower should transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address }"
             button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, 'Tokens transferred'
 
+        if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
+            D "transfer-data-text", "Please send #{state.get('lr').WantedWei } Eth to #{state.get \address }.", br!, "This includes #{state.get(\NeededSumByLender)||'xxx' } fee"
+            button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
 
 
 
@@ -74,7 +77,7 @@ block-scheme =-> D \block-scheme,
     D "#{highlightQ(5)} block-scheme-element block-scheme-element-success", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
         P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, \tokens
-        D 'block-scheme-line-arrow block-scheme-line-arrow-branch'
+        div class:'block-scheme-line-arrow block-scheme-line-arrow-branch' style:'left:87px'
     D "#{highlightQ(2)} block-scheme-element block-scheme-element-branch block-scheme-element-failure", \Default
 
 
@@ -97,16 +100,19 @@ Template.loan_request.created=->
     state.set \loading-class,      ''
     state.set \error-class, (if EthQ(state.get(\address))=>\hidden else '' )
 
-    get-all-lr-data( state.get \address ) ->
-        state.set \loan-wrapper-class, ''
-        state.set \loading-class, \hidden
-        state.set \lr, &1
-        state.set \lr-Lender   &1?Lender
-        state.set \lr-Borrower &1?Borrower
-        state.set \lr-State    &1?State
-        state.set \IamLender        (state.get(\defaultAccount)==state.get(\lr-Lender))       
-        state.set \IamBorrower      (state.get(\defaultAccount)==state.get(\lr-Borrower))            
-
+    lr.getNeededSumByLender(state.get \address )((err,res)->   
+        state.set \NeededSumByLender convert-big-number(res)/10^18   
+        get-all-lr-data( state.get \address ) ->
+       
+            state.set \loan-wrapper-class, ''
+            state.set \loading-class, \hidden
+            state.set \lr, &1
+            state.set \lr-Lender   &1?Lender
+            state.set \lr-Borrower &1?Borrower
+            state.set \lr-State    &1?State
+            state.set \IamLender   (state.get(\defaultAccount)==state.get(\lr-Lender))       
+            state.set \IamBorrower (state.get(\defaultAccount)==state.get(\lr-Borrower))            
+        )
 
 Template.loan_request.rendered =->
     $(\.set-data).attr \disabled, \disabled
@@ -147,12 +153,19 @@ Template.loan_request.events do
                 set-data-cb                      
             )  
 
-
-
     'click .transfer-tokens':->
         lr.checkTokens(state.get(\address)) conscb
 
-
+    'click .lender-pay':->
+        transact = {
+            from:  web3.eth.defaultAccount
+            to:    state.get(\address)
+            value: state.get(\NeededSumByLender)
+            gas:   2900000
+        }
+        web3.eth.sendTransaction transact, (err,res)-> 
+            if err => console.log \err:   err
+            if res => console.log \res:   res
 
     'input .input':~> 
         $T = $(event.target)
