@@ -103,11 +103,11 @@ block-scheme =-> D \block-scheme,
         P \block-scheme-line-inscription, 'Borrower gets his', br!, 'tokens back'
         P 'block-scheme-line-inscription block-scheme-line-inscription-second', "Lender gets money + ", br!, \premium
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
-    D "#{highlightQ(5)} block-scheme-element block-scheme-element-success", \Finished
+    D "#{highlightQ(5)} block-scheme-element #{if state.get(\lr-State)!=5 => \block-scheme-element-success}", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
         P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, \tokens
-        div class:'block-scheme-line-arrow block-scheme-line-arrow-branch' style:'left:87px'
-    D "#{highlightQ(2)} block-scheme-element block-scheme-element-branch block-scheme-element-failure", \Default
+        div class:'block-scheme-line-arrow block-scheme-line-arrow-branch'
+    D "#{highlightQ(2)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=2 => \block-scheme-element-failure else \failure-highlighted}", \Default
 
 
 Template.loan_request.created=->
@@ -263,4 +263,6 @@ set-data-cb =(err,res)->
 
 @disableQ =-> (!state.get(\IamBorrower) || !!state.get(\lr-State))
 
-@highlightQ =-> if it is state.get \lr-State then \block-scheme-element-highlighted else ''
+@highlightQ =-> 
+    if it is state.get \lr-State then \block-scheme-element-highlighted else ''
+    if it is state.get \lr-State then \block-scheme-element-highlighted else ''
