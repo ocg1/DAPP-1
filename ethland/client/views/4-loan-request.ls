@@ -50,7 +50,11 @@ input-box =~> div class:\input-box,
             button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, 'Tokens transferred'
 
         if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
-            D "transfer-data-text", "Please send #{state.get('lr').WantedWei } Eth to #{state.get \address }.", br!, "This includes #{state.get(\NeededSumByLender)||'xxx' } fee"
+            D "transfer-data-text", 
+                "Please send #{state.get('lr').WantedWei + state.get(\NeededSumByLender)} Eth to #{state.get \address }"
+                br!
+                "to fund this Loan Request. This includes #{state.get(\NeededSumByLender)||'xxx' } Eth platform fee."
+
             button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
 
 
@@ -160,9 +164,10 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: state.get(\NeededSumByLender)
+            value: +state.get(\NeededSumByLender)*10^18
             gas:   2900000
         }
+        # console.log \transact: transact
         web3.eth.sendTransaction transact, (err,res)-> 
             if err => console.log \err:   err
             if res => console.log \res:   res
