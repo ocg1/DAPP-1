@@ -93,6 +93,14 @@
     if &0 => console.log \err: &0
     if &1 => console.log \res: &1
 
+@goto-success-cb =-> 
+    if &0 => console.log \err: &0
+    if &1
+        console.log \res: &1
+        Router.go \success
+
+
+
 @simple-cb =->
     if &0 => new Error &0
     if &1 => &1    

@@ -24,10 +24,10 @@ input-unit =-> section style:'height:40px',
 
 input-box =~> div class:\input-box, 
     map input-unit, [
-        *c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'00.00 Eth',       
+        *c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth',       
         *c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!,                                
         *c:'lr-TokenAmount'                                   n:'Token amount'               d:disableQ!, placeholder:'0',       
-        *c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'00.00 Eth',       
+        *c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Eth',       
         *c:'lr-TokenName'                                     n:'Token name'                 d:disableQ!,                                
         *c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower),
         *c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender),  
@@ -154,23 +154,23 @@ Template.loan_request.events do
                 res.link,
                 res.smart,
                 res.days, 
-                set-data-cb                      
+                goto-success-cb
             )  
 
+
+
     'click .transfer-tokens':->
-        lr.checkTokens(state.get(\address)) conscb
+        lr.checkTokens(state.get(\address)) goto-success-cb
 
     'click .lender-pay':->
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: +state.get(\NeededSumByLender)*10^18
+            value: (+state.get(\NeededSumByLender) + +state.get(\lr-WantedWei))*10^18
             gas:   2900000
         }
         # console.log \transact: transact
-        web3.eth.sendTransaction transact, (err,res)-> 
-            if err => console.log \err:   err
-            if res => console.log \res:   res
+        web3.eth.sendTransaction transact, goto-success-cb
 
     'input .input':~> 
         $T = $(event.target)
