@@ -5,12 +5,17 @@
     overflow: hidden;
 }
 
+
 .loan-title {
     font-size: 14px;
     line-height: 1.1;
     color: $primary-color;
+
     margin: 51px 0 30px 68px;
+    position:relative;
+    top: 20px;
 }
+
 
 .input {
     border: none;
@@ -160,7 +165,7 @@
             border-left: 3px solid transparent;
             border-right: 3px solid transparent;
             border-top: 10px solid $primary-color;
-            margin-left: 54.5px;
+            left: 55.5px;
             &-long {
                 top: 103px;
             }
