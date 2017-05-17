@@ -107,7 +107,7 @@ block-scheme =-> D \block-scheme,
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
         P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, \tokens
         div class:'block-scheme-line-arrow block-scheme-line-arrow-branch'
-    D "#{highlightQ(2)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=2 => \block-scheme-element-failure else \failure-highlighted}", \Default
+    D "#{highlightQ(2)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=2 => \block-scheme-element-failure else \failure-highlighted }", \Default
 
 
 Template.loan_request.created=->
