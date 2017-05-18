@@ -134,7 +134,18 @@
     bn = new BigNumber(str)
     bn.times(1000_000_000_000_000_000).to-fixed!
 
+@bigNum-add =(arr1,arr2)->
+    a1 = new BigNumber(0)
+    a2 = new BigNumber(0)
+    a1.c = arr1?c
+    a1.e = arr1?e
+    a1.s = arr1?s    
 
+    a2.c = arr2?c
+    a2.e = arr2?e
+    a2.s = arr2?s    
+
+    bigNum-toStr a1.add a2
 
 @bigNum-toStr =(arr)-> 
     bn = new BigNumber(0)

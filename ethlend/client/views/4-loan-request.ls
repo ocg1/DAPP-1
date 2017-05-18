@@ -51,17 +51,17 @@ input-box =~> div class:\input-box,
 
         if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", 
-                "Please send #{bigNum-toStr(state.get('lr').WantedWei) + bigNum-toStr(state.get(\NeededSumByLender))} Eth to #{state.get \address }"
+                "Please send #{bigNum-add(state.get('lr').WantedWei, state.get(\NeededSumByLender))} Eth to #{state.get \address }"
                 br!
-                "to fund this Loan Request. This includes #{state.get(\NeededSumByLender)||'xxx' } Eth platform fee."
+                "to fund this Loan Request. This includes #{bigNum-toStr state.get(\NeededSumByLender)||'xxx' } Eth platform fee."
 
             button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
 
         if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
-            D "loan-prebutton-text", "To return tokens please send #{bigNum-toStr(state.get('lr').WantedWei) + bigNum-toStr(state.get(\NeededSumByLender))} Eth to #{state.get \address }. This includes #{state.get(\NeededSumByLender)} Eth premium"
+            D "loan-prebutton-text", "To return tokens please send #{bigNum-add(state.get('lr').WantedWei, state.get(\NeededSumByLender))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\NeededSumByLender)} Eth premium"
             button class:'card-button bgc-primary loan-button return-tokens', 'Return tokens'
         if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
-            D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr(state.get('lr').WantedWei) + bigNum-toStr(state.get(\NeededSumByLender))} Eth in order to return tokens back"
+            D "loan-prebutton-text", "Borrower should now return #{bigNum-add(state.get('lr').WantedWei, state.get(\NeededSumByLender))} Eth in order to return tokens back"
             button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
         if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
             D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can get his tokens"
@@ -172,7 +172,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: ( +bigNum-toStr(state.get('lr').WantedWei) + bigNum-toStr(state.get(\NeededSumByLender)) )
+            value: bigNum-add(state.get('lr').WantedWei, state.get(\NeededSumByLender))
             gas:   2900000
         }
         console.log \transact: transact
@@ -182,7 +182,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: (+bigNum-toStr(state.get(\lr-PremiumWei)) + +bigNum-toStr(state.get(\lr-WantedWei)))
+            value: bigNum-add(state.get(\lr).PremiumWei, state.get(\lr).WantedWei)
             gas:   2900000
         }
         # console.log \transact: transact

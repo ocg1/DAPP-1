@@ -38,7 +38,6 @@ getContractAbi=(cName)=> (filename)=> (cb)=> fs.readFile(filename, (err, res)=>{
      var abi      = JSON.parse(output.contracts[cName].interface);
      var bytecode = output.contracts[cName].bytecode;
      return cb(null,abi,bytecode);
-
 });
 
 Create =(cb)=>{
@@ -57,25 +56,6 @@ Create =(cb)=>{
           });
      });
 }
-
-// IsTicketSold = (contract,ticket_address,cb)=> {
-//      contract.isticketsold(ticket_address, (err,res)=>{
-//           if(err) { return cb(err)}
-//           return cb(null, res)
-//      });
-// };
-
-// SellTicket = (contract,ticket_address,cb)=> {
-//      var params   = { from: creator, gas: 2000000 };
-//      contract.sellticket(ticket_address, params, (err,res)=>{
-//           if(err) { return cb(err)}
-//           var out = {
-//                tx: res,
-//                txLink: 'https://kovan.etherscan.io/tx/'+res
-//           }
-//           return cb(null, out)
-//      });
-// };
 
 call_API_method = (func)=>(A)=>{
      getContractAbi(':SampleToken')(base+'/ethland/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
@@ -110,31 +90,20 @@ transfer = (contract,A)=> {
      });
 }
 
-
-
-// call_API_method(issueTokens)
-
 Meteor.methods({
      'create': ()=> Create((err,res)=>{
           console.log('err:',err,'res:',res)
      }),
 
-     'issue': (address, token_count)=>call_API_method(issueTokens)({address:address, token_count:token_count, cb:(err,res)=>console.log('err:',err,'res:',res)}),
+     'issue': (address, token_count)=>call_API_method(issueTokens)({
+          address:     address, 
+          token_count: token_count, 
+          cb:          conscb
+     }),
 
-     'transfer': (address, token_count)=>call_API_method(transfer)({address:address, token_count:token_count, cb:(err,res)=>console.log('err:',err,'res:',res)})
+     'transfer': (address, token_count)=>call_API_method(transfer)({
+          address:     address, 
+          token_count: token_count, 
+          cb:          conscb
+     })
 })
-
-
-// exports.IsTicketSold    = IsTicketSold
-// exports.SellTicket      = SellTicket
-// exports.call_API_method = call_API_method
-
-
-
-// '0xb9af8aa42c97f5a1f73c6e1a683c4bf6353b83e8'
-
-// call_API_method(IsTicketSold)('0xb9af8aa42c97f5a1f73c6e1a683c4bf6353b83e8',(err,res)=>{
-//      Ω(`IsTicketSold: ${res}`);
-//      return res
-// })
-

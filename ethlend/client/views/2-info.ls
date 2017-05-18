@@ -25,7 +25,7 @@ Template.info.created=~>
     state.set \selected-class \info 
     if !web3 => console.log \oops
     getB =-> web3.eth.getBalance(it, (err,res)~> 
-        if res => $(\.balance).html("#{+convert-big-number(res)/10^18} ETH"); console.log res
+        if res => $(\.balance).html("#{ bigNum-toStr(res)} ETH"); console.log res
         else getB(it))    
 
     lookup web3.eth.defaultAccount, (res)~> 
