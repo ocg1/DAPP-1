@@ -43,7 +43,7 @@ input-box =~> div class:\input-box,
             button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
 
         if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
-            D "loan-prebutton-text", "Please, transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address } and click on Tokens Transferred button"
+            D "loan-prebutton-text", "Please, transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address } and click on the button"
             button class:'card-button bgc-primary loan-button transfer-tokens', 'Check that tokens are transferred'
         if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", "Borrower should transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address }"
@@ -136,10 +136,10 @@ Template.loan_request.created=->
 
 Template.loan_request.rendered =->
     $(\.set-data).attr \disabled, \disabled
-    if state.get(\lr)?WantedWei                 != 0 =>        $('.lr-WantedWei').attr \value,                  bigNum-toStr state.get(\lr)?WantedWei
+    if bigNum-toStr state.get(\lr)?WantedWei    != 0 =>        $('.lr-WantedWei').attr \value,                  bigNum-toStr state.get(\lr)?WantedWei
     if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
     if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
-    if state.get(\lr)?PremiumWei                != 0 =>        $('.lr-PremiumWei').attr \value,                 bigNum-toStr state.get(\lr)?PremiumWei
+    if bigNum-toStr state.get(\lr)?PremiumWei   != 0 =>        $('.lr-PremiumWei').attr \value,                 bigNum-toStr state.get(\lr)?PremiumWei
     if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
     if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
