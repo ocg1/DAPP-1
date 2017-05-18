@@ -25,8 +25,6 @@ Template.newLoanRequest.events do
                 console.log \thash: res
                 Router.go \success
 
-
-
 Template.newLoanRequest.created =->
     state.set \selected-class \new-loan
     state.set \message-class \hidden

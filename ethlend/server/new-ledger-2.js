@@ -66,27 +66,20 @@ this.renewContract = (creator, contract_address, node, fee, enabled)=> {
           getContractAbi(contractName,function(err,ledgerAbi,ledgerBytecode,abiJsonLedger){
                if (err){ console.log('err:::',err); return err }
 
-               // fs.writeFileSync(base+'ethlend/client/ledger_abi.ls','config.LEDGER-ABI = '+abiJson);
-               console.log('Wrote Ledger abi to file: ledger_abi.ls');
-
                var contractName2 = ':LendingRequest';
                getContractAbi(contractName2,function(err,lrAbi,bytecode,abiJsonLr){
                     if (err){ console.log('err:::',err); return err }
-                    fs.writeFileSync(base+'ethlend/config.ls',
-      
+                    fs.writeFileSync(base+'ethlend/config.ls',   
 `this.config = {}
 config.LEDGER-ABI = ${abiJsonLedger}
 config.LR-ABI = ${abiJsonLr}
 config.ETH_MAIN_ADDRESS = '${contract_address}'
 config.ETH_MAIN_ADDRESS_LINK = 'https://kovan.etherscan.io/address/${contract_address}'
 config.BALANCE_FEE_AMOUNT_IN_WEI = ${fee}
-config.BALANCE_FEE_AMOUNT_IN_WEI = ${fee}
 config.ETH_NODE = '${node}'
 config.SMART_CONTRACTS_ENABLED = ${enabled}`
-
                          );
-                    console.log('Wrote tonfig to ethlend/config.ls');
-
+                    console.log('Wrote сonfig to ethlend/config.ls');
                     deployMain(creator,ledgerAbi,ledgerBytecode);
                });
           });
