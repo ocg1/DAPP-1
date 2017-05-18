@@ -35,7 +35,7 @@ Template.newLoanRequest.created =->
 Template.newLoanRequest.rendered =~>
     ledger.getFeeSum (err, res)~>
         if err => return err 
-        fee-sum = convert-big-number res
+        fee-sum = lilNum-toStr res
         state.set \fee-sum fee-sum
         state.set \message-class ''
         state.set \loading-class \hidden

@@ -11,6 +11,8 @@ map init(ledger), [
 	\getLrCountForUser 				#6. (address a)constant returns(uint out)
 	\getLrForUser 					#7. (address a,uint index) constant returns (address out)
 	\payable                        #8. when recieve money -> NewLendingRequest()
+	\getLrFundedCount				#9. same
+	\getLrFunded 				    #10.same
 ]
 
 map init(lr), [ 
@@ -38,19 +40,12 @@ map init(lr), [
 	\requestDefault                 #21. onlyByLender onlyInState(State.WaitingForPayback)
 ]
 
-# createNewLendingRequest =-> ledger.createNewLendingRequest({
-#             from:  web3.eth.defaultAccount
-#             to:    config.ETH_MAIN_ADDRESS
-#             value: 200000000000000000
-#             gas:   2900000
-#         },conscb)
-
-@get-all-lr-data =(address)->(cb)-> #TODO: надо будет параллельно обрабатывать эти запросы.
+@get-all-lr-data =(address)->(cb)-> #TODO: parallel it
 	out = {}
 	lr.getWantedWei(address) ->  
-		out.WantedWei = &1.c.0       
+		out.WantedWei = &1    
 		lr.getPremiumWei(address) ->
-			out.PremiumWei = &1.c.0
+			out.PremiumWei = &1
 			lr.getTokenName(address) ->
 				out.TokenName = &1
 				lr.getTokenInfoLink(address) ->
@@ -60,16 +55,11 @@ map init(lr), [
 						lr.getBorrower(address) ->
 							out.Borrower = &1
 							lr.getDaysToLen(address) ->
-								out.DaysToLen = &1.c.0
+								out.DaysToLen = +lilNum-toStr &1
 								lr.getState(address) ->
-									out.State = &1.c.0
+									out.State = +lilNum-toStr &1
 									lr.getLender(address) ->
 										out.Lender = &1
 										lr.getTokenAmount(address) ->
-											out.TokenAmount = &1.c.0;
+											out.TokenAmount = +lilNum-toStr &1
 											cb(null,out)
-
-
-
-# TODO: Как получать funded-loan-request`ы? Нужен метод, который возвращает массив вида [1, 12, 14, 57, ...]
-# 		то есть те номера lr, которые funded. Нужно передеплоить контракт, видимо.

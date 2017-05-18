@@ -44,46 +44,28 @@ input-box =~> div class:\input-box,
 
         if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", "Please, transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address } and click on Tokens Transferred button"
-            button class:'card-button bgc-primary loan-button transfer-tokens', 'Tokens transferred'
+            button class:'card-button bgc-primary loan-button transfer-tokens', 'Check that tokens are transferred'
         if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", "Borrower should transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address }"
-            button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, 'Tokens transferred'
+            button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, 'Check that tokens are transferred'
 
         if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", 
-                "Please send #{state.get('lr').WantedWei + state.get(\NeededSumByLender)} Eth to #{state.get \address }"
+                "Please send #{bigNum-toStr(state.get('lr').WantedWei) + bigNum-toStr(state.get(\NeededSumByLender))} Eth to #{state.get \address }"
                 br!
                 "to fund this Loan Request. This includes #{state.get(\NeededSumByLender)||'xxx' } Eth platform fee."
 
             button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
 
         if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
-            D "loan-prebutton-text", "To return tokens please send #{state.get('lr').WantedWei + state.get(\NeededSumByLender)} Eth to #{state.get \address }. This includes #{state.get(\NeededSumByLender)} Eth premium"
+            D "loan-prebutton-text", "To return tokens please send #{bigNum-toStr(state.get('lr').WantedWei) + bigNum-toStr(state.get(\NeededSumByLender))} Eth to #{state.get \address }. This includes #{state.get(\NeededSumByLender)} Eth premium"
             button class:'card-button bgc-primary loan-button return-tokens', 'Return tokens'
         if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
-            D "loan-prebutton-text", "Borrower should now return #{state.get('lr').WantedWei + state.get(\NeededSumByLender)} Eth in order to return tokens back"
+            D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr(state.get('lr').WantedWei) + bigNum-toStr(state.get(\NeededSumByLender))} Eth in order to return tokens back"
             button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
         if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
             D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can get his tokens"
             button class:'card-button bgc-primary loan-button get-tokens', 'Get tokens'
-
-
-    # Если я Borrower -> 
-    # 1) Показать надпись "To return tokens please send 2.02 Eth to 0x4256c2a59387df22f0dab5da6f06018552985f0a. This includes 0.02 Eth premium"
-    # 2) Показать кнопку "Send back Eth. Return tokens"
-
-    # По нажатию посылать деньги от текущего юзера (borrower'а) в контракт LR.
-
-    # Если я не Borrower ->
-    # 1) Показать надпись "Borrower should now return 2.02 Eth in order to return tokens back"
-    # 2) Показать кнопку "Send back Eth. Return tokens" (disabled)
-
-    # Если я Lender ->
-    # 1) Показать надпись "If time has passed but borrower hasn't returned the loan - you can get his tokens"
-    # 2) Показать кнопку "Get tokens"
-
-    # По нажатию вызывать метод requestDefault.
-
 
 block-scheme =-> D \block-scheme,
     D "block-scheme-element #{highlightQ(0)}", 'No data'
@@ -130,7 +112,7 @@ Template.loan_request.created=->
     state.set \error-class, (if EthQ(state.get(\address))=>\hidden else '' )
 
     lr.getNeededSumByLender(state.get \address )((err,res)->   
-        state.set \NeededSumByLender convert-big-number(res)/10^18   
+        state.set \NeededSumByLender res
         get-all-lr-data( state.get \address ) ->
        
             state.set \loan-wrapper-class, ''
@@ -145,10 +127,10 @@ Template.loan_request.created=->
 
 Template.loan_request.rendered =->
     $(\.set-data).attr \disabled, \disabled
-    if state.get(\lr)?WantedWei                 != 0 =>        $('.lr-WantedWei').attr \value,                  state.get(\lr)?WantedWei
+    if state.get(\lr)?WantedWei                 != 0 =>        $('.lr-WantedWei').attr \value,                  bigNum-toStr state.get(\lr)?WantedWei
     if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
     if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
-    if state.get(\lr)?PremiumWei                != 0 =>        $('.lr-PremiumWei').attr \value,                 state.get(\lr)?PremiumWei
+    if state.get(\lr)?PremiumWei                != 0 =>        $('.lr-PremiumWei').attr \value,                 bigNum-toStr state.get(\lr)?PremiumWei
     if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
     if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
@@ -159,28 +141,27 @@ Template.loan_request.rendered =->
 Template.loan_request.events do 
     'click .set-data':-> 
         out = {}
-        out.ethamount = $(\.lr-WantedWei).val!
+        out.ethamount = eth-to-wei $(\.lr-WantedWei).val!
         out.days      = $(\.lr-DaysToLen).val!
         out.tokamount = $(\.lr-TokenAmount).val!
-        out.premium   = $(\.lr-PremiumWei).val!
+        out.premium   = eth-to-wei $(\.lr-PremiumWei).val!
         out.tokname   = $(\.lr-TokenName).val!
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
         out.smart     = $(\.lr-TokenSmartcontractAddress).val!
         out.link      = $(\.lr-TokenInfoLink).val!
 
-        check-set-data-out out, (err,res)->
-            if err => return err
-            lr.setData(state.get \address )(#uint wanted_wei_, uint token_amount_, uint premium_wei_,
-                res.ethamount,
-                res.tokamount,                    
-                res.premium,             
-                res.tokname,            
-                res.link,
-                res.smart,
-                res.days, 
-                goto-success-cb
-            )  
+        console.log \out: out
+        lr.setData(state.get \address )(#uint wanted_wei_, uint token_amount_, uint premium_wei_,
+            out.ethamount,
+            out.tokamount,                    
+            out.premium,             
+            out.tokname,            
+            out.link,
+            out.smart,
+            out.days, 
+            goto-success-cb
+        )  
 
 
 
@@ -191,7 +172,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: ( +state.get('lr').WantedWei + state.get(\NeededSumByLender) )*10^18
+            value: ( +bigNum-toStr(state.get('lr').WantedWei) + bigNum-toStr(state.get(\NeededSumByLender)) )
             gas:   2900000
         }
         console.log \transact: transact
@@ -201,7 +182,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: (+state.get(\lr-PremiumWei) + +state.get(\lr-WantedWei))*10^18
+            value: (+bigNum-toStr(state.get(\lr-PremiumWei)) + +bigNum-toStr(state.get(\lr-WantedWei)))
             gas:   2900000
         }
         # console.log \transact: transact
@@ -254,7 +235,7 @@ Everything_is_ok=->
     console.log \ok: ok
     ok
 
-check-set-data-out =(out,cb)->  # TODO: чекать данные, соответствующе подсвечивать, если что неправильно
+check-set-data-out =(out,cb)->  # TODO: check set-data 
     cb(null, out)
 
 set-data-cb =(err,res)->

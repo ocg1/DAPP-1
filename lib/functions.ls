@@ -112,7 +112,7 @@
     | 3=> 'waiting for lender'
     | 4=> \funded
     | 5=> \default
-    | 6=> \closed
+    | 6=> \finished
     | _=> \----
 
 @big-zero = \0x0000000000000000000000000000000000000000
@@ -127,8 +127,29 @@
     ( [get-it-head(it)] ++ ['.'] ++ get-it-tail(it) )|> join ''
 
 
-@convert-big-number =->
-    +get-num(it.c)*10^(it.e*it.s)
+# @convert-big-number =->
+#     +get-num(it.c)*10^(it.e*it.s)
+
+@eth-to-wei =(str)->
+    bn = new BigNumber(str)
+    bn.times(1000_000_000_000_000_000).to-fixed!
+
+
+
+@bigNum-toStr =(arr)-> 
+    bn = new BigNumber(0)
+    bn.c = arr?c
+    bn.e = arr?e
+    bn.s = arr?s
+    bn.divided-by(1000_000_000_000_000_000).to-fixed!
+    # console.log \bn: bn
+
+@lilNum-toStr =(arr)-> 
+    bn = new BigNumber(0)
+    bn.c = arr?c
+    bn.e = arr?e
+    bn.s = arr?s
+    bn.to-fixed!
 
 @state-null =-> state.set it, null
 
