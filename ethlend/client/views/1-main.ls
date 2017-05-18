@@ -147,7 +147,7 @@ Template.mainTemplate.events do
     
 get-premium =->
     if bigNum-toStr(it).length > 7 => ''
-    else "+ #it ETH "
+    else "+ #{bigNum-toStr it} ETH "
 
     # if (+bigNum-toStr(it?PremiumWei)).length>10 => '' else ('+ '+ bigNum-toStr(it?PremiumWei)+' ETH ')
 
