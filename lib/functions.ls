@@ -152,7 +152,8 @@
     bn.c = arr?c
     bn.e = arr?e
     bn.s = arr?s
-    bn.divided-by(1000_000_000_000_000_000).to-fixed!
+    many = 1000_000_000_000_000_000
+    bn.divided-by(many).to-fixed!
     # console.log \bn: bn
 
 @lilNum-toStr =(arr)-> 
@@ -163,5 +164,11 @@
     bn.to-fixed!
 
 @state-null =-> state.set it, null
+
+
+@shortest =(str1, str2)->
+    if str1.length > str2.length => str2
+    else str1
+
 
 @yesno =-> if it then \Yes else \No

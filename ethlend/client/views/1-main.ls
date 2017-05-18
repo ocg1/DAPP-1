@@ -14,7 +14,8 @@ card-template =-> a class:\card href:"/loan-request/#{it?id}",
     div class:\card-header,
         if it.State > 0 => div class:\card-header,
             h3 class:\card-header-amount, "#{bigNum-toStr it.WantedWei } Eth"
-            h3 class:\card-header-inscription, "#{it?TokenName} (#{it?TokenAmount})"
+            if bigNum-toStr(it.WantedWei).length < 10    
+                h3 class:\card-header-inscription, "#{it?TokenName} (#{it?TokenAmount})"
         else if it.Borrower == web3?eth?defaultAccount => div class:\card-header, 
             h3 class:\card-header-amount, "Please, set the data"
 
@@ -32,7 +33,7 @@ card-template =-> a class:\card href:"/loan-request/#{it?id}",
             h4 class:'card-key font-weight-normal', "Lender" 
             p class:\card-value, if it.Lender != big-zero => it.Lender else \–––
         if it?State == 3
-            h4 class:"card-key-inscription" style:'color:black', "Get +#{if (+bigNum-toStr(it?PremiumWei))<1 => 0 else (bigNum-toStr it?PremiumWei)} Eth Premium!"
+            h4 class:"card-key-inscription" style:'color:black', "Get #{get-premium(it?WantedWei)}Premium!"
         # if it?State == 3
         #     button class:'card-button bgc-primary fund-button' style:"width:100px;margin-left:70px" id:it?id, 'Fund'
 
@@ -143,7 +144,13 @@ Template.mainTemplate.events do
         state.set \page (+state.get(\page)-1)
         Router.go "/main/#{state.get(\page)}" 
         rerender!
-        
+    
+get-premium =->
+    if bigNum-toStr(it).length > 7 => ''
+    else "+ #it ETH "
+
+    # if (+bigNum-toStr(it?PremiumWei)).length>10 => '' else ('+ '+ bigNum-toStr(it?PremiumWei)+' ETH ')
+
     # 'click .funded-button':->
     #     lr.getNeededSumByLender( $(event.target).attr(\id) ) (err,res)->   
     #         transact = {
