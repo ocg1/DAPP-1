@@ -12,7 +12,7 @@ var Ω = console.log;
 
 var creator               = '0xb9af8aa42c97f5a1f73c6e1a683c4bf6353b83e7';
 //var ledgerContractAddress = //process.env.CONTRACT_ADDRESS;
-var contract_address      = '0xD58803CFBbD47CB1437528D8B99e08bfe559D668';
+var contract_address      = '0x735f9b02c76602a837f1bc614f8ff8d91668e919';
 var node                  = 'http://ethnode.chain.cloud:8545';
 var contract = '';
 
