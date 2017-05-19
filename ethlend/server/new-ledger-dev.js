@@ -90,6 +90,7 @@ transfer = (contract,A)=> {
      });
 }
 
+
 Meteor.methods({
      'create': ()=> Create((err,res)=>{
           console.log('err:',err,'res:',res)
