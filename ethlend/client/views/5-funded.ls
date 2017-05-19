@@ -1,7 +1,7 @@
 Router.route \funded, path: \/funded/:page
 
 template \funded -> main_blaze do
-    not-found-component!
+    not-found-component('Not found', 'No funded Loan Requests found')
     D \card-wrapper,
         progress-bar!
 

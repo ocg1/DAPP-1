@@ -1,7 +1,7 @@
 Router.route \mainTemplate, path: \/main/:page
 
 template \mainTemplate -> main_blaze do
-    not-found-component!
+    not-found-component('Not found', 'No Loan Requests found')
     D \card-wrapper,
         progress-bar!
 
