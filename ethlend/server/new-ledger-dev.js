@@ -90,20 +90,20 @@ transfer = (contract,A)=> {
      });
 }
 
-// Meteor.methods({
-//      'create': ()=> Create((err,res)=>{
-//           console.log('err:',err,'res:',res)
-//      }),
+ Meteor.methods({
+      'create': ()=> Create((err,res)=>{
+           console.log('err:',err,'res:',res)
+      }),
 
-//      'issue': (address, token_count)=>call_API_method(issueTokens)({
-//           address:     address, 
-//           token_count: token_count, 
-//           cb:          conscb
-//      }),
+      'issue': (address, token_count)=>call_API_method(issueTokens)({
+           address:     address, 
+           token_count: token_count, 
+           cb:          conscb
+      }),
 
-//      'transfer': (address, token_count)=>call_API_method(transfer)({
-//           address:     address, 
-//           token_count: token_count, 
-//           cb:          conscb
-//      })
-// })
+      'transfer': (address, token_count)=>call_API_method(transfer)({
+           address:     address, 
+           token_count: token_count, 
+           cb:          conscb
+      })
+ })
