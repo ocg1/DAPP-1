@@ -12,7 +12,7 @@ var Ω = console.log;
 
 var creator               = '0xb9af8aa42c97f5a1f73c6e1a683c4bf6353b83e7';
 //var ledgerContractAddress = //process.env.CONTRACT_ADDRESS;
-var contract_address      = '0x735f9b02c76602a837f1bc614f8ff8d91668e919';
+var contract_address      = '0xD58803CFBbD47CB1437528D8B99e08bfe559D668';
 var node                  = 'http://ethnode.chain.cloud:8545';
 var contract = '';
 
@@ -45,7 +45,7 @@ Create =(cb)=>{
      web3.eth.getAccounts((err, as)=> {
           console.log('as: '+as)
           if(err) { return cb(err)}
-          getContractAbi(':SampleToken')(base+'/ethland/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
+          getContractAbi(':SampleToken')(base+'/ethlend/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
                if(err) { return cb(err)}
                console.log('got contract abi')
                deployMain(creator,ledgerAbi,ledgerBytecode, (err,res)=>{
@@ -58,7 +58,8 @@ Create =(cb)=>{
 }
 
 call_API_method = (func)=>(A)=>{
-     getContractAbi(':SampleToken')(base+'/ethland/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
+     getContractAbi(':SampleToken')(base+'/ethlend/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
+          if (err){console.log('err:::',err); return err}
           contract = web3.eth.contract(ledgerAbi).at(contract_address);
           func(contract, A)
      });
@@ -89,7 +90,6 @@ transfer = (contract,A)=> {
           return A.cb(null, out)
      });
 }
-
 
 Meteor.methods({
      'create': ()=> Create((err,res)=>{
