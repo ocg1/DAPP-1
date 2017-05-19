@@ -101,7 +101,7 @@ create-quartet-page=(start)->
         state.set \quartet-class ''
         state.set \progress-class \hidden
         console.log \res: res
-        if res.length == 0
+        if res.length == 0 || isNaN(+state.get(\page))
             state.set \not-found-class ''
             state.set \quartet-class \hidden 
         else state.set \quartet res
@@ -109,16 +109,21 @@ create-quartet-page=(start)->
 Template.funded.rendered =->
     
 Template.funded.created =->
-    state.set \not-found-class \hidden
-    state.set \selected-class \funded
-    state.set \quartet-class \hidden 
-    state.set \progress-class ''         
-    state.set \page (Router.current!originalUrl |> split \/ |> last )    
+    state.set \page (Router.current!originalUrl |> split \/ |> last )   
+    if isNaN(+state.get(\page)) 
+        state.set \not-found-class ''
+        state.set \progress-class \hidden
+        state.set \quartet-class \hidden 
+    else        
+        state.set \not-found-class \hidden
+        state.set \selected-class \funded
+        state.set \quartet-class \hidden 
+        state.set \progress-class ''         
 
-    if state.get(\percent)==0 or !state.get(\percent)
-        state.set \percent 0
-
-    rerender!  
+        if state.get(\percent)==0 or !state.get(\percent)
+            state.set \percent 0
+  
+        rerender!  
 
 rerender =~> ledger.getLrFundedCount ->
     return &0 if &0

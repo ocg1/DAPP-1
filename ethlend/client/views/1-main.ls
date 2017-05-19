@@ -109,16 +109,21 @@ create-quartet-page=(start)->
 Template.mainTemplate.rendered =->
     
 Template.mainTemplate.created =->
-    state.set \not-found-class \hidden
-    state.set \selected-class \main
-    state.set \quartet-class \hidden 
-    state.set \progress-class ''         
-    state.set \page (Router.current!originalUrl |> split \/ |> last )    
+    state.set \page (Router.current!originalUrl |> split \/ |> last )   
+    if isNaN(+state.get(\page)) 
+        state.set \not-found-class ''
+        state.set \progress-class \hidden
+        state.set \quartet-class \hidden 
+    else        
+        state.set \not-found-class \hidden
+        state.set \selected-class \main
+        state.set \quartet-class \hidden 
+        state.set \progress-class ''         
 
-    if state.get(\percent)==0 or !state.get(\percent)
-        state.set \percent 0
+        if state.get(\percent)==0 or !state.get(\percent)
+            state.set \percent 0
 
-    rerender!  
+        rerender!  
 
 rerender =~> ledger.getLrCount ->
     return &0 if &0
