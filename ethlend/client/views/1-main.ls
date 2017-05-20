@@ -10,7 +10,7 @@ template \mainTemplate -> main_blaze do
             button class:"#{if state.get(\page)~=\1 => \disabled } arrow arrow-left glyphicon glyphicon-chevron-left" disabled:(state.get(\page)~=\1)
             button class:"arrow arrow-right glyphicon glyphicon-chevron-right"
 
-card-template =-> a class:\card href:"/loan-request/#{it?id}",
+@card-template =-> a class:\card href:"/loan-request/#{it?id}",
     div class:\card-header,
         if it.State > 0 => div class:\card-header,
             h3 class:\card-header-amount, "#{bigNum-toStr it.WantedWei } Eth"
@@ -43,15 +43,15 @@ card-template =-> a class:\card href:"/loan-request/#{it?id}",
             h4 class:'card-key font-weight-normal', "State"
             p class:\card-value, state-int-to-str it?State
 
-empty-list =-> div style:'padding:100px' class:\container ,
+@empty-list =-> div style:'padding:100px' class:\container ,
     h1 style:'font-size:50px; display:block', 'No loan requests'
     p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'That is no loan requests here.'
 
-get-card-data =(number, cb)->
+@get-card-data =(number, cb)->
     ledger.getLr number, ->
         get-all-lr-data(&1)(cb)
 
-progress-bar =(percent)-> div style:'padding:100px; padding-right:120px' class:"#{state.get \progress-class } container" ,
+@progress-bar =(percent)-> div style:'padding:100px; padding-right:120px' class:"#{state.get \progress-class } container" ,
     h1 style:'font-size:50px; display:block', 'Receiving data...'
     p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please wait for the data to be downloaded from the Ethereum network'
     div class:\progress style:'width:70%',
@@ -111,6 +111,7 @@ create-quartet-page=(start)->
 Template.mainTemplate.rendered =->
     
 Template.mainTemplate.created =->
+    state.set \quartet ''
     state.set \page (Router.current!originalUrl |> split \/ |> last )   
     if isNaN(+state.get(\page)) 
         state.set \not-found-class ''
@@ -155,18 +156,3 @@ Template.mainTemplate.events do
 get-premium =->
     if bigNum-toStr(it).length > 7 => 'the '
     else "+ #{bigNum-toStr(it)} ETH "
-
-    # if (+bigNum-toStr(it?PremiumWei)).length>10 => '' else ('+ '+ bigNum-toStr(it?PremiumWei)+' ETH ')
-
-    # 'click .funded-button':->
-    #     lr.getNeededSumByLender( $(event.target).attr(\id) ) (err,res)->   
-    #         transact = {
-    #             from:  web3.eth.defaultAccount
-    #             to:    $(event.target).attr(\id)
-    #             value: res
-    #             gas:   2900000
-    #         }
-
-    #         web3.eth.sendTransaction transact, (err,res)-> 
-    #             if err => console.log \err:   err
-    #             if res => console.log \res:   res

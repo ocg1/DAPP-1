@@ -85,11 +85,11 @@ block-scheme =-> D \block-scheme,
         P \block-scheme-line-inscription, 'Borrower gets his', br!, 'tokens back'
         P 'block-scheme-line-inscription block-scheme-line-inscription-second', "Lender gets money + ", br!, \premium
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
-    D "#{highlightQ(5)} block-scheme-element #{if state.get(\lr-State)!=5 => \block-scheme-element-success}", \Finished
+    D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success}", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
         P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, \tokens
         div class:'block-scheme-line-arrow block-scheme-line-arrow-branch'
-    D "#{highlightQ(2)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=2 => \block-scheme-element-failure else \failure-highlighted }", \Default
+    D "#{highlightQ(5)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=5 => \block-scheme-element-failure else \failure-highlighted }", \Default
 
 
 Template.loan_request.created=->
@@ -136,10 +136,10 @@ Template.loan_request.created=->
 
 Template.loan_request.rendered =->
     $(\.set-data).attr \disabled, \disabled
-    if bigNum-toStr state.get(\lr)?WantedWei    != 0 =>        $('.lr-WantedWei').attr \value,                  bigNum-toStr state.get(\lr)?WantedWei
+    if bigNum-toStr(state.get(\lr)?WantedWei)   !=\0 =>        $('.lr-WantedWei').attr \value,                  bigNum-toStr state.get(\lr)?WantedWei
     if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
     if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
-    if bigNum-toStr state.get(\lr)?PremiumWei   != 0 =>        $('.lr-PremiumWei').attr \value,                 bigNum-toStr state.get(\lr)?PremiumWei
+    if bigNum-toStr(state.get(\lr)?PremiumWei)  !=\0 =>       $('.lr-PremiumWei').attr \value,                  bigNum-toStr state.get(\lr)?PremiumWei
     if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
     if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
@@ -181,7 +181,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: bigNum-add(state.get('lr').WantedWei, state.get(\NeededSumByLender))
+            value: lilNum-toStr state.get(\NeededSumByLender)
             gas:   2900000
         }
         console.log \transact: transact
@@ -191,7 +191,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: bigNum-add(state.get(\lr).PremiumWei, state.get(\lr).WantedWei)
+            value: lilNum-toStr state.get(\NeededSumByBorrower)
             gas:   2900000
         }
         # console.log \transact: transact
@@ -256,3 +256,7 @@ set-data-cb =(err,res)->
 @highlightQ =-> 
     if it is state.get \lr-State then \block-scheme-element-highlighted else ''
     if it is state.get \lr-State then \block-scheme-element-highlighted else ''
+
+
+        
+        
