@@ -8,7 +8,7 @@ template \mainTemplate -> main_blaze do
         D "card-wrapper-aligned #{state.get \quartet-class }",
             D \div, map card-template, state.get(\quartet)||[]
             button class:"#{if state.get(\page)~=\1 => \disabled } arrow arrow-left glyphicon glyphicon-chevron-left" disabled:(state.get(\page)~=\1)
-            button class:"arrow arrow-right glyphicon glyphicon-chevron-right"
+            button class:"arrow arrow-right glyphicon glyphicon-chevron-right" disabled:(+state.get(\page)>=state.get(\totalReqs)/4)
 
 @card-template =-> a class:\card href:"/loan-request/#{it?id}",
     div class:\card-header,
@@ -130,7 +130,7 @@ Template.mainTemplate.created =->
 
 rerender =~> ledger.getLrCount ->
     return &0 if &0
-    total-reqs = &1.c.0
+    total-reqs = +lilNum-toStr &1
     state.set \totalReqs total-reqs
     create-quartet-page((state.get(\page)-1)*4)   
 

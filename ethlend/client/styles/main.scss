@@ -2,12 +2,15 @@
 
 .card {
     float: left;
-    width: 332px;
+    width: 342px;
     height: 234px;
     cursor: pointer;
     border-radius: 9px;
     background-color: $secondary-color;
+    color: black;
     margin: 27px;
+    margin-left: 22px;
+    margin-right: 22px;
 
     &:hover {
         box-shadow: 1px 1px 10px 0 rgba(0, 0, 0, 0.3);
