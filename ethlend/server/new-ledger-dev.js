@@ -19,7 +19,7 @@ var contract = '';
 var Web3 = Npm.require('web3');
 var web3 = new Web3(new Web3.providers.HttpProvider(node));
 
-deployMain=(creator,ledgerAbi,ledgerBytecode,cb)=> {
+this.deployMain=(creator,ledgerAbi,ledgerBytecode,cb)=> {
      var tempContract     = web3.eth.contract(ledgerAbi);
      var whereToSendMoney = creator;
      var params = { from: creator, gas: 4995000, data: `0x${ledgerBytecode}`}
@@ -29,7 +29,7 @@ deployMain=(creator,ledgerAbi,ledgerBytecode,cb)=> {
      });
 }
 
-getContractAbi=(cName)=> (filename)=> (cb)=> fs.readFile(filename, (err, res)=>{ 
+this.getContractAbi = (cName)=> (filename)=> (cb)=> fs.readFile(filename, (err, res)=>{ 
      // assert.equal(err,null);
      if (err) return cb(err)
      var source = res.toString();
@@ -40,12 +40,12 @@ getContractAbi=(cName)=> (filename)=> (cb)=> fs.readFile(filename, (err, res)=>{
      return cb(null,abi,bytecode);
 });
 
-Create =(cb)=>{
+this.Create =(cb)=>{
      console.log('base:',base)
      web3.eth.getAccounts((err, as)=> {
           console.log('as: '+as)
           if(err) { return cb(err)}
-          getContractAbi(':SampleToken')(base+'/ethlend/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
+          getContractAbi(':SampleToken')(base+'ethlend/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
                if(err) { return cb(err)}
                console.log('got contract abi')
                deployMain(creator,ledgerAbi,ledgerBytecode, (err,res)=>{
@@ -57,15 +57,35 @@ Create =(cb)=>{
      });
 }
 
-call_API_method = (func)=>(A)=>{
-     getContractAbi(':SampleToken')(base+'/ethlend/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
+this.DeployContract =(cb)=>{
+     console.log('base:',base)
+     web3.eth.getAccounts((err, as)=> {
+          console.log('as: ',as)
+          if(err) { return cb(err)}
+          getContractAbi(':Ledger')(base+'ethlend/server/EthLend.sol')((err,ledgerAbi,ledgerBytecode)=> {
+               if(err) { return cb(err)}
+               console.log('got contract abi')
+               deployMain(creator,ledgerAbi,ledgerBytecode, (err,res)=>{
+                    console.log('deployed: '+res )
+                    if(err) { return cb(err)}
+                    return cb(null,res)
+               })
+          });
+
+     });
+}
+
+
+
+this.call_API_method = (func)=>(A)=>{
+     getContractAbi(':SampleToken')(base+'ethlend/server/SimpleToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
           if (err){console.log('err:::',err); return err}
           contract = web3.eth.contract(ledgerAbi).at(contract_address);
           func(contract, A)
      });
 };
 
-issueTokens = (contract,A)=> {
+this.issueTokens = (contract,A)=> {
      var params   = { from: creator, gas: 2000000 };
 
      contract.issueTokens(A.address, A.token_count, params, (err,res)=>{
@@ -78,7 +98,7 @@ issueTokens = (contract,A)=> {
      });
 }
 
-transfer = (contract,A)=> {
+this.transfer = (contract,A)=> {
      var params   = { from: creator, gas: 2000000 };
 
      contract.transfer(A.address, A.token_count, params, (err,res)=>{
@@ -91,11 +111,35 @@ transfer = (contract,A)=> {
      });
 }
 
-Meteor.methods({
-     'create': ()=> Create((err,res)=>{
-          console.log('err:',err,'res:',res)
-     }),
 
+this.setParams = (contract_address, node, fee, enabled)=> { //creator=0x5f6B5B7D4b99bC78AA622E50115628cd247B9A15
+
+     fs.writeFileSync(base+'ethlend/config-other-params.ls',   
+`config.ETH_MAIN_ADDRESS = '${contract_address}'
+config.ETH_MAIN_ADDRESS_LINK = 'https://kovan.etherscan.io/address/${contract_address}'
+config.BALANCE_FEE_AMOUNT_IN_WEI = ${fee}
+config.ETH_NODE = '${node}'
+config.SMART_CONTRACTS_ENABLED = ${enabled}`
+     );
+};
+
+this.recompileAbi = ()=> { //creator=0x5f6B5B7D4b99bC78AA622E50115628cd247B9A15
+     
+     getContractAbi(':Ledger')(base+'ethlend/server/EthLend.sol')((err,ledgerAbi,ledgerBytecode,abiJsonLedger)=>{
+          if (err){ console.log('err:::',err); return err }
+
+          getContractAbi(':LendingRequest')(base+'ethlend/server/EthLend.sol')((err,lrAbi,bytecode,abiJsonLr)=>{
+               if (err){ console.log('err:::',err); return err }
+               fs.writeFileSync(base+'ethlend/config-abi.ls',   
+`config.LEDGER-ABI = ${JSON.stringify(ledgerAbi)}
+config.LR-ABI = ${JSON.stringify(lrAbi)}`
+                    );
+               console.log('Wrote сonfig to ethlend/config-abi.ls');
+          });
+     });
+};
+
+Meteor.methods({
      'issue': (address, token_count)=>call_API_method(issueTokens)({
           address:     address, 
           token_count: token_count, 
