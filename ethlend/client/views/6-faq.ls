@@ -91,6 +91,6 @@ template \faq -> main_blaze div style:'padding-top:50px; width:800px;' class:\co
 
     p a href:"https://etherdelta.github.io/",  em "https://etherdelta.github.io/"
     p strong "Where can I get help or assistance?"
-    p "Find us on slack channel: " a href:"ethlend.slack.com", em "ethlend.slack.com."
+    p "Find us on slack channel: " a href:"https://ethlend.slack.com", em "ethlend.slack.com."
 
     br!, br!, br!
