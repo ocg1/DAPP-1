@@ -1,7 +1,21 @@
 Router.route \about path:\/about
 
 template \about -> main_blaze do
-	div style:'padding:100px' class:\container ,
-		h1 style:'font-size:50px; display:block', 'About'
-		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 
-			replicate 10 p 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.'
+    div style:'padding-top:50px; width:800px;' class:\container,
+        h2 'About EthLend'
+        br!
+        p 'EthLend is product of ' a href:'https://github.com/ethwarrior', 'https://github.com/ethwarrior.'
+        p 'You can find us on Slack: ', a href:'ethlend.slack.com', 'ethlend.slack.com.'
+        p 'You can find us on Twitter: ', a href:'https://twitter.com/ethlend1', 'https://twitter.com/ethlend1.'
+        br!
+
+        p strong "Is EthLend safe?"
+        p "EthLend is a fully decentralized Smart Contract application running on Ethereum Network. This means that no loan data is stored on centralized servers and no loan contracts can be manipulated. EthLend is safe by design. All transactions are found with Ethereum explorer (such as https://etherscan.io)."
+        p strong "Are my tokens safe?"
+        p "Your tokens are stored in the loan contract. This means that even we do not have access to the tokens. The tokens are transferred to you when you pay the loan back with the premium. If you do not pay the loan back the tokens are transferred to the lender to cover the losses."
+        p strong "What are the fees?"
+        p "EthLend charges borrower 0.01 ETH for Loan Request. The lender is charged 0.01 ETH for Funding the loan. The fees are used to improve EthLend and make most out of Ethereum and Blockchain technology."
+        p strong "Will there be an ICO?"
+        p "Maybe."
+        p strong "What network Ethlend uses?"
+        p "Ethereum Main Network."      
