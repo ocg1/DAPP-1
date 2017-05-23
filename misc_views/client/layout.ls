@@ -32,8 +32,7 @@ template \layout ->
                 a class:\footer-link href:\/main/1, "Home"
                 a class:\footer-link href:'/about', "About EthLеnd"
                 a class:\footer-link href:'/faq', "FAQs"
-            p class:\footer-inscription, "EthLend ©2017 Created by ",
-                a href:'http://Chain.Cloud', "Chain.Cloud"
+            p class:\footer-inscription, "EthLend ©2017"
 
 
 Template.layout.events do 
