@@ -83,7 +83,7 @@ block-scheme =-> D \block-scheme,
     D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
         P \block-scheme-line-inscription, 'Borrower gets his', br!, 'tokens back'
-        P 'block-scheme-line-inscription block-scheme-line-inscription-second', "Lender gets money + ", br!, \premium
+        P 'block-scheme-line-inscription block-scheme-line-inscription-second', "Lender gets Eth amount + ", br!, \premium
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
     D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success}", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
