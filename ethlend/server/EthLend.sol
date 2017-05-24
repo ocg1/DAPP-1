@@ -41,9 +41,9 @@ contract Ledger is SafeMath {
 
      // 0.01 ETH
      uint public borrowerFeeAmount = 10000000000000000;
-     // 0.01 ETH
+     // 0.1 ETH
      // moved to LendingRequest
-     //uint public lenderFeeAmount   = 10000000000000000;
+     //uint public lenderFeeAmount   = 100000000000000000;
 
      modifier byAnyone(){
           _;

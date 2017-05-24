@@ -31,6 +31,6 @@ Template.info.created=~>
     lookup web3.eth.defaultAccount, (res)~> 
         getB(res)
         $(\.account-link).html res
-        $(\.account-link).attr \href "https://kovan.etherscan.io/address/#{res}"
+        $(\.account-link).attr \href "https://etherscan.io/address/#{res}"
   
           

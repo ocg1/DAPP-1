@@ -6,7 +6,7 @@ template \loan_request -> main_blaze do
 
     D "loan-wrapper #{state.get \loan-wrapper-class }",
         D \input-wrapper,
-            a target:\__blank class:\loan-title href:"https://kovan.etherscan.io/address/#{state.get \address }", "Loan Request  #{state.get \address }"
+            a target:\__blank class:\loan-title href:"https://etherscan.io/address/#{state.get \address }", "Loan Request  #{state.get \address }"
             input-box!
         block-scheme!
 
