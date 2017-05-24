@@ -182,7 +182,6 @@ Template.loan_request.events do
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: lilNum-toStr state.get(\NeededSumByLender)
-            gas:   2900000
         }
         console.log \transact: transact
         web3.eth.sendTransaction transact, goto-success-cb
@@ -192,7 +191,6 @@ Template.loan_request.events do
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: lilNum-toStr state.get(\NeededSumByBorrower)
-            gas:   2900000
         }
         # console.log \transact: transact
         web3.eth.sendTransaction transact, goto-success-cb
