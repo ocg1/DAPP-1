@@ -6,7 +6,7 @@ template \loan_request -> main_blaze do
 
     D "loan-wrapper #{state.get \loan-wrapper-class }",
         D \input-wrapper,
-            a target:\__blank class:\loan-title href:"https://kovan.etherscan.io/address/#{state.get \address }", "Loan Request  #{state.get \address }"
+            a target:\__blank class:\loan-title href:"https://etherscan.io/address/#{state.get \address }", "Loan Request  #{state.get \address }"
             input-box!
         block-scheme!
 
@@ -83,7 +83,7 @@ block-scheme =-> D \block-scheme,
     D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
         P \block-scheme-line-inscription, 'Borrower gets his', br!, 'tokens back'
-        P 'block-scheme-line-inscription block-scheme-line-inscription-second', "Lender gets money + ", br!, \premium
+        P 'block-scheme-line-inscription block-scheme-line-inscription-second', "Lender gets Eth amount + ", br!, \premium
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
     D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success}", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
@@ -182,7 +182,6 @@ Template.loan_request.events do
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: lilNum-toStr state.get(\NeededSumByLender)
-            gas:   2900000
         }
         console.log \transact: transact
         web3.eth.sendTransaction transact, goto-success-cb
@@ -192,7 +191,6 @@ Template.loan_request.events do
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: lilNum-toStr state.get(\NeededSumByBorrower)
-            gas:   2900000
         }
         # console.log \transact: transact
         web3.eth.sendTransaction transact, goto-success-cb

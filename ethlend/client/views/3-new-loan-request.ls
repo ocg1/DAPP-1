@@ -17,7 +17,6 @@ Template.newLoanRequest.events do
             from:  web3.eth.defaultAccount
             to:    config.ETH_MAIN_ADDRESS
             value: state.get(\fee-sum)
-            gas:   2900000
         }
         web3.eth.sendTransaction transact, (err,res)-> 
             if err => console.log \err:   err

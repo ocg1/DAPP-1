@@ -92,7 +92,7 @@ this.issueTokens = (contract,A)=> {
           if(err) { return A.cb(err)}
           var out = {
                tx: res,
-               txLink: 'https://kovan.etherscan.io/tx/'+res
+               txLink: 'https://etherscan.io/tx/'+res
           }
           return A.cb(null, out)
      });
@@ -105,7 +105,7 @@ this.transfer = (contract,A)=> {
           if(err) { return A.cb(err)}
           var out = {
                tx: res,
-               txLink: 'https://kovan.etherscan.io/tx/'+res
+               txLink: 'https://etherscan.io/tx/'+res
           }
           return A.cb(null, out)
      });
@@ -116,7 +116,7 @@ this.setParams = (contract_address, node, fee, enabled)=> { //creator=0x5f6B5B7D
 
      fs.writeFileSync(base+'ethlend/config-other-params.ls',   
 `config.ETH_MAIN_ADDRESS = '${contract_address}'
-config.ETH_MAIN_ADDRESS_LINK = 'https://kovan.etherscan.io/address/${contract_address}'
+config.ETH_MAIN_ADDRESS_LINK = 'https://etherscan.io/address/${contract_address}'
 config.BALANCE_FEE_AMOUNT_IN_WEI = ${fee}
 config.ETH_NODE = '${node}'
 config.SMART_CONTRACTS_ENABLED = ${enabled}`
