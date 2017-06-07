@@ -61,7 +61,7 @@ input-box =~> div class:\input-box,
             D "loan-prebutton-text", "To return tokens please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\fee-sum)} Eth premium"
             button class:'card-button bgc-primary loan-button return-tokens', 'Return tokens'
         if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
-            D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to return tokens back"
+            D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to get tokens back"
             button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
         if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
             D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can get his tokens"

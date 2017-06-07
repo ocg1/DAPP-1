@@ -53,7 +53,7 @@ template \mainTemplate -> main_blaze do
 
 @progress-bar =(percent)-> div style:'padding:100px; padding-right:120px' class:"#{state.get \progress-class } container" ,
     h1 style:'font-size:50px; display:block', 'Receiving data...'
-    p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please wait for the data to be downloaded from the Ethereum network'
+    p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please wait for the data to be downloaded from Ethereum network'
     div class:\progress style:'width:70%',
         div class:"progress-bar progress-bar-striped active" role:"progressbar" aria-valuenow:"#percent" aria-valuemin:"0" aria-valuemax:"100" style:"width:#{state.get \percent }%"
         span class:"sr-only", "#{state.get \percent } Complete"
