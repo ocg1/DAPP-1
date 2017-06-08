@@ -13,10 +13,10 @@ map init(ledger), [
 	\payable                        #8. when recieve money -> NewLendingRequest()
 	\getLrFundedCount				#9. same
 	\getLrFunded 				    #10.same
+	\getRepTokenAddress             #11.
 ]
 
 map init(lr), [ 
-
 	\getWantedWei                   #1.  constant returns (_ out)         
 	\getPremiumWei                  #2.  constant returns (_ out)          
 	\getTokenName                   #3.  constant returns (_ out)         
@@ -38,6 +38,7 @@ map init(lr), [
 	\getNeededSumByLender           #19. constant returns(uint out)
 	\getNeededSumByBorrower         #20. constant returns(uint out)
 	\requestDefault                 #21. onlyByLender onlyInState(State.WaitingForPayback)
+	\returnTokens                   #22.
 ]
 
 @get-all-lr-data =(address)->(cb)-> #TODO: parallel it
@@ -63,3 +64,7 @@ map init(lr), [
 										lr.getTokenAmount(address) ->
 											out.TokenAmount = +lilNum-toStr &1
 											cb(null,out)
+
+@get-rep-balance =(address,cb)-> ledger.getRepTokenAddress (err,repAddress)->
+	contr = web3?eth.contract(config.REP-ABI).at(repAddress)
+	contr.balanceOf address, cb
