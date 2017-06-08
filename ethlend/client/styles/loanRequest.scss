@@ -127,10 +127,10 @@
         border-right: solid 2px $primary-color;
         &-inscription {
             float: left;
-            height: 28px;
-            width: 94px;
+            height: 30px;
+            width: 150px; 
+            margin-left: -15px;
             background-color: #ffffff;
-            margin-left: 12px;
             margin-top: 18px;
             text-align: center;
             font-size: 10px;
@@ -138,6 +138,8 @@
             padding: 3px 0 3px 0;
             &-second {
                 margin-top: 0;
+                width: 150px;
+                margin-left: -15px;
             }
             &-branch {
                 margin-left: 46px;

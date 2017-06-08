@@ -61,7 +61,7 @@ input-box =~> div class:\input-box,
 
         if state.get(\lr-State)==3 && state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", 
-                "You can cancel this loan request."
+                "Please wait while someone lend your Loan Request. You can cancel this loan request."
 
             button class:'card-button bgc-primary loan-button borrower-cancel' style:'width:200px; margin-left:-15px', "Cancel"
 
@@ -96,8 +96,8 @@ block-scheme =-> D \block-scheme,
         D \block-scheme-line-arrow
     D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
-        p class:\block-scheme-line-inscription  style:'height:40px; margin-top:7px; margin-bottom:7px', 'Borrower gets his', br!, 'tokens back + Credit Token (CRE)'
-        p class:'block-scheme-line-inscription block-scheme-line-inscription-second' style:'height:48px;', "Lender gets Eth amount + ", br!, 'premium & Credit Token (CRE)'
+        p class:\block-scheme-line-inscription, 'Borrower gets his', br!, 'tokens back + Credit Token (CRE)'
+        p class:'block-scheme-line-inscription block-scheme-line-inscription-second' , "Lender gets Eth amount + ", br!, 'premium & Credit Token (CRE)'
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
     D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success }", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
@@ -245,7 +245,7 @@ Template.loan_request.events do
         case \lr-DaysToLen   => test IntQ $T.val!
         case \lr-TokenAmount => test IntQ $T.val!
         case \lr-PremiumWei  => test IntQ $T.val!
-        case \lr-TokenName   => test $T.val!length > 3
+        case \lr-TokenName   => test $T.val!length > 0
         case \lr-TokenSmartcontractAddress => test EthQ $T.val!
 
         if Everything_is_ok! => $(\.set-data).remove-attr \disabled
@@ -263,7 +263,7 @@ Everything_is_ok=->
         case \lr-DaysToLen   => test IntQ $(el).val!
         case \lr-TokenAmount => test IntQ $(el).val!
         case \lr-PremiumWei  => test IntQ $(el).val!
-        case \lr-TokenName   => test $(el).val!length > 3
+        case \lr-TokenName   => test $(el).val!length > 0
         case \lr-TokenSmartcontractAddress => test EthQ $(el).val!
     console.log \ok: ok
     ok

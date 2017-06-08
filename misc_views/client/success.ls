@@ -10,5 +10,5 @@ template \success -> main_blaze do
 			br!
 			if state.get(\show-finished-text) => "Pledge CRE for your next loans to spare other tokens."
 
-		# a class:'btn btn-primary btn-lg' href:'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn', 'Download Metamask'
+		button class:'btn btn-primary btn-lg' onclick:'window.history.back()', 'Go back'
 
