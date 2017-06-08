@@ -52,11 +52,8 @@ input-box =~> div class:\input-box,
             button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, 'Check that tokens are transferred'
 
         if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
-            D "loan-prebutton-text", 
-                "Please send #{bigNum-toStr state.get(\NeededSumByLender)} Eth to #{state.get \address }"
-                br!
-                "to fund this Loan Request and get Credit tokens as a reward. This includes #{bigNum-toStr state.get(\fee-sum)||'xxx' } Eth platform fee."
-                
+            D "loan-prebutton-text",      
+                "Fund this loan request and get Credit tokens as a reward"
             button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
 
         if state.get(\lr-State)==3 && state.get(\IamBorrower) => D \text-s,
