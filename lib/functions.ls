@@ -196,3 +196,68 @@
 
 
 @yesno =-> if it then \Yes else \No
+
+@get-faq-img-link=-> switch it
+    case 1  => a href:\http://ibb.co/mDACyF, img class:\faq-img src:\http://preview.ibb.co/ePDAkv/image1.jpg  alt:\image1  border:\0
+    case 2  => a href:\http://ibb.co/eRmkJF, img class:\faq-img src:\http://preview.ibb.co/dtACyF/image2.jpg  alt:\image2  border:\0
+    case 3  => a href:\http://ibb.co/c0wkJF, img class:\faq-img src:\http://preview.ibb.co/krbVkv/image3.jpg  alt:\image3  border:\0
+    case 4  => a href:\http://ibb.co/h2dbQv, img class:\faq-img src:\http://preview.ibb.co/iB4GQv/image4.jpg  alt:\image4  border:\0
+    case 5  => a href:\http://ibb.co/iwUGQv, img class:\faq-img src:\http://preview.ibb.co/noyAkv/image5.jpg  alt:\image5  border:\0
+    case 6  => a href:\http://ibb.co/npjSXa, img class:\faq-img src:\http://preview.ibb.co/iLPSXa/image6.jpg  alt:\image6  border:\0
+    case 7  => a href:\http://ibb.co/cJWVkv, img class:\faq-img src:\http://preview.ibb.co/k1UGQv/image7.jpg  alt:\image7  border:\0
+    case 8  => a href:\http://ibb.co/fHmwQv, img class:\faq-img src:\http://preview.ibb.co/hpMVkv/image8.jpg  alt:\image8  border:\0
+    case 9  => a href:\http://ibb.co/nNvCyF, img class:\faq-img src:\http://preview.ibb.co/iOiMsa/image9.jpg  alt:\image9  border:\0
+    case 10 => a href:\http://ibb.co/emUGQv, img class:\faq-img src:\http://preview.ibb.co/fK5qkv/image10.jpg alt:\image10 border:\0
+    case 11 => a href:\http://ibb.co/kaFCyF, img class:\faq-img src:\http://preview.ibb.co/nu8XyF/image11.jpg alt:\image11 border:\0
+    case 12 => a href:\http://ibb.co/gjYbQv, img class:\faq-img src:\http://preview.ibb.co/c1ngsa/image12.jpg alt:\image12 border:\0
+    case 13 => a href:\http://ibb.co/no3nXa, img class:\faq-img src:\http://preview.ibb.co/bsBwQv/image13.jpg alt:\image13 border:\0
+    case 14 => a href:\http://ibb.co/dpTzdF, img class:\faq-img src:\http://preview.ibb.co/k9HsyF/image14.jpg alt:\image14 border:\0
+    case 15 => a href:\http://ibb.co/fuhgsa, img class:\faq-img src:\http://preview.ibb.co/gZ0CyF/image15.jpg alt:\image15 border:\0
+    case 16 => a href:\http://ibb.co/mqAZCa, img class:\faq-img src:\http://preview.ibb.co/nOm7Xa/image16.jpg alt:\image16 border:\0
+    case 17 => a href:\http://ibb.co/dGh35v, img class:\faq-img src:\http://preview.ibb.co/gq1KdF/image17.jpg alt:\image17 border:\0
+    case 18 => a href:\http://ibb.co/j4TzdF, img class:\faq-img src:\http://preview.ibb.co/eo6Vkv/image18.jpg alt:\image18 border:\0
+    case 19 => a href:\http://ibb.co/ct8Msa, img class:\faq-img src:\http://preview.ibb.co/jTOAkv/image19.jpg alt:\image19 border:\0
+    case 20 => a href:\http://ibb.co/kP17Xa, img class:\faq-img src:\http://preview.ibb.co/n4LedF/image20.jpg alt:\image20 border:\0
+    case 21 => a href:\http://ibb.co/cvXsyF, img class:\faq-img src:\http://preview.ibb.co/kdVedF/image21.jpg alt:\image21 border:\0
+    case 22 => a href:\http://ibb.co/iVpGQv, img class:\faq-img src:\http://preview.ibb.co/d6kqkv/image22.jpg alt:\image22 border:\0
+    case 23 => a href:\http://ibb.co/kRL1sa, img class:\faq-img src:\http://preview.ibb.co/nzvZCa/image23.jpg alt:\image23 border:\0
+    case 24 => a href:\http://ibb.co/hiLO5v, img class:\faq-img src:\http://preview.ibb.co/bKGwQv/image24.jpg alt:\image24 border:\0
+    case 25 => a href:\http://ibb.co/joLO5v, img class:\faq-img src:\http://preview.ibb.co/bMoXyF/image25.jpg alt:\image25 border:\0
+    case 26 => a href:\http://ibb.co/i3puCa, img class:\faq-img src:\http://preview.ibb.co/jLyXyF/image26.jpg alt:\image26 border:\0
+    case 27 => a href:\http://ibb.co/mYm7Xa, img class:\faq-img src:\http://preview.ibb.co/gP8bQv/image27.jpg alt:\image27 border:\0
+    case 28 => a href:\http://ibb.co/gJxECa, img class:\faq-img src:\http://preview.ibb.co/b2bkJF/image28.jpg alt:\image28 border:\0
+    case 29 => a href:\http://ibb.co/hqaO5v, img class:\faq-img src:\http://preview.ibb.co/fH0qkv/image29.jpg alt:\image29 border:\0
+    case 30 => a href:\http://ibb.co/jup5JF, img class:\faq-img src:\http://preview.ibb.co/dVkedF/image30.jpg alt:\image30 border:\0
+    case 31 => a href:\http://ibb.co/my3nXa, img class:\faq-img src:\http://preview.ibb.co/jQSECa/image31.jpg alt:\image31 border:\0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
