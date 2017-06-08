@@ -7,8 +7,20 @@ template \newLoanRequest -> main_blaze do
             "This includes " b "#{state.get(\fee-sum)/10^18} ETH"; " platform fees and can take 3-5 minutes"
 
         p style:\font-size:20px,
-            'New ' b 'Loan Request'; ' will be then available in ’All Loan Requests’ window.'
+            'New ' 
+            b 'Loan Request'
+            ' will be then available in ’All Loan Requests’ window.'
+            br!
+            "Credit Tokens (CRE) are credited to the borrower and the lender on successful loan"
+            br!
+            "repayment (Loan amount of 1 ETH = 0.1 CRE). CRE represents the borrower’s credit rating. "
+            br!
+            "Pledge CRE to spare other tokens."
         button class:'new-loan-request card-button bgc-primary', 'New loan request'
+
+
+
+
 
 Template.newLoanRequest.events do
     'click .new-loan-request':->
@@ -22,6 +34,8 @@ Template.newLoanRequest.events do
             if err => console.log \err:   err
             if res 
                 console.log \thash: res
+                state.set \transact-to-address config.ETH_MAIN_ADDRESS
+                state.set \transact-value      state.get(\fee-sum)
                 Router.go \success
 
 Template.newLoanRequest.created =->
