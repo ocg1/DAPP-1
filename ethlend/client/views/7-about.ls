@@ -4,9 +4,9 @@ template \about -> main_blaze do
     div style:'padding-top:50px; width:800px;' class:\container,
         h2 'About EthLend'
         br!
-        p 'EthLend is product of ' a href:'https://github.com/ethwarrior', 'https://github.com/ethwarrior.'
-        p 'You can find us on Slack: ', a href:'ethlend.slack.com', 'ethlend.slack.com.'
-        p 'You can find us on Twitter: ', a href:'https://twitter.com/ethlend1', 'https://twitter.com/ethlend1.'
+        p 'EthLend is product of ' a href:'https://github.com/ethwarrior', 'https://github.com/ethwarrior'
+        p 'You can find us on Slack: ', a href:'https://join.slack.com/ethlend/shared_invite/MTg3MDY5MjEwNjczLTE0OTU2NjEwNTktZWE3MTE5YWNhOA', 'ethlend.slack.com'
+        p 'You can find us on Twitter: ', a href:'https://twitter.com/ethlend1', 'https://twitter.com/ethlend1'
         br!
 
         p strong "Is EthLend safe?"

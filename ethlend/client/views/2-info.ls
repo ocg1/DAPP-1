@@ -5,9 +5,6 @@ template \info -> main_blaze {},
         h4 class:\info-key, "Eth is enabled"
         p class:\info-value, yesno config.SMART_CONTRACTS_ENABLED
 
-        h4 class:\info-key, "Eth node"
-        p class:\info-value, config.ETH_NODE
-
         h4 class:\info-key, "Your address"
         p class:'info-value defaultAccount', 
             a target:\_blank class:\account-link href:'', ''

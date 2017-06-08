@@ -1,4 +1,4 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.11;
 
 contract SafeMath {
      function safeMul(uint a, uint b) internal returns (uint) {
@@ -28,10 +28,15 @@ contract ERC20Token {
      function transfer(address _to, uint _value) returns (bool success);
 }
 
+contract ReputationTokenInterface {
+     function issueTokens(address forAddress, uint tokenCount) returns (bool success);
+}
+
 contract Ledger is SafeMath {
      // who deployed Ledger
      address public mainAddress;
      address public whereToSendFee;
+     address public repTokenAddress;
 
      mapping (address => mapping(uint => address)) lrsPerUser;
      mapping (address => uint) lrsCountPerUser;
@@ -41,17 +46,20 @@ contract Ledger is SafeMath {
 
      // 0.01 ETH
      uint public borrowerFeeAmount = 10000000000000000;
-     // 0.1 ETH
-     // moved to LendingRequest
-     //uint public lenderFeeAmount   = 100000000000000000;
 
      modifier byAnyone(){
           _;
      }
 
-     function Ledger(address whereToSendFee_){
+     function Ledger(address whereToSendFee_,address repTokenAddress_){
           mainAddress = msg.sender;
           whereToSendFee = whereToSendFee_;
+          repTokenAddress = repTokenAddress_;
+     }
+
+     function getRepTokenAddress()constant returns(address out){
+          out = repTokenAddress;
+          return;
      }
 
      function getFeeSum()constant returns(uint out){
@@ -134,6 +142,14 @@ contract Ledger is SafeMath {
           return;
      }
 
+     function addRepTokens(address a, uint weiSum){
+          ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
+
+          uint repTokens = (weiSum / 10);
+          // will throw if called not from here...
+          repToken.issueTokens(a,repTokens);
+     }
+
      function() payable{
           createNewLendingRequest();
      }
@@ -146,6 +162,7 @@ contract LendingRequest is SafeMath {
      uint public lenderFeeAmount   = 10000000000000000;
      
      address public ledger = 0x0;
+
      // who deployed Ledger
      address public mainAddress = 0x0;
      
@@ -342,6 +359,16 @@ contract LendingRequest is SafeMath {
           }
      }
 
+     // If no lenders -> borrower can cancel the LR
+     function returnTokens() byLedgerMainOrBorrower onlyInState(State.WaitingForLender){
+          // tokens are released back to borrower
+          ERC20Token token = ERC20Token(token_smartcontract_address);
+          uint tokenBalance = token.balanceOf(this);
+          token.transfer(borrower,tokenBalance);
+
+          currentState = State.Finished;
+     }
+
      function waitingForLender()payable onlyInState(State.WaitingForLender){
           if(msg.value<safeAdd(wanted_wei,lenderFeeAmount)){
                throw;
@@ -384,6 +411,11 @@ contract LendingRequest is SafeMath {
           ERC20Token token = ERC20Token(token_smartcontract_address);
           uint tokenBalance = token.balanceOf(this);
           token.transfer(borrower,tokenBalance);
+
+          // Borrower and Lender get Reputation tokens
+          Ledger l = Ledger(ledger);
+          l.addRepTokens(borrower,wanted_wei);
+          l.addRepTokens(lender,wanted_wei);
 
           // finished
           currentState = State.Finished;

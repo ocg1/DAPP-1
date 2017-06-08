@@ -38,6 +38,7 @@ map init(lr), [
 	\getNeededSumByLender           #19. constant returns(uint out)
 	\getNeededSumByBorrower         #20. constant returns(uint out)
 	\requestDefault                 #21. onlyByLender onlyInState(State.WaitingForPayback)
+	\returnTokens                   #22.
 ]
 
 @get-all-lr-data =(address)->(cb)-> #TODO: parallel it

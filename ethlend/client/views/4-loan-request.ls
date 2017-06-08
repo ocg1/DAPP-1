@@ -30,6 +30,7 @@ input-box =~> div class:\input-box,
         *c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Eth',       
         *c:'lr-TokenName'                                     n:'Token name'                 d:disableQ!,                                
         *c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower),
+        *c:'lr-Borrower-rep'                                  n:'Borrower reputation'        d:true
         *c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender),  
         *c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
         *c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!,                                
@@ -56,6 +57,15 @@ input-box =~> div class:\input-box,
                 "to fund this Loan Request. This includes #{bigNum-toStr state.get(\fee-sum)||'xxx' } Eth platform fee."
 
             button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
+
+        if state.get(\lr-State)==3 && state.get(\IamBorrower) => D \text-s,
+            D "loan-prebutton-text", 
+                "You can cancel this loan request."
+
+            button class:'card-button bgc-primary borrower-cancel' style:'width:200px; margin-left:-15px', "Cancel"
+
+
+
 
         if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", "To return tokens please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\fee-sum)} Eth premium"
@@ -131,7 +141,10 @@ Template.loan_request.created=->
                     state.set \lr-Borrower &1?Borrower
                     state.set \lr-State    &1?State
                     state.set \IamLender   (state.get(\defaultAccount)==state.get(\lr-Lender))       
-                    state.set \IamBorrower (state.get(\defaultAccount)==state.get(\lr-Borrower))            
+                    state.set \IamBorrower (state.get(\defaultAccount)==state.get(\lr-Borrower)) 
+
+                    # lr.returnTokens(state.get \address) ->
+                    #     state.set \reputation &1        
 
 
 Template.loan_request.rendered =->
@@ -185,6 +198,10 @@ Template.loan_request.events do
         }
         console.log \transact: transact
         web3.eth.sendTransaction transact, goto-success-cb
+
+    'click .borrower-cancel':-> 
+
+        lr.returnTokens(state.get(\address)) goto-success-cb
 
     'click .return-tokens':->
         transact = {
