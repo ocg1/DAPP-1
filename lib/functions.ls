@@ -171,6 +171,15 @@
     bn.divided-by(many).to-fixed!
     # console.log \bn: bn
 
+@bigNum-toStr-div10 =(arr)->
+    bn = new BigNumber(0)
+    bn.c = arr?c
+    bn.e = arr?e
+    bn.s = arr?s
+    many = \10000000000000000000
+    bn.divided-by(many).to-fixed!
+
+
 @lilNum-toStr =(arr)-> 
     bn = new BigNumber(0)
     bn.c = arr?c

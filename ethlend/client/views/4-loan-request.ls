@@ -10,11 +10,11 @@ template \loan_request -> main_blaze do
             input-box!
         block-scheme!
 
-grn-pin   =-> img class:"hidden input-img-pin gpin" src:\/img/green_pin.svg alt:''
-red-pin   =-> img class:"hidden input-img-pin rpin" src:\/img/red_pin.svg   alt:''
-red-dot   =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''
+grn-pin =-> img class:"hidden input-img-pin gpin" src:\/img/green_pin.svg alt:''
+red-pin =-> img class:"hidden input-img-pin rpin" src:\/img/red_pin.svg   alt:''
+red-dot =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''
 
-input-unit =-> section style:'height:40px',
+input-unit =-> section style:'height:36px',
     h3 class:\input-key, 
         if it.red-dot   => red-dot!
         it.n
@@ -24,16 +24,17 @@ input-unit =-> section style:'height:40px',
 
 input-box =~> div class:\input-box, 
     map input-unit, [
-        *c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth',       
-        *c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!,                                
-        *c:'lr-TokenAmount'                                   n:'Token amount'               d:disableQ!, placeholder:'0',       
-        *c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Eth',       
-        *c:'lr-TokenName'                                     n:'Token name'                 d:disableQ!,                                
-        *c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower),
-        *c:'lr-Borrower-rep'                                  n:'Borrower reputation'        d:true
-        *c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender),  
+
+        *c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth'     
+        *c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                               
+        *c:'lr-TokenAmount'                                   n:'Token amount'               d:disableQ!, placeholder:'0'      
+        *c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Eth'       
+        *c:'lr-TokenName'                                     n:'Token name'                 d:disableQ!                                
+        *c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
+        *c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
+        *c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
         *c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
-        *c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!,                                
+        *c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
     ]
     div class:\text-aligned,
         if state.get(\lr-State)==0 && state.get(\IamBorrower) => D \text-s,
@@ -54,21 +55,24 @@ input-box =~> div class:\input-box,
             D "loan-prebutton-text", 
                 "Please send #{bigNum-toStr state.get(\NeededSumByLender)} Eth to #{state.get \address }"
                 br!
-                "to fund this Loan Request. This includes #{bigNum-toStr state.get(\fee-sum)||'xxx' } Eth platform fee."
-
+                "to fund this Loan Request and get Credit tokens as a reward. This includes #{bigNum-toStr state.get(\fee-sum)||'xxx' } Eth platform fee."
+                
             button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
 
         if state.get(\lr-State)==3 && state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", 
                 "You can cancel this loan request."
 
-            button class:'card-button bgc-primary borrower-cancel' style:'width:200px; margin-left:-15px', "Cancel"
+            button class:'card-button bgc-primary loan-button borrower-cancel' style:'width:200px; margin-left:-15px', "Cancel"
 
 
 
 
         if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
-            D "loan-prebutton-text", "To return tokens please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\fee-sum)} Eth premium"
+            D "loan-prebutton-text", 
+                "To return tokens please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\lr).PremiumWei} Eth premium amount"
+                br!
+                "Borrower and lender are rewarded with #{+bigNum-toStr-div10(state.get(\lr)?WantedWei)} Credit Tokens (CRE) after the repayment."
             button class:'card-button bgc-primary loan-button return-tokens', 'Return tokens'
         if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
             D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to get tokens back"
@@ -92,10 +96,10 @@ block-scheme =-> D \block-scheme,
         D \block-scheme-line-arrow
     D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
-        P \block-scheme-line-inscription, 'Borrower gets his', br!, 'tokens back'
-        P 'block-scheme-line-inscription block-scheme-line-inscription-second', "Lender gets Eth amount + ", br!, \premium
+        p class:\block-scheme-line-inscription  style:'height:40px; margin-top:7px; margin-bottom:7px', 'Borrower gets his', br!, 'tokens back + Credit Token (CRE)'
+        p class:'block-scheme-line-inscription block-scheme-line-inscription-second' style:'height:48px;', "Lender gets Eth amount + ", br!, 'premium & Credit Token (CRE)'
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
-    D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success}", \Finished
+    D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success }", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
         P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, \tokens
         div class:'block-scheme-line-arrow block-scheme-line-arrow-branch'
@@ -141,11 +145,13 @@ Template.loan_request.created=->
                     state.set \lr-Borrower &1?Borrower
                     state.set \lr-State    &1?State
                     state.set \IamLender   (state.get(\defaultAccount)==state.get(\lr-Lender))       
-                    state.set \IamBorrower (state.get(\defaultAccount)==state.get(\lr-Borrower)) 
 
-                    # lr.returnTokens(state.get \address) ->
-                    #     state.set \reputation &1        
 
+                    state.set \IamBorrower (state.get(\defaultAccount)==state.get(\lr-Borrower))   
+
+                    get-rep-balance (state.get \lr)?Borrower, (err,res)->
+                        $('.bor-balance').attr \value, res/10^19
+                        state.set \bor-balance res
 
 Template.loan_request.rendered =->
     $(\.set-data).attr \disabled, \disabled
@@ -156,6 +162,7 @@ Template.loan_request.rendered =->
     if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
     if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
+    
     $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
     $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink       
 
@@ -185,8 +192,6 @@ Template.loan_request.events do
             goto-success-cb
         )  
 
-
-
     'click .transfer-tokens':->
         lr.checkTokens(state.get(\address)) goto-success-cb
 
@@ -209,7 +214,11 @@ Template.loan_request.events do
             to:    state.get(\address)
             value: lilNum-toStr state.get(\NeededSumByBorrower)
         }
-        # console.log \transact: transact
+        console.log \transact: transact
+        
+        state.set \transact-to-address state.get(\address)
+        state.set \transact-value bigNum-toStr state.get(\NeededSumByBorrower)
+        state.set \show-finished-text true
         web3.eth.sendTransaction transact, goto-success-cb
 
     'click .get-tokens':->
