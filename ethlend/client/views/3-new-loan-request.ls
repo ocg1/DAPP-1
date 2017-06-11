@@ -11,9 +11,11 @@ template \newLoanRequest -> main_blaze do
             b 'Loan Request'
             ' will be then available in ’All Loan Requests’ window.'
             br!
+            br!
             "Credit Tokens (CRE) are credited to the borrower and the lender on successful loan"
             br!
-            "repayment (Loan amount of 1 ETH = 0.1 CRE). CRE represents the borrower’s credit rating. "
+            "repayment (loan amount of 1 ETH = 10 CRE). CRE represents the borrower’s credit rating. "
+            br!
             br!
             "Pledge CRE to spare other tokens."
         button class:'new-loan-request card-button bgc-primary', 'New loan request'

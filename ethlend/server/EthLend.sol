@@ -145,7 +145,7 @@ contract Ledger is SafeMath {
      function addRepTokens(address a, uint weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
 
-          uint repTokens = (weiSum / 10);
+          uint repTokens = (10 * weiSum);
           // will throw if called not from here...
           repToken.issueTokens(a,repTokens);
      }
