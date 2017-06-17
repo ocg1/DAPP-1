@@ -4,7 +4,7 @@ blaze-html-templates   		  # Compile .html files into Meteor Blaze views
 reactive-var@1.0.11           # Reactive variable for tracker
 jquery@1.11.10                # Helpful client-side library
 
-mrt:jquery-ui
+#mrt:jquery-ui
 
 mizzao:bootboxjs
 twbs:bootstrap

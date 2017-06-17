@@ -10,44 +10,20 @@ template \funded -> main_blaze do
             button class:"#{if state.get(\page)~=\1 => \disabled } arrow arrow-left glyphicon glyphicon-chevron-left" disabled:(state.get(\page)~=\1)
             button class:"arrow arrow-right glyphicon glyphicon-chevron-right"
 
-create-quartet=(start,cb)-> # TODO: свернуть рукурентно
+create-quartet=(start,cb)->
     out = []
-    if state.get(\percent)==0 
-        ledger.getLrFunded start, ->
-            if &1 == big-zero => return cb(null,out)
-            id = &1
-            get-all-lr-data(&1) ->
-                if state.get(\percent)==0 => state.set \percent 25
-                console.log state.get(\percent)
-                &1.id = id
-                out.push &1
-               
-                ledger.getLrFunded start+1, ->
-                    if &1 == big-zero => return cb(null,out)
-                    id = &1
-                    get-all-lr-data(&1) ->
-                        if state.get(\percent)==25 => state.set \percent 50
-                        console.log state.get(\percent)
-                        &1.id = id
-                        out.push &1
-                 
-                        ledger.getLrFunded start+2, ->
-                            if &1 == big-zero => return cb(null,out)
-                            id = &1
-                            get-all-lr-data(&1) ->
-                                if state.get(\percent)==50 =>state.set \percent 75
-                                console.log state.get(\percent)
-                                &1.id = id
-                                out.push &1
-                      
-                                ledger.getLrFunded start+3, ->
-                                    if &1 == big-zero => return cb(null,out)
-                                    id = &1
-                                    get-all-lr-data(&1) ->
-                                        if state.get(\percent)==75 =>state.set \percent 100
-                                        &1.id = id
-                                        out.push &1
-                                        return cb(null,out)
+    load-one-card =-> ledger.getLrFunded start + it, (err,id)->
+        if id == big-zero => out.push null
+        else get-all-lr-data(id) (err,lr)~>
+            lr.id = id
+            out.push lr
+
+    map load-one-card, [0 1 2 3]
+   
+    cycle =-> 
+        if out.length < 4 => Meteor.setTimeout (-> cycle! ), 10
+        else cb null, compact out
+    cycle! 
 
 create-quartet-page=(start)->
     state.set \percent 0

@@ -53,48 +53,25 @@ template \mainTemplate -> main_blaze do
 
 @progress-bar =(percent)-> div style:'padding:100px; padding-right:120px' class:"#{state.get \progress-class } container" ,
     h1 style:'font-size:50px; display:block', 'Receiving data...'
-    p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please wait for the data to be downloaded from Ethereum network'
-    div class:\progress style:'width:70%',
-        div class:"progress-bar progress-bar-striped active" role:"progressbar" aria-valuenow:"#percent" aria-valuemin:"0" aria-valuemax:"100" style:"width:#{state.get \percent }%"
-        span class:"sr-only", "#{state.get \percent } Complete"
+    p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please wait for the data to be downloaded from Ethereum network...'
+    # div class:\progress style:'width:70%',
+        # div class:"progress-bar progress-bar-striped active" role:"progressbar" aria-valuenow:"#percent" aria-valuemin:"0" aria-valuemax:"100" style:"width:#{state.get \percent }%"
+        # span class:"sr-only", "#{state.get \percent } Complete"
 
-create-quartet=(start,cb)-> # TODO: свернуть рукурентно
+create-quartet=(start,cb)->
     out = []
-    if state.get(\percent)==0 => ledger.getLr start, ->
-        if &1 == big-zero => return cb(null,out)
-        id = &1
-        get-all-lr-data(&1) ->
-            if state.get(\percent)==0 => state.set \percent 25
-            console.log state.get(\percent)
-            &1.id = id
-            out.push &1
-           
-            ledger.getLr start+1, ->
-                if &1 == big-zero => return cb(null,out)
-                id = &1
-                get-all-lr-data(&1) ->
-                    if state.get(\percent)==25 => state.set \percent 50
-                    console.log state.get(\percent)
-                    &1.id = id
-                    out.push &1
-             
-                    ledger.getLr start+2, ->
-                        if &1 == big-zero => return cb(null,out)
-                        id = &1
-                        get-all-lr-data(&1) ->
-                            if state.get(\percent)==50 =>state.set \percent 75
-                            console.log state.get(\percent)
-                            &1.id = id
-                            out.push &1
-                  
-                            ledger.getLr start+3, ->
-                                if &1 == big-zero => return cb(null,out)
-                                id = &1
-                                get-all-lr-data(&1) ->
-                                    if state.get(\percent)==75 =>state.set \percent 100
-                                    &1.id = id
-                                    out.push &1
-                                    return cb(null,out)
+    load-one-card =-> ledger.getLr start + it, (err,id)->
+        if id == big-zero => out.push null
+        else get-all-lr-data(id) (err,lr)~>
+            lr.id = id
+            out.push lr
+
+    map load-one-card, [0 1 2 3]
+   
+    cycle =-> 
+        if out.length < 4 => Meteor.setTimeout (-> cycle! ), 10
+        else cb null, compact out
+    cycle!        
 
 create-quartet-page=(start)->
     state.set \percent 0
