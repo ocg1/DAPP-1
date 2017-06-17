@@ -43,27 +43,35 @@ map init(lr), [
 
 @get-all-lr-data =(address)->(cb)-> #TODO: parallel it
 	out = {}
-	lr.getWantedWei(address) ->  
-		out.WantedWei = &1    
-		lr.getPremiumWei(address) ->
-			out.PremiumWei = &1
-			lr.getTokenName(address) ->
-				out.TokenName = &1
-				lr.getTokenInfoLink(address) ->
-					out.TokenInfoLink = &1
-					lr.getTokenSmartcontractAddress(address) ->
-						out.TokenSmartcontractAddress = &1
-						lr.getBorrower(address) ->
-							out.Borrower = &1
-							lr.getDaysToLen(address) ->
-								out.DaysToLen = +lilNum-toStr &1
-								lr.getState(address) ->
-									out.State = +lilNum-toStr &1
-									lr.getLender(address) ->
-										out.Lender = &1
-										lr.getTokenAmount(address) ->
-											out.TokenAmount = +lilNum-toStr &1
-											cb(null,out)
+	lr.getWantedWei(address) ->  				out.WantedWei = &1    
+	lr.getPremiumWei(address) -> 				out.PremiumWei = &1
+	lr.getTokenName(address) ->                 out.TokenName = &1
+	lr.getTokenInfoLink(address) -> 			out.TokenInfoLink = &1
+	lr.getTokenSmartcontractAddress(address) -> out.TokenSmartcontractAddress = &1
+	lr.getBorrower(address) -> 					out.Borrower = &1
+	lr.getDaysToLen(address) -> 				out.DaysToLen = +lilNum-toStr &1
+	lr.getState(address) -> 					out.State = +lilNum-toStr &1
+	lr.getLender(address) -> 					out.Lender = &1
+	lr.getTokenAmount(address) -> 				out.TokenAmount = +lilNum-toStr &1
+	
+	cycle =-> 
+		if typeof out.WantedWei ==\undefined  || typeof out.PremiumWei ==\undefined || typeof out.TokenName ==\undefined || typeof out.TokenInfoLink ==\undefined || typeof out.TokenSmartcontractAddress ==\undefined || typeof out.Borrower ==\undefined || typeof out.DaysToLen ==\undefined || typeof out.State ==\undefined || typeof out.Lender ==\undefined || typeof out.TokenAmount ==\undefined
+			Meteor.setTimeout (->( console.log \loading...; cycle!)), 10
+		else cb null, out
+
+	cycle!
+	# console.log \out.WantedWei:	out.WantedWei
+	# console.log \out.PremiumWei:	out.PremiumWei 
+	# console.log \out.TokenName:	out.TokenName 
+	# console.log \out.TokenInfoLink:	out.TokenInfoLink 
+	# console.log \out.TokenSmartcontractAddress:	out.TokenSmartcontractAddress 
+	# console.log \out.Borrower:	out.Borrower 
+	# console.log \out.DaysToLen:	out.DaysToLen 
+	# console.log \out.State:	out.State 
+	# console.log \out.Lender:	out.Lender 
+	# console.log \out.TokenAmount:	out.TokenAmount 
+	# unless 
+	
 
 @get-rep-balance =(address,cb)-> ledger.getRepTokenAddress (err,repAddress)->
 	contr = web3?eth.contract(config.REP-ABI).at(repAddress)
