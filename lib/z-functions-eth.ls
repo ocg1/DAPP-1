@@ -14,31 +14,36 @@ map init(ledger), [
 	\getLrFundedCount				#9. same
 	\getLrFunded 				    #10.same
 	\getRepTokenAddress             #11.
+	\createNewLendingRequestEns     #12.
 ]
 
 map init(lr), [ 
-	\getWantedWei                   #1.  constant returns (_ out)         
-	\getPremiumWei                  #2.  constant returns (_ out)          
-	\getTokenName                   #3.  constant returns (_ out)         
-	\getTokenInfoLink               #4.  constant returns (_ out)             
-	\getTokenSmartcontractAddress   #5.  constant returns (_ out)                         
-	\getBorrower                    #6.  constant returns (_ out)        
-	\getDaysToLen                   #7.  constant returns (_ out)         
-	\getState                       #8.  constant returns (_ out)     
-	\getLender                      #9.  constant returns (_ out)
-	\getTokenAmount					#10. constant returns (_ out)
-	\LendingRequest                 #11. (address mainAddress_,address borrower_,address whereToSendFee_)!->      
-	\changeLedgerAddress            #12. (address new_)onlyByLedger
-	\changeMainAddress              #13. (address new_)onlyByMain
-	\setData                        #14. (uint wanted_wei_, uint token_amount_, uint premium_wei_, string token_name_, string token_infolink_, address token_smartcontract_address_, uint days_to_lend_) byLedgerMainOrBorrower onlyInState(State.WaitingForData)
-	\cancell                        #15. byLedgerMainOrBorrower
-	\checkTokens                    #16. byLedgerMainOrBorrower onlyInState(State.WaitingForTokens)
-	\waitingForLender               #17. payable onlyInState(State.WaitingForLender)
-	\waitingForPayback              #18. payable onlyInState(State.WaitingForPayback)
-	\getNeededSumByLender           #19. constant returns(uint out)
-	\getNeededSumByBorrower         #20. constant returns(uint out)
-	\requestDefault                 #21. onlyByLender onlyInState(State.WaitingForPayback)
-	\returnTokens                   #22.
+	\getBorrower                  # 1.
+	\getWantedWei                 # 2.
+	\getPremiumWei                # 3.
+	\getTokenAmount               # 4.
+	\getTokenName                 # 5.
+	\getTokenInfoLink             # 6.
+	\getTokenSmartcontractAddress # 7.
+	\getDaysToLen                 # 8.
+	\getState                     # 9.
+	\getLender                    # 10.
+	\isEns                        # 11.
+	\getEnsDomainHash             # 12.
+	\changeLedgerAddress          # 13.
+	\changeMainAddress            # 14.
+	\setData                      # 15.
+	\cancell                      # 16.
+	\checkTokens                  # 17.
+	\checkDomain                  # 18.
+	\returnTokens                 # 19.
+	\waitingForLender             # 20.
+	\waitingForPayback            # 21.
+	\getNeededSumByLender         # 22.
+	\getNeededSumByBorrower       # 23.
+	\requestDefault               # 24.
+	\releaseToLender              # 25.
+	\releaseToBorrower            # 26.
 ]
 
 @get-all-lr-data =(address)->(cb)-> #TODO: parallel it
@@ -53,10 +58,13 @@ map init(lr), [
 	lr.getState(address) -> 					out.State = +lilNum-toStr &1
 	lr.getLender(address) -> 					out.Lender = &1
 	lr.getTokenAmount(address) -> 				out.TokenAmount = +lilNum-toStr &1
+	lr.isEns(address) ->						out.isEns = &1
+	lr.getEnsDomainHash(address) ->				out.EnsDomainHash = &1
+
 	
 	cycle =-> 
-		if typeof out.WantedWei ==\undefined  || typeof out.PremiumWei ==\undefined || typeof out.TokenName ==\undefined || typeof out.TokenInfoLink ==\undefined || typeof out.TokenSmartcontractAddress ==\undefined || typeof out.Borrower ==\undefined || typeof out.DaysToLen ==\undefined || typeof out.State ==\undefined || typeof out.Lender ==\undefined || typeof out.TokenAmount ==\undefined
-			Meteor.setTimeout (->( console.log \loading...; cycle!)), 10
+		if typeof out.WantedWei ==\undefined  || typeof out.PremiumWei ==\undefined || typeof out.TokenName ==\undefined || typeof out.TokenInfoLink ==\undefined || typeof out.TokenSmartcontractAddress ==\undefined || typeof out.Borrower ==\undefined || typeof out.DaysToLen ==\undefined || typeof out.State ==\undefined || typeof out.Lender ==\undefined || typeof out.TokenAmount ==\undefined || typeof out.isEns == \undefined || typeof out.EnsDomainHash == \undefined
+			Meteor.setTimeout (->cycle!), 10
 		else cb null, out
 
 	cycle!

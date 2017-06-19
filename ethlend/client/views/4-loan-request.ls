@@ -23,19 +23,9 @@ input-unit =-> section style:'height:36px',
     red-pin!          
 
 input-box =~> div class:\input-box, 
-    map input-unit, [
+    
+    input-fields-column!
 
-        *c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth'     
-        *c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                               
-        *c:'lr-TokenAmount'                                   n:'Token amount'               d:disableQ!, placeholder:'0'      
-        *c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Eth'       
-        *c:'lr-TokenName'                                     n:'Token name'                 d:disableQ!                                
-        *c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
-        *c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
-        *c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
-        *c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
-        *c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
-    ]
     div class:\text-aligned,
         if state.get(\lr-State)==0 && state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", "Please, enter the data" 
@@ -45,11 +35,11 @@ input-box =~> div class:\input-box,
             button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
 
         if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
-            D "loan-prebutton-text", "Please, transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address } and click on the button"
-            button class:'card-button bgc-primary loan-button transfer-tokens', 'Check that tokens are transferred'
+            D "loan-prebutton-text", "Please, transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) }  to this Loan Request address - #{state.get \address } and click on the button"
+            button class:'card-button bgc-primary loan-button transfer-tokens', "Check that #{ ensQ('tokens are', 'domain is') } transferred"
         if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
-            D "loan-prebutton-text", "Borrower should transfer #{state.get('lr').TokenAmount } tokens to this Loan Request address - #{state.get \address }"
-            button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, 'Check that tokens are transferred'
+            D "loan-prebutton-text", "Borrower should transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) } to this Loan Request address - #{state.get \address }"
+            button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, "Check that #{ensQ(\tokens \domain)} are transferred"
 
         if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text",      
@@ -67,25 +57,25 @@ input-box =~> div class:\input-box,
 
         if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", 
-                "To return tokens please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\lr).PremiumWei} Eth premium amount"
+                "To return #{ensQ(\tokens \domain)} please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\lr).PremiumWei} Eth premium amount"
                 br!
                 "Borrower and lender are rewarded with #{+bigNum-toStr-div10(state.get(\lr)?WantedWei)} Credit Tokens (CRE) after the repayment."
             button class:'card-button bgc-primary loan-button return-tokens', 'Return tokens'
         if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
-            D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to get tokens back"
+            D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to get #{ensQ(\tokens \domain)} back"
             button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
         if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
-            D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can get his tokens"
-            button class:'card-button bgc-primary loan-button get-tokens', 'Get tokens'
+            D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can get his #{ensQ(\tokens \domain)}"
+            button class:'card-button bgc-primary loan-button get-tokens', "Get #{ensQ(\tokens \domain)}"
 
 block-scheme =-> D \block-scheme,
     D "block-scheme-element #{highlightQ(0)}", 'No data'
     D \block-scheme-line,
         P \block-scheme-line-inscription, "Borrower ", br!, 'sets data'
         D \block-scheme-line-arrow
-    D "block-scheme-element #{highlightQ(1)}", 'Waiting For Tokens'
+    D "block-scheme-element #{highlightQ(1)}", ensQ('Waiting for tokens', 'Waiting For domain')
     D \block-scheme-line,
-        P \block-scheme-line-inscription, "Borrower transfers ", br!, \tokens
+        P \block-scheme-line-inscription, "Borrower transfers", br!,  ensQ(\tokens \domain)
         D \block-scheme-line-arrow
     D "block-scheme-element #{highlightQ(3)}", 'Waiting For Lender'
     D \block-scheme-line,
@@ -93,12 +83,12 @@ block-scheme =-> D \block-scheme,
         D \block-scheme-line-arrow
     D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
-        p class:\block-scheme-line-inscription, 'Borrower gets his', br!, 'tokens back + Credit Token (CRE)'
+        p class:\block-scheme-line-inscription, 'Borrower gets his', br!, "#{ensQ \tokens \domain } back + Credit Token (CRE)"
         p class:'block-scheme-line-inscription block-scheme-line-inscription-second' , "Lender gets Eth amount + ", br!, 'premium & Credit Token (CRE)'
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
     D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success }", \Finished
     D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
-        P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, \tokens
+        P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, ensQ(\tokens \domain)
         div class:'block-scheme-line-arrow block-scheme-line-arrow-branch'
     D "#{highlightQ(5)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=5 => \block-scheme-element-failure else \failure-highlighted }", \Default
 
@@ -115,6 +105,7 @@ Template.loan_request.created=->
         *\lr-Lender
         *\lr-TokenSmartcontractAddress
         *\lr-TokenInfoLink
+        *\lr-isE
     ]    
 
     state.set \address     (Router.current!originalUrl |> split \/ |> last )
@@ -160,6 +151,8 @@ Template.loan_request.rendered =->
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
     if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
     
+    if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
+
     $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
     $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink       
 
@@ -169,13 +162,15 @@ Template.loan_request.events do
         out = {}
         out.ethamount = eth-to-wei $(\.lr-WantedWei).val!
         out.days      = $(\.lr-DaysToLen).val!
-        out.tokamount = $(\.lr-TokenAmount).val!
         out.premium   = eth-to-wei $(\.lr-PremiumWei).val!
-        out.tokname   = $(\.lr-TokenName).val!
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
-        out.smart     = $(\.lr-TokenSmartcontractAddress).val!
-        out.link      = $(\.lr-TokenInfoLink).val!
+
+        out.tokamount =     if state.get(\lr)?isEns==false => $(\.lr-TokenAmount).val!   else 0
+        out.tokname   =     if state.get(\lr)?isEns==false => $(\.lr-TokenName).val!     else 0
+        out.ensDomainHash = if state.get(\lr)?isEns==true  => $(\.lr-ensDomain).val!     else 0
+        out.smart =         if state.get(\lr)?isEns==false => $(\.lr-TokenSmartcontractAddress).val! else 0
+        out.link  =         if state.get(\lr)?isEns==false => $(\.lr-TokenInfoLink).val! else 0
 
         console.log \out: out
         lr.setData(state.get \address )(#uint wanted_wei_, uint token_amount_, uint premium_wei_,
@@ -186,11 +181,10 @@ Template.loan_request.events do
             out.link,
             out.smart,
             out.days, 
+            out.ensDomainHash,
             goto-success-cb
         )  
 
-    'click .transfer-tokens':->
-        lr.checkTokens(state.get(\address)) goto-success-cb
 
     'click .lender-pay':->   
         transact = {
@@ -202,21 +196,33 @@ Template.loan_request.events do
         web3.eth.sendTransaction transact, goto-success-cb
 
     'click .borrower-cancel':-> 
-
         lr.returnTokens(state.get(\address)) goto-success-cb
 
+    'click .transfer-tokens':->
+        if state.get(\lr)?isEns == false
+            lr.checkTokens(state.get(\address)) goto-success-cb
+        if state.get(\lr)?isEns == true
+            lr.checkDomain(state.get(\address)) goto-success-cb
+            # {from:web3.eth.defaultAccount, gas:4000000, gasPrice:150000000000}, 
+
     'click .return-tokens':->
-        transact = {
-            from:  web3.eth.defaultAccount
-            to:    state.get(\address)
-            value: lilNum-toStr state.get(\NeededSumByBorrower)
-        }
-        console.log \transact: transact
-        
-        state.set \transact-to-address state.get(\address)
-        state.set \transact-value bigNum-toStr state.get(\NeededSumByBorrower)
-        state.set \show-finished-text true
-        web3.eth.sendTransaction transact, goto-success-cb
+        if state.get(\lr)?isEns == false
+            transact = {
+                from:  web3.eth.defaultAccount
+                to:    state.get(\address)
+                value: lilNum-toStr state.get(\NeededSumByBorrower)
+            }
+            console.log \transact: transact
+            
+            state.set \transact-to-address state.get(\address)
+            state.set \transact-value bigNum-toStr state.get(\NeededSumByBorrower)
+            state.set \show-finished-text true
+            web3.eth.sendTransaction transact, goto-success-cb
+
+        if state.get(\lr)?isEns == true
+            ...
+
+
 
     'click .get-tokens':->
         lr.requestDefault(state.get(\address)) goto-success-cb
@@ -237,13 +243,16 @@ Template.loan_request.events do
 
         cls = $T.attr(\class) |> split ' ' |> last
 
-        switch cls
-        case \lr-WantedWei   => test IntQ $T.val!
-        case \lr-DaysToLen   => test IntQ $T.val!
-        case \lr-TokenAmount => test IntQ $T.val!
-        case \lr-PremiumWei  => test IntQ $T.val!
-        case \lr-TokenName   => test $T.val!length > 0
-        case \lr-TokenSmartcontractAddress => test EthQ $T.val!
+        
+        if cls==\lr-TokenAmount && state.get(\lr)?isEns == false => test IntQ $T.val!
+        if cls==\lr-TokenName   && state.get(\lr)?isEns == false => test $T.val!length > 0
+        if cls==\lr-ensDomain   && state.get(\lr)?isEns == true  => test ShaQ $T.val!
+        if cls==\lr-TokenSmartcontractAddress && state.get(\lr)?isEns == false => test EthQ $T.val!
+       
+        if cls==\lr-WantedWei   => test IntQ $T.val!
+        if cls==\lr-DaysToLen   => test IntQ $T.val!
+        if cls==\lr-PremiumWei  => test IntQ $T.val!
+        
 
         if Everything_is_ok! => $(\.set-data).remove-attr \disabled
         else $(\.set-data).attr \disabled, \disabled
@@ -255,14 +264,15 @@ Everything_is_ok=->
 
     for el in $(\.input)
         cls = $(el).attr(\class) |> split ' ' |> last
-        switch cls
-        case \lr-WantedWei   => test IntQ $(el).val!
-        case \lr-DaysToLen   => test IntQ $(el).val!
-        case \lr-TokenAmount => test IntQ $(el).val!
-        case \lr-PremiumWei  => test IntQ $(el).val!
-        case \lr-TokenName   => test $(el).val!length > 0
-        case \lr-TokenSmartcontractAddress => test EthQ $(el).val!
-    console.log \ok: ok
+        
+        if cls==\lr-WantedWei   => test IntQ $(el).val!
+        if cls==\lr-DaysToLen   => test IntQ $(el).val!
+        if cls==\lr-TokenAmount && state.get(\lr)?isEns == false => test IntQ $(el).val!
+        if cls==\lr-TokenName   && state.get(\lr)?isEns == false => test $(el).val!length > 0
+        if cls==\lr-ensDomain   && state.get(\lr)?isEns == true  => test ShaQ $(el).val!
+        if cls==\lr-PremiumWei  => test IntQ $(el).val!
+        if cls==\lr-TokenSmartcontractAddress && state.get(\lr)?isEns == false => test EthQ $(el).val!
+        console.log cls, \ok:, ok
     ok
 
 check-set-data-out =(out,cb)->  # TODO: check set-data 
@@ -278,6 +288,29 @@ set-data-cb =(err,res)->
     if it is state.get \lr-State then \block-scheme-element-highlighted else ''
     if it is state.get \lr-State then \block-scheme-element-highlighted else ''
 
+input-fields-column =->
+    field-array = []
+
+    if not state.get(\lr)?isEns
+        field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+        field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
+        field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
+        field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
+
+    else 
+        field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
+  
+    field-array.push c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth'     
+    field-array.push c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                                      
+    field-array.push c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Eth'       
+    field-array.push c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
+    field-array.push c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
+    field-array.push c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
+
+    map input-unit, field-array
+
+    
 
         
         
+@ensQ =-> if state.get(\lr)?isEns => &1 else &0

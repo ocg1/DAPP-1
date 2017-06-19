@@ -16,6 +16,9 @@ template \info -> main_blaze {},
         p class:\info-value,
             a target:\_blank href:config.ETH_MAIN_ADDRESS_LINK, config.ETH_MAIN_ADDRESS
 
+        h4 class:\info-key, "ENS registry address"
+        p class:\info-value, config.ENS_REG_ADDRESS
+
         
 
 Template.info.created=~>

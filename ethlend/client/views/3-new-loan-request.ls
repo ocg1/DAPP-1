@@ -18,7 +18,8 @@ template \newLoanRequest -> main_blaze do
             br!
             br!
             "Pledge CRE to spare other tokens."
-        button class:'new-loan-request card-button bgc-primary', 'New loan request'
+        button class:'new-loan-request card-button bgc-primary',  'New loan request (tokens)'
+        button class:'new-domain-request card-button bgc-primary', 'New loan request (domain)'
 
 
 
@@ -26,19 +27,43 @@ template \newLoanRequest -> main_blaze do
 
 Template.newLoanRequest.events do
     'click .new-loan-request':->
+        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequest do
+            {from:web3.eth.defaultAccount, gas:4000000, gasPrice:150000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
+            (err,res)->
+                if err => console.log \err: err
+                if res 
+                    console.log \thash: res
+                    state.set \transact-to-address config.ETH_MAIN_ADDRESS
+                    state.set \transact-value      state.get(\fee-sum)
+                    Router.go \success   
 
-        transact = {
-            from:  web3.eth.defaultAccount
-            to:    config.ETH_MAIN_ADDRESS
-            value: state.get(\fee-sum)
-        }
-        web3.eth.sendTransaction transact, (err,res)-> 
-            if err => console.log \err:   err
-            if res 
-                console.log \thash: res
-                state.set \transact-to-address config.ETH_MAIN_ADDRESS
-                state.set \transact-value      state.get(\fee-sum)
-                Router.go \success
+
+    'click .new-domain-request':->
+        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequestEns do
+            {from:web3.eth.defaultAccount, gas:4000000, gasPrice:150000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
+            (err,res)->
+                if err => console.log \err: err
+                if res 
+                    console.log \thash: res
+                    state.set \transact-to-address config.ETH_MAIN_ADDRESS
+                    state.set \transact-value      state.get(\fee-sum)
+                    Router.go \success   
+
+        # transact = {
+        #     from:  web3.eth.defaultAccount
+        #     to:    config.ETH_MAIN_ADDRESS
+        #     value: state.get(\fee-sum)
+        # }
+        # web3.eth.sendTransaction transact, (err,res)-> 
+        #     if err => console.log \err:   err
+        #     if res 
+        #         console.log \thash: res
+        #         state.set \transact-to-address config.ETH_MAIN_ADDRESS
+        #         state.set \transact-value      state.get(\fee-sum)
+        #         Router.go \success
+
+
+
 
 Template.newLoanRequest.created =->
     state.set \selected-class \new-loan

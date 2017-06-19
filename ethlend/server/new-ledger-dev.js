@@ -13,21 +13,12 @@ var Ω = console.log;
 var creator               = '0xb9af8aa42c97f5a1f73c6e1a683c4bf6353b83e7';
 //var ledgerContractAddress = //process.env.CONTRACT_ADDRESS;
 var contract_address      = '0x185dd613715258688B8c903e5b46CaD63c943681';
-var node                  = 'http://ethnode.chain.cloud:8545';
+var node                  = 'http://52.213.65.90:8545';
 var contract = '';
 
 var Web3 = Npm.require('web3');
-var web3 = new Web3(new Web3.providers.HttpProvider(node));
+this.web3 = new Web3(new Web3.providers.HttpProvider(node));
 
-this.deployMain=(creator,repAddress, ledgerAbi,ledgerBytecode,cb)=> {
-     var tempContract     = web3.eth.contract(ledgerAbi);
-     var whereToSendMoney = creator;
-     var params = { from: creator, gas: 4005000, gasPrice:150000000000, data: `0x${ledgerBytecode}`}
-     tempContract.new(whereToSendMoney, repAddress, params, (err, c)=> {
-          if(err){ Ω('ERROR: ' + err); return cb(err) }
-          return cb(null, c.transactionHash)
-     });
-}
 
 this.deployResp=(creator,ledgerAbi,ledgerBytecode,cb)=> {
      var tempContract     = web3.eth.contract(ledgerAbi);
@@ -86,20 +77,45 @@ this.DeployRepContract =(cb)=>{
      });
 }
 
-this.DeployContract =(repAddress, cb)=>{
-     console.log('base:',base)
-     web3.eth.getAccounts((err, as)=> {
-          console.log('as: ',as)
+
+this.deployMain=(creator,repAddress,ledgerAbi,ledgerBytecode,cb)=> {
+     var tempContract     = web3.eth.contract(ledgerAbi);
+     var whereToSendMoney = creator;
+     var params = { from: creator, gas: 4005000, gasPrice:150000000000, data: `0x${ledgerBytecode}`}
+     tempContract.new(whereToSendMoney, repAddress, params, (err, c)=> {
+          if(err){ Ω('ERROR: ' + err); return cb(err) }
+          return cb(null, c.transactionHash)
+     });
+}
+
+
+this.DeployContract =(repAddress, ensA, cb)=>{
+     getContractAbi(':Ledger')(base+'ethlend/server/EthLend.sol')((err,ledgerAbi,ledgerBytecode)=> {
           if(err) { return cb(err)}
-          getContractAbi(':Ledger')(base+'ethlend/server/EthLend.sol')((err,ledgerAbi,ledgerBytecode)=> {
-               if(err) { return cb(err)}
-               console.log('got contract abi')
-               deployMain(creator, repAddress, ledgerAbi,ledgerBytecode, (err,res)=>{
-                    console.log('deployed: '+res )
-                    if(err) { return cb(err)}
-                    return cb(null,res)
-               })
+          console.log('got contract abi')
+
+          var tempContract   = web3.eth.contract(ledgerAbi);
+          var params = { from: creator, gas: 4005000, gasPrice:150000000000, data: `0x${ledgerBytecode}`}
+          tempContract.new(creator, repAddress, ensA, params, (err, c)=> {
+               if(err){ Ω('ERROR: ' + err); return cb(err) }
+               return cb(null, c.transactionHash)
           });
+
+     });
+}
+
+this.DeployENS =(cb)=>{
+     getContractAbi(':TestENS')(base+'ethlend/server/ENS.sol')((err,ledgerAbi,ledgerBytecode)=> {
+          if(err) { return cb(err)}
+          console.log('got contract abi')
+
+          var tempContract   = web3.eth.contract(ledgerAbi);
+          var params = { from: creator, gas: 4005000, gasPrice:150000000000, data: `0x${ledgerBytecode}`}
+          tempContract.new(params, (err, c)=> {
+               if(err){ Ω('ERROR: ' + err); return cb(err) }
+               return cb(null, c.transactionHash)
+          });
+
      });
 }
 
@@ -158,14 +174,15 @@ this.transfer = (contract,A)=> {
 }
 
 
-this.setParams = (contract_address, node, fee, enabled, repAddress)=> { //creator=0x5f6B5B7D4b99bC78AA622E50115628cd247B9A15
+this.setParams = (contract_address, node, fee, enabled, repAddress, ensAddress)=> { //creator=0x5f6B5B7D4b99bC78AA622E50115628cd247B9A15
      fs.writeFileSync(base+'ethlend/config-other-params.ls',   
           `config.ETH_MAIN_ADDRESS = '${contract_address}'\n` +
           `config.ETH_MAIN_ADDRESS_LINK = 'https://etherscan.io/address/${contract_address}'\n` +
           `config.BALANCE_FEE_AMOUNT_IN_WEI = ${fee}\n` +
           `config.ETH_NODE = '${node}'\n` +
           `config.SMART_CONTRACTS_ENABLED = ${enabled}\n` +
-          `config.REPUTATION_ADDRESS = ${repAddress}`
+          `config.REPUTATION_ADDRESS = ${repAddress}\n` + 
+          `config.ENS_REG_ADDRESS    = ${ensAddress}`
      );
 };
 
