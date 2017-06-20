@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.4;
 
 contract SafeMath {
      function safeMul(uint a, uint b) internal returns (uint) {
@@ -33,13 +33,32 @@ contract ReputationTokenInterface {
 }
 
 contract AbstractENS {
-     function owner(bytes32 node) constant returns(address);
-     function resolver(bytes32 node) constant returns(address);
-     function ttl(bytes32 node) constant returns(uint64);
-     function setOwner(bytes32 node, address owner);
-     function setSubnodeOwner(bytes32 node, bytes32 label, address owner);
-     function setResolver(bytes32 node, address resolver);
-     function setTTL(bytes32 node, uint64 ttl);
+     function owner(bytes32 node) constant returns(address){ 
+          return 0;
+     }
+
+     function resolver(bytes32 node) constant returns(address){ 
+          return 0;
+     }
+
+     function ttl(bytes32 node) constant returns(uint64){ 
+          return 0;
+     }
+     function setOwner(bytes32 node, address owner){
+
+     }
+
+     function setSubnodeOwner(bytes32 node, bytes32 label, address owner){
+
+     }
+
+     function setResolver(bytes32 node, address resolver){
+
+     }
+
+     function setTTL(bytes32 node, uint64 ttl){
+
+     }
 
      // Logged when the owner of a node assigns a new owner to a subnode.
      event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
@@ -53,6 +72,7 @@ contract AbstractENS {
      // Logged when the TTL of a node changes
      event NewTTL(bytes32 indexed node, uint64 ttl);
 }
+
 
 contract Ledger is SafeMath {
      // who deployed Ledger
@@ -449,6 +469,7 @@ contract LendingRequest is SafeMath {
           if(!borrower.call.gas(200000).value(wanted_wei)()){
                throw;
           }
+
           currentState = State.WaitingForPayback;
 
           start = now;
@@ -506,6 +527,11 @@ contract LendingRequest is SafeMath {
 
           // tokens are released to the lender 
           releaseToLender();
+
+          // Only Lender get Reputation tokens
+          Ledger l = Ledger(ledger);
+          l.addRepTokens(lender,wanted_wei);
+
           currentState = State.Default; 
      }
 

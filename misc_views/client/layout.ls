@@ -6,9 +6,7 @@ template \layout ->
         body do
             header_blaze do
                 a class:\logo href:\/main/1,
-                    img class:\logo-image src:\/img/logo.svg alt:'EthLend logo'
-                h1 class:\site-name,
-                    a class:\home-link href:\/main/1, "EthLend"
+                    img class:\logo-image src:\/img/logo.png alt:'EthLend logo'
                 nav class:\navigation,
                     D "nav-link-wrapper #{if state.get(\selected-class)==\main => \selected  }",
                         a class:\nav-link href:\/main/1, "All Loan Requests"

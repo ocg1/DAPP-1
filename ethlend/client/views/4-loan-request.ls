@@ -60,7 +60,7 @@ input-box =~> div class:\input-box,
                 "To return #{ensQ(\tokens \domain)} please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\lr).PremiumWei} Eth premium amount"
                 br!
                 "Borrower and lender are rewarded with #{+bigNum-toStr-div10(state.get(\lr)?WantedWei)} Credit Tokens (CRE) after the repayment."
-            button class:'card-button bgc-primary loan-button return-tokens', 'Return tokens'
+            button class:'card-button bgc-primary loan-button return-tokens', "Return #{ensQ(\tokens \domain)}"
         if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
             D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to get #{ensQ(\tokens \domain)} back"
             button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
@@ -206,21 +206,21 @@ Template.loan_request.events do
             # {from:web3.eth.defaultAccount, gas:4000000, gasPrice:150000000000}, 
 
     'click .return-tokens':->
-        if state.get(\lr)?isEns == false
-            transact = {
-                from:  web3.eth.defaultAccount
-                to:    state.get(\address)
-                value: lilNum-toStr state.get(\NeededSumByBorrower)
-            }
-            console.log \transact: transact
-            
-            state.set \transact-to-address state.get(\address)
-            state.set \transact-value bigNum-toStr state.get(\NeededSumByBorrower)
-            state.set \show-finished-text true
-            web3.eth.sendTransaction transact, goto-success-cb
+        
+        transact = {
+            from:  web3.eth.defaultAccount
+            to:    state.get(\address)
+            value: +lilNum-toStr state.get(\NeededSumByBorrower)
+            gas:4000000
+            gasPrice:150000000000
+        }
+        console.log \transact: transact
+        
+        state.set \transact-to-address state.get(\address)
+        state.set \transact-value bigNum-toStr state.get(\NeededSumByBorrower)
+        state.set \show-finished-text true
+        web3.eth.sendTransaction transact, goto-success-cb
 
-        if state.get(\lr)?isEns == true
-            ...
 
 
 

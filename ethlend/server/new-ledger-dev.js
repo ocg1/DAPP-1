@@ -5,6 +5,7 @@ var BigNumber = Npm.require('bignumber.js');
 var path = Npm.require('path');
 var base =  path.resolve('.').split('.meteor')[0];
 
+ 
 
 var Ω = console.log;
 
@@ -43,6 +44,20 @@ this.getContractAbi = (cName)=> (filename)=> (cb)=> fs.readFile(filename, (err, 
      return cb(null,abi,bytecode);
 });
 
+this.getInterface =(cName,filename,cb)=> fs.readFile(base+'ethlend/server/'+filename, 'utf8', (err, res)=>{ 
+     // assert.equal(err,null);
+     if (err) return cb(err);
+     
+     var source = res.toString();
+     // assert.notEqual(source.length,0);
+
+     var output   = solc.compile(source, 1);
+     console.log('file:', output)
+     cb(null,output.contracts)
+});
+
+
+
 this.Create =(repAddress,cb)=>{
      console.log('base:',base)
      web3.eth.getAccounts((err, as)=> {
@@ -78,6 +93,8 @@ this.DeployRepContract =(cb)=>{
 }
 
 
+
+
 this.deployMain=(creator,repAddress,ledgerAbi,ledgerBytecode,cb)=> {
      var tempContract     = web3.eth.contract(ledgerAbi);
      var whereToSendMoney = creator;
@@ -89,14 +106,14 @@ this.deployMain=(creator,repAddress,ledgerAbi,ledgerBytecode,cb)=> {
 }
 
 
-this.DeployContract =(repAddress, ensA, cb)=>{
+this.DeployContract =(creatr, repAddress, ensA, cb)=>{
      getContractAbi(':Ledger')(base+'ethlend/server/EthLend.sol')((err,ledgerAbi,ledgerBytecode)=> {
           if(err) { return cb(err)}
           console.log('got contract abi')
 
           var tempContract   = web3.eth.contract(ledgerAbi);
-          var params = { from: creator, gas: 4005000, gasPrice:150000000000, data: `0x${ledgerBytecode}`}
-          tempContract.new(creator, repAddress, ensA, params, (err, c)=> {
+          var params = { from: creatr, gas: 4005000, gasPrice:150000000000, data: `0x${ledgerBytecode}`}
+          tempContract.new(creatr, repAddress, ensA, params, (err, c)=> {
                if(err){ Ω('ERROR: ' + err); return cb(err) }
                return cb(null, c.transactionHash)
           });
@@ -105,12 +122,13 @@ this.DeployContract =(repAddress, ensA, cb)=>{
 }
 
 this.DeployENS =(cb)=>{
-     getContractAbi(':TestENS')(base+'ethlend/server/ENS.sol')((err,ledgerAbi,ledgerBytecode)=> {
+     getContractAbi(':TestENS')(base+'ethlend/server/ENS.sol')((err,abi,Bytecode)=> {
           if(err) { return cb(err)}
           console.log('got contract abi')
 
-          var tempContract   = web3.eth.contract(ledgerAbi);
-          var params = { from: creator, gas: 4005000, gasPrice:150000000000, data: `0x${ledgerBytecode}`}
+          var tempContract   = web3.eth.contract(abi);
+          var params = { from: '0xb9Af8aA42c97f5A1F73C6e1a683c4Bf6353B83E7', gas: 2000000, gasPrice:200000000000, data: `0x${Bytecode}`}
+          console.log('params:', params)
           tempContract.new(params, (err, c)=> {
                if(err){ Ω('ERROR: ' + err); return cb(err) }
                return cb(null, c.transactionHash)
@@ -118,6 +136,10 @@ this.DeployENS =(cb)=>{
 
      });
 }
+
+        // web3.eth.sendTransaction({from:  '0xb9Af8aA42c97f5A1F73C6e1a683c4Bf6353B83E7', to:'0x896dca6f8489cc0e3dacf4412ae1730421186823', value: 1400000000000000, gas:4000000, gasPrice:150000000000}, conscb)
+
+
 
 this.changeCreator =(repAddress, contrAddress, cb)=>{
      getContractAbi(':ReputationToken')(base+'ethlend/server/ReputationToken.sol')((err,ledgerAbi,ledgerBytecode)=> {
@@ -185,6 +207,10 @@ this.setParams = (contract_address, node, fee, enabled, repAddress, ensAddress)=
           `config.ENS_REG_ADDRESS    = ${ensAddress}`
      );
 };
+
+
+
+
 
 this.recompileAbi = ()=> { //creator=0x5f6B5B7D4b99bC78AA622E50115628cd247B9A15
      
