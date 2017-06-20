@@ -17,7 +17,10 @@ template \info -> main_blaze {},
             a target:\_blank href:config.ETH_MAIN_ADDRESS_LINK, config.ETH_MAIN_ADDRESS
 
         h4 class:\info-key, "ENS registry address"
-        p class:\info-value, config.ENS_REG_ADDRESS
+        p class:\info-value,
+            a target:\_blank href:"https://etherscan.io/address/#{config.ENS_REG_ADDRESS}", config.ENS_REG_ADDRESS
+
+        
 
         
 

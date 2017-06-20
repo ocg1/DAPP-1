@@ -14,10 +14,14 @@ template \mainTemplate -> main_blaze do
     div class:\card-header,
         if it.State > 0 => div class:\card-header,
             h3 class:\card-header-amount, "#{bigNum-toStr it.WantedWei } Eth"
-            if bigNum-toStr(it.WantedWei).length < 10    
-                if (bigNum-toStr(it?TokenAmount)?length + it?TokenName?length)< 20    
-                    h3 class:'card-header-inscription token-am', "#{it?TokenName} (#{it?TokenAmount})"
-                else h3 class:'card-header-inscription token-am', "#{it?TokenName}"
+            if it.isEns == false
+                if bigNum-toStr(it.WantedWei).length < 10    
+                    if (bigNum-toStr(it?TokenAmount)?length + it?TokenName?length)< 20    
+                        h3 class:'card-header-inscription token-am', "#{it?TokenName} (#{it?TokenAmount})"
+                    else h3 class:'card-header-inscription token-am', "#{it?TokenName}"
+            if it.isEns == true
+                h3 class:'card-header-inscription token-am', 'ENS domain'
+
         else if it.Borrower == web3?eth?defaultAccount => div class:\card-header, 
             h3 class:\card-header-amount, "Please, set the data"
 
