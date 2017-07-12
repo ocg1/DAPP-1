@@ -44,9 +44,10 @@ map init(lr), [
 	\requestDefault               # 24.
 	\releaseToLender              # 25.
 	\releaseToBorrower            # 26.
+	\isRep			              # 27.
 ]
 
-@get-all-lr-data =(address)->(cb)-> #TODO: parallel it
+@get-all-lr-data =(address)->(cb)->
 	out = {}
 	lr.getWantedWei(address) ->  				out.WantedWei = &1    
 	lr.getPremiumWei(address) -> 				out.PremiumWei = &1
@@ -59,27 +60,15 @@ map init(lr), [
 	lr.getLender(address) -> 					out.Lender = &1
 	lr.getTokenAmount(address) -> 				out.TokenAmount = +lilNum-toStr &1
 	lr.isEns(address) ->						out.isEns = &1
+	lr.isRep(address) ->						out.isRep = &1
 	lr.getEnsDomainHash(address) ->				out.EnsDomainHash = &1
 
-	
 	cycle =-> 
 		if typeof out.WantedWei ==\undefined  || typeof out.PremiumWei ==\undefined || typeof out.TokenName ==\undefined || typeof out.TokenInfoLink ==\undefined || typeof out.TokenSmartcontractAddress ==\undefined || typeof out.Borrower ==\undefined || typeof out.DaysToLen ==\undefined || typeof out.State ==\undefined || typeof out.Lender ==\undefined || typeof out.TokenAmount ==\undefined || typeof out.isEns == \undefined || typeof out.EnsDomainHash == \undefined
 			Meteor.setTimeout (->cycle!), 10
 		else cb null, out
 
 	cycle!
-	# console.log \out.WantedWei:	out.WantedWei
-	# console.log \out.PremiumWei:	out.PremiumWei 
-	# console.log \out.TokenName:	out.TokenName 
-	# console.log \out.TokenInfoLink:	out.TokenInfoLink 
-	# console.log \out.TokenSmartcontractAddress:	out.TokenSmartcontractAddress 
-	# console.log \out.Borrower:	out.Borrower 
-	# console.log \out.DaysToLen:	out.DaysToLen 
-	# console.log \out.State:	out.State 
-	# console.log \out.Lender:	out.Lender 
-	# console.log \out.TokenAmount:	out.TokenAmount 
-	# unless 
-	
 
 @get-rep-balance =(address,cb)-> ledger.getRepTokenAddress (err,repAddress)->
 	contr = web3?eth.contract(config.REP-ABI).at(repAddress)

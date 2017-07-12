@@ -20,15 +20,13 @@ template \newLoanRequest -> main_blaze do
             "Pledge CRE to spare other tokens."
         button class:'new-loan-request card-button bgc-primary',  'New loan request (tokens)'
         button class:'new-domain-request card-button bgc-primary', 'New loan request (domain)'
-
-
-
+        button class:'new-rep-request card-button bgc-primary', 'New loan request (reputation)'
 
 
 Template.newLoanRequest.events do
     'click .new-loan-request':->
         web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequest do
-            {from:web3.eth.defaultAccount, gas:4000000, gasPrice:150000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
+            {from:web3.eth.defaultAccount, gas:4000000, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
             (err,res)->
                 if err => console.log \err: err
                 if res 
@@ -36,11 +34,10 @@ Template.newLoanRequest.events do
                     state.set \transact-to-address config.ETH_MAIN_ADDRESS
                     state.set \transact-value      state.get(\fee-sum)
                     Router.go \success   
-
 
     'click .new-domain-request':->
         web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequestEns do
-            {from:web3.eth.defaultAccount, gas:4000000, gasPrice:150000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
+            {from:web3.eth.defaultAccount, gas:4000000, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
             (err,res)->
                 if err => console.log \err: err
                 if res 
@@ -49,20 +46,16 @@ Template.newLoanRequest.events do
                     state.set \transact-value      state.get(\fee-sum)
                     Router.go \success   
 
-        # transact = {
-        #     from:  web3.eth.defaultAccount
-        #     to:    config.ETH_MAIN_ADDRESS
-        #     value: state.get(\fee-sum)
-        # }
-        # web3.eth.sendTransaction transact, (err,res)-> 
-        #     if err => console.log \err:   err
-        #     if res 
-        #         console.log \thash: res
-        #         state.set \transact-to-address config.ETH_MAIN_ADDRESS
-        #         state.set \transact-value      state.get(\fee-sum)
-        #         Router.go \success
-
-
+    'click .new-rep-request':->
+        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequestRep do
+            {from:web3.eth.defaultAccount, gas:4000000, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
+            (err,res)->
+                if err => console.log \err: err
+                if res 
+                    console.log \thash: res
+                    state.set \transact-to-address config.ETH_MAIN_ADDRESS
+                    state.set \transact-value      state.get(\fee-sum)
+                    Router.go \success   
 
 
 Template.newLoanRequest.created =->

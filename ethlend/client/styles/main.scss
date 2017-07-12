@@ -133,3 +133,17 @@
         }
     }
 }
+
+
+.card.tokens{ background-color: $secondary-color-1; }
+.card.ens   { background-color: $secondary-color-2; }
+.card.rep   { background-color: $secondary-color-3; }
+
+
+.card-header.tokens{ background-color: $primary-color-1; }
+.card-header.ens   { background-color: $primary-color-2; }
+.card-header.rep   { background-color: $primary-color-3; }
+
+.card-value.tokens{ color: $primary-color-1; }
+.card-value.ens   { color: $primary-color-2; }
+.card-value.rep   { color: $primary-color-3; }

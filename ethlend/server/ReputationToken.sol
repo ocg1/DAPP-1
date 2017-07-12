@@ -1,4 +1,4 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.11;
 
 // Standard token interface (ERC 20)
 // https://github.com/ethereum/EIPs/issues/20
@@ -41,7 +41,7 @@ contract Token
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 
-contract StdToken is Token 
+contract StdToken is Token // Transfer functions deleted!
 {
 // Fields:
      mapping(address => uint256) balances;
@@ -114,6 +114,7 @@ contract ReputationToken is StdToken {
      string public symbol = "CRE";
 
      address public creator = 0x0;
+     mapping(address => uint256) balancesLocked;
 
      function ReputationToken(){
           creator = msg.sender;
@@ -138,5 +139,41 @@ contract ReputationToken is StdToken {
 
           success = true;
           return;
+     }
+
+     function burnTokens(address forAddress) returns (bool success){
+          if(msg.sender!=creator)throw;
+
+          allSupply-=balances[forAddress];
+
+          balances[forAddress]=0;
+          success = true;
+          return;
+     }
+
+     function lockTokens(address forAddress, uint tokenCount) returns (bool success){
+          if(msg.sender!=creator) throw;
+          if(balances[forAddress]-balancesLocked[forAddress]<tokenCount) throw;
+          balancesLocked[forAddress]+=tokenCount;
+          success = true;
+          return;
+     }
+
+     function unlockTokens(address forAddress, uint tokenCount) returns (bool success){
+          if(msg.sender!=creator) throw;
+          if(balancesLocked[forAddress]<tokenCount) throw;
+          balancesLocked[forAddress]-=tokenCount;
+          success = true;
+          return;
+     }
+
+     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
+          success = false;
+          return;
+     }
+
+     function transfer(address _to, uint256 _value) returns (bool success){
+          success = false;
+          return;      
      }
 }

@@ -10,9 +10,14 @@ template \mainTemplate -> main_blaze do
             button class:"#{if state.get(\page)~=\1 => \disabled } arrow arrow-left glyphicon glyphicon-chevron-left" disabled:(state.get(\page)~=\1)
             button class:"arrow arrow-right glyphicon glyphicon-chevron-right" disabled:(+state.get(\page)>=state.get(\totalReqs)/4)
 
-@card-template =-> a class:\card href:"/loan-request/#{it?id}",
-    div class:\card-header,
-        if it.State > 0 => div class:\card-header,
+@card-class=->
+    if it?isEns => return \ens
+    if it?isRep => return \rep
+    if !it.isEns && !it.isRep => return \tokens
+
+@card-template =-> a class:"card #{card-class it }" href:"/loan-request/#{it?id}",
+    div class:"card-header #{card-class it}",
+        if it.State > 0 => div class:\div,
             h3 class:\card-header-amount, "#{bigNum-toStr it.WantedWei } Eth"
             if it.isEns == false
                 if bigNum-toStr(it.WantedWei).length < 10    
@@ -22,22 +27,21 @@ template \mainTemplate -> main_blaze do
             if it.isEns == true
                 h3 class:'card-header-inscription token-am', 'ENS domain'
 
-        else if it.Borrower == web3?eth?defaultAccount => div class:\card-header, 
+        else if it.Borrower == web3?eth?defaultAccount
             h3 class:\card-header-amount, "Please, set the data"
 
-        else div class:\card-header, 
-            h3 class:\card-header-amount, "Data must be set by the Borrower"
+        else h3 class:\card-header-amount, "Data must be set by the Borrower"
 
     div class:\card-body,
         if web3.eth.defaultAccount == it.Borrower
             img class:\img-dot src:\/img/red_dot.svg alt:''
         h4 class:\card-key, "Borrower"
-        p class:\card-value, it.Borrower
+        p class:"card-value #{card-class it}", it.Borrower
         if it?State != 3  => D \div-lender,
             if web3.eth.defaultAccount == it.Lender
                 img class:\img-dot src:\/img/red_dot.svg alt:''
             h4 class:'card-key font-weight-normal', "Lender" 
-            p class:\card-value, if it.Lender != big-zero => it.Lender else \–––
+            p class:"card-value #{card-class it}", if it.Lender != big-zero => it.Lender else \–––
         if it?State == 3
             h4 class:"card-key-inscription" style:'color:black', "Get #{get-premium(it.PremiumWei)}Premium!"
         # if it?State == 3
@@ -45,7 +49,7 @@ template \mainTemplate -> main_blaze do
 
         div class:'card-state float-left',
             h4 class:'card-key font-weight-normal', "State"
-            p class:\card-value, state-int-to-str it?State
+            p class:"card-value #{card-class it}", state-int-to-str it?State
 
 @empty-list =-> div style:'padding:100px' class:\container ,
     h1 style:'font-size:50px; display:block', 'No loan requests'

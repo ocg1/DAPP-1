@@ -12,15 +12,7 @@ template \loan_request -> main_blaze do
 
 grn-pin =-> img class:"hidden input-img-pin gpin" src:\/img/green_pin.svg alt:''
 red-pin =-> img class:"hidden input-img-pin rpin" src:\/img/red_pin.svg   alt:''
-red-dot =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''
-
-input-unit =-> section style:'height:36px',
-    h3 class:\input-key, 
-        if it.red-dot   => red-dot!
-        it.n
-    input id:it.ident, ident:it.ident, style:'max-height:40px' class:"input #{it?c||''}" placeholder:it?placeholder, value:it?v, disabled:it.d
-    grn-pin!       
-    red-pin!          
+red-dot =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''     
 
 input-box =~> div class:\input-box, 
     
@@ -51,9 +43,6 @@ input-box =~> div class:\input-box,
                 "Please wait while someone lend your Loan Request. You can cancel this loan request."
 
             button class:'card-button bgc-primary loan-button borrower-cancel' style:'width:200px; margin-left:-15px', "Cancel"
-
-
-
 
         if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", 
@@ -128,6 +117,7 @@ Template.loan_request.created=->
                       
                     state.set \loan-wrapper-class, ''
                     state.set \loading-class, \hidden
+                    &1.isToken = (!&1?isEns)&&(!&1?isRep)
                     state.set \lr, &1
                     state.set \lr-Lender   &1?Lender
                     state.set \lr-Borrower &1?Borrower
@@ -138,8 +128,8 @@ Template.loan_request.created=->
                     state.set \IamBorrower (state.get(\defaultAccount)==state.get(\lr-Borrower))   
 
                     get-rep-balance (state.get \lr)?Borrower, (err,res)->
-                        $('.bor-balance').attr \value, res/10^19
-                        state.set \bor-balance res
+                        $('.bor-balance').attr \value, +bigNum-toStr(res)/10
+                        state.set \bor-balance bigNum-toStr(res)
 
 Template.loan_request.rendered =->
     $(\.set-data).attr \disabled, \disabled
@@ -166,11 +156,13 @@ Template.loan_request.events do
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
 
-        out.tokamount =     if state.get(\lr)?isEns==false => $(\.lr-TokenAmount).val!   else 0
-        out.tokname   =     if state.get(\lr)?isEns==false => $(\.lr-TokenName).val!     else 0
-        out.ensDomainHash = if state.get(\lr)?isEns==true  => $(\.lr-ensDomain).val!     else 0
-        out.smart =         if state.get(\lr)?isEns==false => $(\.lr-TokenSmartcontractAddress).val! else 0
-        out.link  =         if state.get(\lr)?isEns==false => $(\.lr-TokenInfoLink).val! else 0
+        out.tokamount =     if state.get(\lr)?isToken => $(\.lr-TokenAmount).val!   else 0
+        out.tokname   =     if state.get(\lr)?isToken => $(\.lr-TokenName).val!     else 0
+        out.smart     =     if state.get(\lr)?isToken => $(\.lr-TokenSmartcontractAddress).val! else 0
+        out.link      =     if state.get(\lr)?isToken => $(\.lr-TokenInfoLink).val! else 0
+
+        out.ensDomainHash = if state.get(\lr)?isEns => $(\.lr-ensDomain).val! else 0
+
 
         console.log \out: out
         lr.setData(state.get \address )(#uint wanted_wei_, uint token_amount_, uint premium_wei_,
@@ -244,10 +236,10 @@ Template.loan_request.events do
         cls = $T.attr(\class) |> split ' ' |> last
 
         
-        if cls==\lr-TokenAmount && state.get(\lr)?isEns == false => test IntQ $T.val!
-        if cls==\lr-TokenName   && state.get(\lr)?isEns == false => test $T.val!length > 0
-        if cls==\lr-ensDomain   && state.get(\lr)?isEns == true  => test ShaQ $T.val!
-        if cls==\lr-TokenSmartcontractAddress && state.get(\lr)?isEns == false => test EthQ $T.val!
+        if cls==\lr-TokenAmount && state.get(\lr)?isToken => test IntQ $T.val!
+        if cls==\lr-TokenName   && state.get(\lr)?isToken => test $T.val!length > 0
+        if cls==\lr-ensDomain   && state.get(\lr)?isEns   => test ShaQ $T.val!
+        if cls==\lr-TokenSmartcontractAddress && state.get(\lr)?isToken => test EthQ $T.val!
        
         if cls==\lr-WantedWei   => test IntQ $T.val!
         if cls==\lr-DaysToLen   => test IntQ $T.val!
@@ -256,6 +248,8 @@ Template.loan_request.events do
 
         if Everything_is_ok! => $(\.set-data).remove-attr \disabled
         else $(\.set-data).attr \disabled, \disabled
+
+    'keydown .block-input':-> event.prevent-default!
 
 
 Everything_is_ok=->
@@ -290,17 +284,24 @@ set-data-cb =(err,res)->
 
 input-fields-column =->
     field-array = []
+    rep = state.get(\bor-balance)
 
-    if not state.get(\lr)?isEns
+    if (not state.get(\lr)?isEns) && (not state.get(\lr)?isRep)
+        field-array.push c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth'     
         field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
         field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
         field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
         field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
 
-    else 
+    if (state.get(\lr)?isEns)
+        field-array.push c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth'     
         field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
   
-    field-array.push c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth'     
+    if (state.get(\lr)?isRep)
+        field-array.push c:'lr-WantedWei block-input'   n:'Eth amount'       d:disableQ!, placeholder:'0.00 Eth' type:\number step:0.1, maxi:(+rep/10), mini:0, v:(+rep/10)
+  
+
+    
     field-array.push c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                                      
     field-array.push c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Eth'       
     field-array.push c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
@@ -309,7 +310,13 @@ input-fields-column =->
 
     map input-unit, field-array
 
-    
+input-unit =-> section style:'height:36px',
+    h3 class:\input-key, 
+        if it.red-dot   => red-dot!
+        it.n
+    input id:it.ident, type:it?type||\text, step:it?step, max:it?maxi, min:it?mini, ident:it.ident, style:'max-height:40px' class:"input #{it?c||''}" placeholder:it?placeholder, value:it?v, disabled:it.d
+    grn-pin!       
+    red-pin!      
 
         
         
