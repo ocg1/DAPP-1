@@ -223,7 +223,7 @@ contract LendingRequest is SafeMath {
      // 0.01 ETH
      uint public lenderFeeAmount   = 10000000000000000;
      
-     address public ledger = 0x0;
+     Ledger ledger;
 
      // who deployed Ledger
      address public mainAddress = 0x0;
@@ -259,8 +259,6 @@ contract LendingRequest is SafeMath {
 
      address public whereToSendFee = 0x0;
      uint public start = 0;
-
-     Ledger l = Ledger(ledger);
 
      // This must be set by borrower:
      address public borrower = 0x0;
@@ -338,7 +336,7 @@ contract LendingRequest is SafeMath {
      }
 
      modifier onlyByLedger(){
-          if(msg.sender!=ledger)
+          if(Ledger(msg.sender)!=ledger)
                throw;
           _;
      }
@@ -350,13 +348,13 @@ contract LendingRequest is SafeMath {
      }
 
      modifier byLedgerOrMain(){
-          if((msg.sender!=mainAddress) && (msg.sender!=ledger))
+          if((msg.sender!=mainAddress) && (Ledger(msg.sender)!=ledger))
                throw;
           _;
      }
 
      modifier byLedgerMainOrBorrower(){
-          if((msg.sender!=mainAddress) && (msg.sender!=ledger) && (msg.sender!=borrower))
+          if((msg.sender!=mainAddress) && (Ledger(msg.sender)!=ledger) && (msg.sender!=borrower))
                throw;
           _;
      }
@@ -374,7 +372,7 @@ contract LendingRequest is SafeMath {
      }
 
      function LendingRequest(address mainAddress_,address borrower_,address whereToSendFee_, int contractType, address ensRegistryAddress_){
-          ledger = msg.sender;
+          ledger = Ledger(msg.sender);
 
           mainAddress = mainAddress_;
           whereToSendFee = whereToSendFee_;
@@ -394,7 +392,7 @@ contract LendingRequest is SafeMath {
      }
 
      function changeLedgerAddress(address new_)onlyByLedger{
-          ledger = new_;
+          ledger = Ledger(new_);
      }
 
      function changeMainAddress(address new_)onlyByMain{
@@ -416,7 +414,7 @@ contract LendingRequest is SafeMath {
           ens_domain_hash = ens_domain_hash_;
 
           if(currentType==Type.RepCollateral){
-               l.lockRepTokens(borrower, wanted_wei);
+               ledger.lockRepTokens(borrower, wanted_wei);
                currentState = State.WaitingForLender;
           } else {
                currentState = State.WaitingForTokens;
@@ -520,23 +518,14 @@ contract LendingRequest is SafeMath {
           if(msg.value<safeAdd(wanted_wei,premium_wei)){
                throw;
           }
-
-          // ETH is sent back to lender in full
-          // with premium!!!
-          if(!lender.call.gas(200000).value(msg.value)()){
+          // ETH is sent back to lender in full with premium!!!
+          if(!lender.call.gas(2000000).value(msg.value)()){
                throw;
           }
 
-          // tokens are released back to borrower
-          releaseToBorrower();
-
-          // Borrower and Lender get Reputation tokens
-          
-          l.addRepTokens(borrower,wanted_wei);
-          // l.addRepTokens(lender,wanted_wei);
-
-          // finished
-          currentState = State.Finished;
+          releaseToBorrower(); // tokens are released back to borrower
+          ledger.addRepTokens(borrower,wanted_wei);
+          currentState = State.Finished; // finished
      }
 
      // How much should lender send
@@ -553,36 +542,33 @@ contract LendingRequest is SafeMath {
           return;
      }
 
-     // After time has passed but lender hasn't returned the loan ->
-     // move tokens to lender
-     // 
+     // After time has passed but lender hasn't returned the loan -> move tokens to lender
      // anyone can call this (not only the lender)
      function requestDefault()onlyInState(State.WaitingForPayback){
           if(now < (start + days_to_lend * 1 days)){
                throw;
           }
 
-          // tokens are released to the lender 
-          releaseToLender();
-
-          // Only Lender get Reputation tokens
-          Ledger l = Ledger(ledger);
-          l.addRepTokens(lender,wanted_wei);
-
+          releaseToLender(); // tokens are released to the lender        
+          ledger.addRepTokens(lender,wanted_wei); // Only Lender get Reputation tokens
           currentState = State.Default; 
      }
 
      function releaseToLender(){
+    
           if(currentType==Type.EnsCollateral){
                AbstractENS ens = AbstractENS(ensRegistryAddress);
                ens.setOwner(ens_domain_hash,lender);
+
           }else if (currentType==Type.RepCollateral){
-               l.burnRepTokens(borrower);
+               ledger.unlockRepTokens(borrower, wanted_wei);
           }else{
                ERC20Token token = ERC20Token(token_smartcontract_address);
                uint tokenBalance = token.balanceOf(this);
                token.transfer(lender,tokenBalance);
           }
+
+          ledger.burnRepTokens(borrower);
      }
 
      function releaseToBorrower(){
@@ -590,7 +576,7 @@ contract LendingRequest is SafeMath {
                AbstractENS ens = AbstractENS(ensRegistryAddress);
                ens.setOwner(ens_domain_hash,borrower);
           }else if (currentType==Type.RepCollateral){
-               l.unlockRepTokens(borrower, wanted_wei);
+               ledger.unlockRepTokens(borrower, wanted_wei);
           }else{
                ERC20Token token = ERC20Token(token_smartcontract_address);
                uint tokenBalance = token.balanceOf(this);

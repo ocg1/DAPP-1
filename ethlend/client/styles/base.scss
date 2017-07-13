@@ -5,11 +5,11 @@
 $primary-color: #1e64c8;
 $secondary-color: rgba(30, 100, 200, 0.1);
 
-$primary-color-1: #1e64c8;
+$primary-color-1:   #1e64c8;
 $secondary-color-1: rgba(30, 100, 200, 0.1);
 
-$primary-color-2: rgb(100,200,30);
-$secondary-color-2: rgba(100,200,30,0.1);
+$primary-color-2:   #1e64c8;
+$secondary-color-2: rgba(30, 100, 200, 0.1);
 
 $primary-color-3: rgb(200,30,100);
 $secondary-color-3: rgba(200,30,100,0.1);
@@ -51,7 +51,7 @@ main {
 
 header {
     min-width: 570px;
-    background-color: $primary-color;
+    background-color: rgb(70,70,70);
     height: 54px;
     box-shadow: 0 4px 6px -2px rgba(0,0,0,0.3);
 }

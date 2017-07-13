@@ -203,7 +203,7 @@ Template.loan_request.events do
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: +lilNum-toStr state.get(\NeededSumByBorrower)
-            gas:4000000
+            gas:2000000
             gasPrice:150000000000
         }
         console.log \transact: transact
@@ -298,7 +298,7 @@ input-fields-column =->
         field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
   
     if (state.get(\lr)?isRep)
-        field-array.push c:'lr-WantedWei block-input'   n:'Eth amount'       d:disableQ!, placeholder:'0.00 Eth' type:\number step:0.1, maxi:(+rep/10), mini:0, v:(+rep/10)
+        field-array.push c:'lr-WantedWei block-input'   n:'Eth amount'       d:disableQ!, placeholder:'0.00 Eth' type:\number step:0.01, maxi:(+rep/10), mini:0, v:(+rep/10)
   
 
     

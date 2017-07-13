@@ -15,3 +15,8 @@ ethereum:web3@=0.18.3
 3stack:bignumber
 dynamic-import
 npm-container
+practicalmeteor:mocha
+#silentcicero:testrpc
+mongo                        # The database Meteor supports right now
+minimongo
+peerlibrary:assert

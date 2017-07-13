@@ -100,6 +100,20 @@ this.DeployContract =(creatr, repAddress, ensA, cb)=>{
      });
 }
 
+this.DeploySampleContract =(cb)=>{
+     getContractAbi(':SampleToken')(base+'ethlend/server/SampleToken.sol')((err,Abi,Bytecode)=> {
+          if(err) { return cb(err)}
+          console.log('got contract abi')
+
+          var tempContract   = web3.eth.contract(ledgerAbi);
+          var params = { from: creatr, gas: 4005000, gasPrice:150000000000, data: `0x${Bytecode}`}
+          tempContract.new(params, (err, c)=> {
+               if(err){ Ω('ERROR: ' + err); return cb(err) }
+               return cb(null, c.transactionHash)
+          });
+     });
+}
+
 this.DeployENS =(cb)=>{
      getContractAbi(':TestENS')(base+'ethlend/server/ENS.sol')((err,abi,Bytecode)=> {
           if(err) { return cb(err)}
@@ -120,7 +134,7 @@ this.changeCreator =(repAddress, contrAddress, cb)=>{
      getContractAbi(':ReputationToken')(base+'ethlend/server/ReputationToken.sol')((err,abi,ledgerBytecode)=> {
           if (err){console.log('err:::',err); return err}
           contract = web3.eth.contract(abi).at(repAddress);
-          var params   = { from: config.TONY_ADDRESS, gas: 2000000, gasPrice:200000000000 };
+          var params   = { from: config.TONY_ADDRESS, gas: 2000000, gasPrice:20000000000 };
           contract.changeCreator(contrAddress, params, cb);
      });
 }
@@ -183,35 +197,48 @@ this.recompileAbi = ()=> {
      getContractAbi(':Ledger')(base+'ethlend/server/EthLend.sol')((err,ledgerAbi,ledgerBytecode,abiJsonLedger)=>{
           if (err){ console.log('err:::',err); return err }
 
-          getContractAbi(':LendingRequest')(base+'ethlend/server/EthLend.sol')((err,lrAbi,bytecode,abiJsonLr)=>{
+          getContractAbi(':LendingRequest')(base+'ethlend/server/EthLend.sol')((err,lrAbi,lrBytecode,abiJsonLr)=>{
                if (err){ console.log('err:::',err); return err }
 
-               getContractAbi(':ReputationToken')(base+'ethlend/server/ReputationToken.sol')((err,repAbi,bytecode,abiJsonRep)=>{
+               getContractAbi(':ReputationToken')(base+'ethlend/server/ReputationToken.sol')((err,repAbi,repBytecode,abiJsonRep)=>{
                     if (err){ console.log('err:::',err); return err }
 
-                    getContractAbi(':TestENS')(base+'ethlend/server/TestENS.sol')((err,ensAbi,bytecode,abiJsonTestENS)=>{
+                    getContractAbi(':TestENS')(base+'ethlend/server/TestENS.sol')((err,ensAbi,ensBytecode,abiJsonTestENS)=>{
                          if (err){ console.log('err:::',err); return err }
 
-                         fs.writeFileSync(base+'ethlend/config-abi.ls',   
-                              `config.LEDGER-ABI = ${JSON.stringify(ledgerAbi)}\n`+
-                              `config.LR-ABI     = ${JSON.stringify(lrAbi)}\n`+
-                              `config.ENS-ABI    = ${JSON.stringify(ensAbi)}\n`+
-                              `config.REP-ABI    = ${JSON.stringify(repAbi)}`
-                         );
-                         console.log('Config at ethlend/config-abi.ls has written');
+                         getContractAbi(':SampleToken')(base+'ethlend/server/SampleToken.sol')((err,sampleAbi,sampleBytecode,abiJsonSample)=>{
+                              if (err){ console.log('err:::',err); return err }
+
+                              fs.writeFileSync(base+'ethlend/config-abi.ls',   
+                                   `config.LEDGER-ABI = ${JSON.stringify(ledgerAbi)}\n`+
+                                   `config.LR-ABI     = ${JSON.stringify(lrAbi)}\n`+
+                                   `config.ENS-ABI    = ${JSON.stringify(ensAbi)}\n`+
+                                   `config.SAM-ABI    = ${JSON.stringify(ensAbi)}\n`+
+                                   `config.REP-ABI    = ${JSON.stringify(repAbi)}\n\n`+
+
+                                   `config.LEDGER-BCODE = '0x${ledgerBytecode}'\n`+
+                                   `config.LR-BCODE     = '0x${lrBytecode}'\n`+
+                                   `config.ENS-BCODE    = '0x${ensBytecode}'\n`+
+                                   `config.SAM-BCODE    = '0x${repBytecode}'\n`+
+                                   `config.REP-BCODE    = '0x${sampleBytecode}'`                                   
+                              );
+                              console.log('Config at ethlend/config-abi.ls has written');
+                         });
                     });
                });
           });
      });
 };
 
+
+this.step.deploySample   =()=> DeploySampleContract(conscb)
 this.step.recompileAbi   =()=> recompileAbi()
 this.step.deployENS      =()=> DeployENS(conscb)
 this.step.deployRep      =()=> DeployRepContract(conscb)
 //config-params!
 this.step.deployContract =()=> DeployContract(config.TONY_ADDRESS, config.REP_ADDRESS, config.ENS_ADDRESS, conscb)
 //config-params!
-this.step.changeCreator  =()=> web3.eth.contract(config.REPABI).at(config.REP_ADDRESS).changeCreator(config.ETH_MAIN_ADDRESS, config.STANDART_PARAMS, conscb)
+this.step.changeCreator  =()=> web3.eth.contract(config.REPABI).at(config.REP_ADDRESS).changeCreator(config.ETH_MAIN_ADDRESS, {from:config.TONY_ADDRESS, gas: 2000000, gasPrice:20000000000}, conscb)
 
 
 Meteor.methods({

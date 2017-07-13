@@ -19,12 +19,12 @@ template \mainTemplate -> main_blaze do
     div class:"card-header #{card-class it}",
         if it.State > 0 => div class:\div,
             h3 class:\card-header-amount, "#{bigNum-toStr it.WantedWei } Eth"
-            if it.isEns == false
+            if !it.isEns && !it.isRep
                 if bigNum-toStr(it.WantedWei).length < 10    
                     if (bigNum-toStr(it?TokenAmount)?length + it?TokenName?length)< 20    
                         h3 class:'card-header-inscription token-am', "#{it?TokenName} (#{it?TokenAmount})"
                     else h3 class:'card-header-inscription token-am', "#{it?TokenName}"
-            if it.isEns == true
+            if it.isEns
                 h3 class:'card-header-inscription token-am', 'ENS domain'
 
         else if it.Borrower == web3?eth?defaultAccount
