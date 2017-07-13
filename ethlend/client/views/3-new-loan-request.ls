@@ -12,7 +12,7 @@ template \newLoanRequest -> main_blaze do
             ' will be then available in ’All Loan Requests’ window.'
             br!
             br!
-            "Credit Tokens (CRE) are credited to the borrower and the lender on successful loan"
+            "Credit Tokens (CRE) are credited to the borrower on successful loan"
             br!
             "repayment (loan amount of 1 ETH = 10 CRE). CRE represents the borrower’s credit rating. "
             br!
