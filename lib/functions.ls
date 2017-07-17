@@ -106,9 +106,9 @@
     if &0 => new Error &0
     if &1 => &1    
 
-@state-int-to-str =-> switch it
+@state-int-to-str =(state, what)-> switch state
     | 0=> 'no data'
-    | 1=> 'waiting for tokens'
+    | 1=> 'waiting for ' + what
     | 2=> \cancelled
     | 3=> 'waiting for lender'
     | 4=> \funded

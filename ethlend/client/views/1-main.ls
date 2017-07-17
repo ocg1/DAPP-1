@@ -49,7 +49,7 @@ template \mainTemplate -> main_blaze do
 
         div class:'card-state float-left',
             h4 class:'card-key font-weight-normal', "State"
-            p class:"card-value #{card-class it}", state-int-to-str it?State
+            p class:"card-value #{card-class it}", state-int-to-str it?State, if it?isEns => \domain else \tokens
 
 @empty-list =-> div style:'padding:100px' class:\container ,
     h1 style:'font-size:50px; display:block', 'No loan requests'
@@ -69,16 +69,20 @@ template \mainTemplate -> main_blaze do
 create-quartet=(start,cb)->
     out = []
     load-one-card =-> ledger.getLr start + it, (err,id)->
-        if id == big-zero => out.push null
+        if id == big-zero => out[it] = null
         else get-all-lr-data(id) (err,lr)~>
             lr.id = id
-            out.push lr
+            out[it] = lr
 
     map load-one-card, [0 1 2 3]
+    Undef = false
    
     cycle =-> 
-        if out.length < 4 => Meteor.setTimeout (-> cycle! ), 10
-        else cb null, compact out
+        if typeof out[0] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
+        if typeof out[1] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
+        if typeof out[2] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
+        if typeof out[3] == \undefined => return Meteor.setTimeout (-> cycle! ), 10            
+        else return cb null, compact out
     cycle!        
 
 create-quartet-page=(start)->
