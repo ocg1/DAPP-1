@@ -233,34 +233,5 @@
     case 30 => a href:\http://ibb.co/jup5JF, img class:\faq-img src:\http://preview.ibb.co/dVkedF/image30.jpg alt:\image30 border:\0
     case 31 => a href:\http://ibb.co/my3nXa, img class:\faq-img src:\http://preview.ibb.co/jQSECa/image31.jpg alt:\image31 border:\0
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@address-last =->
+    Router.current!originalUrl |> split \/ |> last

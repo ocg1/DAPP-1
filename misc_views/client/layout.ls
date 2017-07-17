@@ -20,7 +20,7 @@ template \layout ->
 #       CHECK FOR WEB3 do
             div class:'main-shell', 
                 
-                go-cycle(10, SI(@lookupTemplate \yield))
+                go-cycle(0, SI(@lookupTemplate \yield))
 
 
         footer do
@@ -60,7 +60,7 @@ Template.layout.rendered=->
 
 go-cycle=(iterator, eld)~> 
     unless web3?
-        if iterator < 10
+        if iterator < 50
             Meteor.setTimeout (-> iterator +=1; console.log(\web3-loading:,iterator);  go-cycle!), 20
                 
         else no_metamask!
