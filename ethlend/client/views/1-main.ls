@@ -4,11 +4,12 @@ template \mainTemplate -> main_blaze do
     not-found-component('Not found', 'No Loan Requests found')
     D \card-wrapper,
         progress-bar!
+        D "card-und-nav #{state.get \quartet-class }",
+            D "card-wrapper-aligned",
+                D \div, map card-template, state.get(\quartet)||[]
 
-        D "card-wrapper-aligned #{state.get \quartet-class }",
-            D \div, map card-template, state.get(\quartet)||[]
-            button class:"#{if state.get(\page)~=\1 => \disabled } arrow arrow-left glyphicon glyphicon-chevron-left" disabled:(state.get(\page)~=\1)
-            button class:"arrow arrow-right glyphicon glyphicon-chevron-right" disabled:(+state.get(\page)>=state.get(\totalReqs)/4)
+            link-panel \main
+
 
 @card-class=->
     if it?isEns => return \ens
@@ -51,6 +52,10 @@ template \mainTemplate -> main_blaze do
             h4 class:'card-key font-weight-normal', "State"
             p class:"card-value #{card-class it}", state-int-to-str it?State, if it?isEns => \domain else \tokens
 
+
+
+
+
 @empty-list =-> div style:'padding:100px' class:\container ,
     h1 style:'font-size:50px; display:block', 'No loan requests'
     p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'That is no loan requests here.'
@@ -68,7 +73,7 @@ template \mainTemplate -> main_blaze do
 
 create-quartet=(start,cb)->
     out = []
-    load-one-card =-> ledger.getLr start + it, (err,id)->
+    load-one-card =-> ledger.getLr start - it, (err,id)->
         if id == big-zero => out[it] = null
         else get-all-lr-data(id) (err,lr)~>
             lr.id = id
@@ -100,6 +105,10 @@ create-quartet-page=(start)->
 Template.mainTemplate.rendered =->
     
 Template.mainTemplate.created =->
+    # ledger.getLrCount (err,res)-> 
+    #     console.log \err: err, \res: res
+    #     state.set \pages-count lilNum-toStr res
+
     state.set \quartet ''
     state.set \page (Router.current!originalUrl |> split \/ |> last )   
     if isNaN(+state.get(\page)) 
@@ -121,27 +130,80 @@ rerender =~> ledger.getLrCount ->
     return &0 if &0
     total-reqs = +lilNum-toStr &1
     state.set \totalReqs total-reqs
-    create-quartet-page((state.get(\page)-1)*4)   
+    console.log \quartet-page: (total-reqs - state.get(\page)*4)
+
+    create-quartet-page total-reqs - state.get(\page)*4 + 3
 
 Template.mainTemplate.events do
-    'click .arrow-right':-> 
+    'click .chevron-right':-> 
         state.set \quartet-class \hidden 
         state.set \progress-class ''
         state.set \percent 0
 
-        state.set \page (+state.get(\page)+1)
+        state.set \page ceiling state.get(\totalReqs)/4
         Router.go "/main/#{state.get(\page)}" 
         rerender!
-    'click .arrow-left' :->    
+
+    'click .chevron-left' :->    
         if +state.get(\page)<2 => event.prevent-default; return
         state.set \percent 0
         state.set \quartet-class \hidden 
         state.set \progress-class ''
-
-        state.set \page (+state.get(\page)-1)
+        state.set \page 1
         Router.go "/main/#{state.get(\page)}" 
         rerender!
     
 get-premium =->
     if bigNum-toStr(it).length > 7 => 'the '
     else "+ #{bigNum-toStr(it)} ETH "
+
+
+@gotoPagemain=->
+    state.set \page &0
+    if +state.get(\page)<1 => event.prevent-default; return
+    state.set \percent 0
+    state.set \quartet-class \hidden 
+    state.set \progress-class ''
+
+    Router.go "/#{&1}/#{state.get(\page)}" 
+    rerender!
+
+
+@link-panel=(type)->
+    current-page  = +address-last!
+    left-chevron  = a class:"chevron-left arrows #{if (state.get(\page)~=\1) => \disabled }", \‹‹
+    right-chevron = a class:"chevron-right arrows #{if state.get(\page)~=(ceiling state.get(\totalReqs)/4) => \disabled }", \››
+    count = state.get \totalReqs
+    console.log \totalReqs state.get \totalReqs
+    if count < 0 => return null
+
+    pages = ceiling count/4
+
+    link-arr = []
+
+    if pages <= 9 # просто отрисовываем все цифры без стрелочек
+        link-arr = [1 to pages] 
+
+    if pages > 9 && current-page <= 5 # стрелочку влево не отрисовываем
+        link-arr = [1 to 9]
+        # right-chevron = a class:'icon item' href:'/main/'+pages, i class:'right chevron icon'
+
+    if pages > 9 && current-page > 5 && pages > current-page + 4 # отрисовываем обе стрелочки
+        link-arr = [(current-page - 4) to (current-page + 4)]
+        # left-chevron  = a class:'icon item' href:'/main/1', i class:'left chevron icon'
+        # right-chevron = a class:'icon item' href:'/main/'+pages, i class:'right chevron icon'
+
+    if pages > 9 && current-page > 5 && pages <= current-page + 4 # стрелочку вправо не отрисовываем
+        link-arr = [(pages - 8) to pages]
+        # left-chevron  = a class:'icon item' href:'/main/1', i class:'left chevron icon'
+
+    get-link=(text, type)-> a class:"pagination-item #{if address-last! ~= text => \active }" onclick:"gotoPage#{type}(#{text},'#{type}')", text
+
+    console.log \count: count
+    console.log \pages: pages
+
+
+    div class:'pagination menu',
+        left-chevron
+        map get-link(_,type), link-arr
+        right-chevron

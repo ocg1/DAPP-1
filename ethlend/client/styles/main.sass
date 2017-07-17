@@ -40,13 +40,24 @@
 // 	margin-right: 30px	
 // 	padding-top: 0px
 
-.arrow:active 
-	outline: none
+*:active 
+	outline: none !important
+    text-decoration: none !important
 
-.arrow:focus
-	outline: none
+*:focus
+	outline: none !important
+    text-decoration: none !important
+*:hover
+	outline: none !important
+    text-decoration: none !important	
 
-.arrow:disabled 
+
+.arrows
+	font-weight: bold
+	font-size: 20px
+
+
+.arrows.disabled 
 	color: rgb(180,180,180)
 	
 .token-am
@@ -54,3 +65,25 @@
 	max-height: 30px
 	max-width: 160px
 	white-space: nowrap
+
+.pagination.menu
+	// position: absolute
+	display: flex
+	justify-content: center
+	flex-direction: row
+	align-items: center
+	width: 100%
+
+.pagination-item
+	padding: 15px
+	font-size: 20px
+	color: rgb(70,70,70)
+
+
+.pagination-item.active
+	outline: none
+	color: #1e64c8
+	font-weight: bold
+
+.disabled:hover
+	outline: none
