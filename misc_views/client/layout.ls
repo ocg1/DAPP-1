@@ -18,12 +18,10 @@ template \layout ->
                     D "nav-link-wrapper #{if state.get(\selected-class)==\info => \selected } #{if state.get(\selected-class)==\loan => \pseudo-selected }",
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
-            if web3?
-                Meteor.setTimeout((~> 
-                    unless web3?eth?defaultAccount => SI Template.reload),30)
-                state.set \defaultAccount web3?eth?defaultAccount
-                SI @lookupTemplate \yield
-            else Template.no_metamask
+            div class:'main-shell', 
+                
+                go-cycle(10, SI(@lookupTemplate \yield))
+
 
         footer do
             div class:\footer-nav,
@@ -56,3 +54,17 @@ Template.layout.rendered=->
     state.set \info-class     if (state.get(\addr-last)==\info)             => \selected else ''
     state.set \new-loan-class if (state.get(\addr-last)==\new-loan-request) => \selected else ''
     
+
+# check-web=(eld, nom)~>
+
+
+go-cycle=(iterator, eld)~> 
+    unless web3?
+        if iterator < 10
+            Meteor.setTimeout (-> iterator +=1; console.log(\web3-loading:,iterator);  go-cycle!), 20
+                
+        else no_metamask!
+    else 
+        state.set \defaultAccount web3?eth?defaultAccount
+        console.log \done
+        eld
