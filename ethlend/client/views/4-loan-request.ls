@@ -35,7 +35,7 @@ input-box =~> div class:\input-box,
 
         if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text",      
-                "Fund this loan request and get Credit tokens as a reward"
+                'Fund this Loan Request and get Premium'
             button class:'card-button bgc-primary loan-button lender-pay' style:'width:200px; margin-left:-15px', "Fund this Loan Request"
 
         if state.get(\lr-State)==3 && state.get(\IamBorrower) => D \text-s,
@@ -46,40 +46,41 @@ input-box =~> div class:\input-box,
 
         if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
             D "loan-prebutton-text", 
-                "To return #{ensQ(\tokens \domain)} please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\lr).PremiumWei} Eth premium amount"
+                "To return #{ensQ(\tokens \domain 'the loan')} please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\lr).PremiumWei} Eth premium amount"
                 br!
-                "Borrower and lender are rewarded with #{+bigNum-toStr-div10(state.get(\lr)?WantedWei)} Credit Tokens (CRE) after the repayment."
-            button class:'card-button bgc-primary loan-button return-tokens', "Return #{ensQ(\tokens \domain)}"
+                "Borrower is rewarded with #{+bigNum-toStr-div10(state.get(\lr)?WantedWei)} Credit Tokens (CRE) after the repayment."
+            button class:'card-button bgc-primary loan-button return-tokens', "Return #{ensQ(\tokens \domain \loan)}"
         if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
-            D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to get #{ensQ(\tokens \domain)} back"
+            D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to get #{ensQ(\tokens \domain 'the loan')} back"
             button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
         if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
-            D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can get his #{ensQ(\tokens \domain)}"
-            button class:'card-button bgc-primary loan-button get-tokens', "Get #{ensQ(\tokens \domain)}"
+            D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can #{ensQ('get his tokens' 'get his domain' 'burn his credit' )}"
+            button class:'card-button bgc-primary loan-button get-tokens', ensQ('Get tokens' 'Get domain' 'Burn borrowers CRE')
 
 block-scheme =-> D \block-scheme,
     D "block-scheme-element #{highlightQ(0)}", 'No data'
     D \block-scheme-line,
         P \block-scheme-line-inscription, "Borrower ", br!, 'sets data'
         D \block-scheme-line-arrow
-    D "block-scheme-element #{highlightQ(1)}", ensQ('Waiting for tokens', 'Waiting For domain')
-    D \block-scheme-line,
+    unless state.get(\lr)?isRep => D "block-scheme-element #{highlightQ(1)}", ensQ('Waiting for tokens', 'Waiting For domain')
+    unless state.get(\lr)?isRep => D \block-scheme-line,
         P \block-scheme-line-inscription, "Borrower transfers", br!,  ensQ(\tokens \domain)
         D \block-scheme-line-arrow
     D "block-scheme-element #{highlightQ(3)}", 'Waiting For Lender'
     D \block-scheme-line,
-        P \block-scheme-line-inscription, "Lender sends ", br!, \money
+        P \block-scheme-line-inscription, "Lender sends ", br!, \ETH
         D \block-scheme-line-arrow
     D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
-        p class:\block-scheme-line-inscription, 'Borrower gets his', br!, "#{ensQ \tokens \domain } back + Credit Token (CRE)"
-        p class:'block-scheme-line-inscription block-scheme-line-inscription-second' , "Lender gets Eth amount + ", br!, 'premium & Credit Token (CRE)'
+        p class:\block-scheme-line-inscription, 'Borrower gets ',  ensQ('his tokens back +' 'his domain back +', ''), br!, 'Credit Tokens (CRE)'
+        p class:'block-scheme-line-inscription block-scheme-line-inscription-second' , "Lender gets Eth amount"
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
     D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success }", \Finished
-    D 'block-scheme-line block-scheme-line-long block-scheme-line-long-branch',
-        P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets', br!, ensQ(\tokens \domain)
+  
+    div class:'block-scheme-line block-scheme-line-long block-scheme-line-long-branch' style:"#{if state.get(\lr)?isRep=> \top:240px }",
+        P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets ', ensQ(\tokens \domain 'CRE and'), br!, ensQ('','','Borrowers CRE is burned')      
         div class:'block-scheme-line-arrow block-scheme-line-arrow-branch'
-    D "#{highlightQ(5)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=5 => \block-scheme-element-failure else \failure-highlighted }", \Default
+    div class:"#{highlightQ(5)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=5 => \block-scheme-element-failure else \failure-highlighted }" style:"#{if state.get(\lr)?isRep=> \top:379px }", \Default
 
 
 Template.loan_request.created=->
@@ -203,7 +204,7 @@ Template.loan_request.events do
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: +lilNum-toStr state.get(\NeededSumByBorrower)
-            gas:2000000
+            # gas:2000000
             gasPrice:150000000000
         }
         console.log \transact: transact
@@ -320,4 +321,7 @@ input-unit =-> section style:'height:36px',
 
         
         
-@ensQ =-> if state.get(\lr)?isEns => &1 else &0
+@ensQ =-> 
+    if state.get(\lr)?isToken => &0
+    else if state.get(\lr)?isEns => &1
+    else &2

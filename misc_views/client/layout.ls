@@ -20,7 +20,7 @@ template \layout ->
 #       CHECK FOR WEB3 do
             if web3?
                 Meteor.setTimeout((~> 
-                    unless web3?eth?defaultAccount => SI Template.reload),70)
+                    unless web3?eth?defaultAccount => SI Template.reload),30)
                 state.set \defaultAccount web3?eth?defaultAccount
                 SI @lookupTemplate \yield
             else Template.no_metamask

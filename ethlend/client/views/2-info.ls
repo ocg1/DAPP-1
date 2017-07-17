@@ -20,6 +20,8 @@ template \info -> main_blaze {},
         p class:\info-value,
             a target:\_blank href:"https://etherscan.io/address/#{config.ENS_REG_ADDRESS}", config.ENS_REG_ADDRESS
 
+        h4 class:\info-key, "Your reputation"
+        p class:'info-value reputation', ''
         
 
         
@@ -35,5 +37,10 @@ Template.info.created=~>
         getB(res)
         $(\.account-link).html res
         $(\.account-link).attr \href "https://etherscan.io/address/#{res}"
-  
+
+        get-rep-balance web3.eth.defaultAccount, (err,res)->
+            $(\.reputation).html +bigNum-toStr(res)/10
+            state.set \reputation bigNum-toStr(res)
+
+
           
