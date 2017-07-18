@@ -203,7 +203,7 @@ this.recompileAbi = ()=> {
                getContractAbi(':ReputationToken')(base+'ethlend/server/ReputationToken.sol')((err,repAbi,repBytecode,abiJsonRep)=>{
                     if (err){ console.log('err:::',err); return err }
 
-                    getContractAbi(':TestENS')(base+'ethlend/server/TestENS.sol')((err,ensAbi,ensBytecode,abiJsonTestENS)=>{
+                    getContractAbi(':TestENS')(base+'ethlend/server/ENS.sol')((err,ensAbi,ensBytecode,abiJsonTestENS)=>{
                          if (err){ console.log('err:::',err); return err }
 
                          getContractAbi(':SampleToken')(base+'ethlend/server/SampleToken.sol')((err,sampleAbi,sampleBytecode,abiJsonSample)=>{

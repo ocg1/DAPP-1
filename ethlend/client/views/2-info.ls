@@ -43,7 +43,7 @@ Template.info.created=~>
         $(\.account-link).attr \href "https://etherscan.io/address/#{res}"
 
         get-rep-balance web3.eth.defaultAccount, (err,res)->
-            $(\.reputation).html +bigNum-toStr(res)/10
+            $(\.reputation).html +bigNum-toStr(res)
             state.set \reputation bigNum-toStr(res)
 
 

@@ -78,7 +78,7 @@ block-scheme =-> D \block-scheme,
     D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success }", \Finished
   
     div class:'block-scheme-line block-scheme-line-long block-scheme-line-long-branch' style:"#{if state.get(\lr)?isRep=> \top:240px }",
-        P 'block-scheme-line-inscription block-scheme-line-inscription-branch', 'Lender gets ', ensQ(\tokens \domain 'CRE and'), br!, ensQ('','','Borrowers CRE is burned')      
+        P 'block-scheme-line-inscription block-scheme-line-inscription-branch', ensQ('Lender gets tokens' 'Lender gets domain' 'Lender burns borrowers CRE (reputation)')
         div class:'block-scheme-line-arrow block-scheme-line-arrow-branch'
     div class:"#{highlightQ(5)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=5 => \block-scheme-element-failure else \failure-highlighted }" style:"#{if state.get(\lr)?isRep=> \top:379px }", \Default
 
@@ -129,7 +129,7 @@ Template.loan_request.created=->
                     state.set \IamBorrower (state.get(\defaultAccount)==state.get(\lr-Borrower))   
 
                     get-rep-balance (state.get \lr)?Borrower, (err,res)->
-                        $('.bor-balance').attr \value, +bigNum-toStr(res)/10
+                        $('.bor-balance').attr \value, +bigNum-toStr(res)
                         state.set \bor-balance bigNum-toStr(res)
 
 Template.loan_request.rendered =->
@@ -158,15 +158,17 @@ Template.loan_request.events do
         out.len       = $(\.lr-Lender).val!
 
         out.tokamount =     if state.get(\lr)?isToken => $(\.lr-TokenAmount).val!   else 0
-        out.tokname   =     if state.get(\lr)?isToken => $(\.lr-TokenName).val!     else 0
+        out.tokname   =     if state.get(\lr)?isToken => $(\.lr-TokenName).val!     else ''
         out.smart     =     if state.get(\lr)?isToken => $(\.lr-TokenSmartcontractAddress).val! else 0
-        out.link      =     if state.get(\lr)?isToken => $(\.lr-TokenInfoLink).val! else 0
+        out.link      =     if state.get(\lr)?isToken => $(\.lr-TokenInfoLink).val! else ''
 
         out.ensDomainHash = if state.get(\lr)?isEns => $(\.lr-ensDomain).val! else 0
 
 
+
+
         console.log \out: out
-        lr.setData(state.get \address )(#uint wanted_wei_, uint token_amount_, uint premium_wei_,
+        lr.setData(state.get \address )(
             out.ethamount,
             out.tokamount,                    
             out.premium,             
@@ -179,8 +181,10 @@ Template.loan_request.events do
         )  
 
 
-    'click .lender-pay':->   
+    'click .lender-pay':-> 
+        console.log \NeededSumByLender: lilNum-toStr state.get(\NeededSumByLender)  
         transact = {
+            gasPrice: 200000000000
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: lilNum-toStr state.get(\NeededSumByLender)
@@ -194,12 +198,15 @@ Template.loan_request.events do
     'click .transfer-tokens':->
         if state.get(\lr)?isEns == false
             lr.checkTokens(state.get(\address)) goto-success-cb
-        if state.get(\lr)?isEns == true
-            lr.checkDomain(state.get(\address)) goto-success-cb
-            # {from:web3.eth.defaultAccount, gas:4000000, gasPrice:150000000000}, 
+        if state.get(\lr)?isEns
+            # lr.checkDomain(state.get(\address)) goto-success-cb
+            web3.eth.contract(config.LRABI).at(state.get(\address)).checkDomain({from:web3.eth.defaultAccount, gas:4900000, gasPrice:200000000000}, goto-success-cb)
+
+
+
+
 
     'click .return-tokens':->
-        
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)

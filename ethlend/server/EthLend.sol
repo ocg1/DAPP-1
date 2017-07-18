@@ -189,20 +189,20 @@ contract Ledger is SafeMath {
      function addRepTokens(address a, uint weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
 
-          uint repTokens = (10 * weiSum);
+          uint repTokens = (weiSum/10);
           // will throw if called not from here...
           repToken.issueTokens(a,repTokens);
      }
 
      function lockRepTokens(address a, uint weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
-          uint repTokens = (10 * weiSum);
+          uint repTokens = (weiSum/10);
           repToken.lockTokens(a,repTokens);
      }
 
      function unlockRepTokens(address a, uint weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
-          uint repTokens = (10 * weiSum);
+          uint repTokens = (weiSum/10);
           repToken.unlockTokens(a,repTokens);
      }
 
@@ -550,7 +550,7 @@ contract LendingRequest is SafeMath {
           }
 
           releaseToLender(); // tokens are released to the lender        
-          ledger.addRepTokens(lender,wanted_wei); // Only Lender get Reputation tokens
+          // ledger.addRepTokens(lender,wanted_wei); // Only Lender get Reputation tokens
           currentState = State.Default; 
      }
 
