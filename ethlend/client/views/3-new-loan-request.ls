@@ -18,9 +18,11 @@ template \newLoanRequest -> main_blaze do
             br!
             br!
             "0.1 CRE allows to borrow up to 0.1 ETH without a collateral (reputation based lending)."
-        button class:'new-loan-request card-button bgc-primary',  'New loan request (tokens)'
-        button class:'new-domain-request card-button bgc-primary', 'New loan request (domain)'
-        button class:'new-rep-request card-button bgc-primary', 'New loan request (reputation)'
+        div class:'new-loan-group',
+            div class:'new-loan-text', 'New loan request:'
+        button class:'new-loan-request card-button bgc-primary blue',  \Tokens
+        button class:'new-domain-request card-button bgc-primary blue', \Domain
+        button class:'new-rep-request card-button bgc-primary red', \Reputation
 
 
 Template.newLoanRequest.events do
