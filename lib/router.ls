@@ -17,12 +17,4 @@ Router.route('/(.*)', where: 'server').get( ->
 		@response.writeHead 301, {'Location': '/main/1'}
 		@response.end!			
 	else @next!
-		)
-
-# Router.route('/(.*)', where: 'server').get( ->
-# 	if  @params[0] == ''
-# 		@response.writeHead 301, {'Location': '/main'}
-# 		@response.end!
-# 	else @next!
-# 		)
-	
+	)

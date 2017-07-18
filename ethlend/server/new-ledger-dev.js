@@ -100,6 +100,9 @@ this.DeployContract =(creatr, repAddress, ensA, cb)=>{
      });
 }
 
+
+
+
 this.DeploySampleContract =(cb)=>{
      getContractAbi(':SampleToken')(base+'ethlend/server/SampleToken.sol')((err,Abi,Bytecode)=> {
           if(err) { return cb(err)}
@@ -236,7 +239,7 @@ this.step.recompileAbi   =()=> recompileAbi()
 this.step.deployENS      =()=> DeployENS(conscb)
 this.step.deployRep      =()=> DeployRepContract(conscb)
 //config-params!
-this.step.deployContract =()=> DeployContract(config.TONY_ADDRESS, config.REP_ADDRESS, config.ENS_ADDRESS, conscb)
+this.step.deployContract =()=> web3.eth.contract(config.LEDGERABI).new(config.TONY_ADDRESS, config.REP_ADDRESS, config.ENS_REG_ADDRESS, { from: config.TONY_ADDRESS, gas: 4005000, gasPrice:150000000000, data: config.LEDGERBCODE}, (err,res)=>console.log('transactionHash:',res.transactionHash,'address:',res.address))
 //config-params!
 this.step.changeCreator  =()=> web3.eth.contract(config.REPABI).at(config.REP_ADDRESS).changeCreator(config.ETH_MAIN_ADDRESS, {from:config.TONY_ADDRESS, gas: 2000000, gasPrice:20000000000}, conscb)
 
