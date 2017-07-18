@@ -272,7 +272,7 @@ contract LendingRequest is SafeMath {
      uint public days_to_lend = 0;
 
      // this is an address of AbstractENS contract
-     address ensRegistryAddress = 0;
+     address public ensRegistryAddress = 0;
 
      address public lender = 0x0;
 // Access methods:
@@ -450,17 +450,14 @@ contract LendingRequest is SafeMath {
           }
      }
 
-     function checkDomain()byLedgerMainOrBorrower onlyInState(State.WaitingForTokens){
-          if(currentType!=Type.EnsCollateral){
-               throw;
-          }
-
+     function checkDomain() returns (State currentState){
           // Use 'ens_domain_hash' to check whether this domain is transferred to this address
           AbstractENS ens = AbstractENS(ensRegistryAddress);
           if(ens.owner(ens_domain_hash)==address(this)){
                // we are ready to search someone 
                // to give us the money
                currentState = State.WaitingForLender;
+               return;
           }
      }
 

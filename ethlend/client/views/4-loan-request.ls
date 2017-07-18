@@ -157,12 +157,12 @@ Template.loan_request.events do
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
 
-        out.tokamount =     if state.get(\lr)?isToken => $(\.lr-TokenAmount).val!   else 0
-        out.tokname   =     if state.get(\lr)?isToken => $(\.lr-TokenName).val!     else ''
-        out.smart     =     if state.get(\lr)?isToken => $(\.lr-TokenSmartcontractAddress).val! else 0
-        out.link      =     if state.get(\lr)?isToken => $(\.lr-TokenInfoLink).val! else ''
+        out.tokamount = $(\.lr-TokenAmount).val!   || 0
+        out.tokname   = $(\.lr-TokenName).val!    || ''
+        out.smart     = $(\.lr-TokenSmartcontractAddress).val! || 0
+        out.link      = $(\.lr-TokenInfoLink).val! || ''
 
-        out.ensDomainHash = if state.get(\lr)?isEns => $(\.lr-ensDomain).val! else 0
+        out.ensDomainHash = $(\.lr-ensDomain).val! || 0
 
 
 
