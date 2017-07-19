@@ -186,31 +186,44 @@ contract Ledger is SafeMath {
           return;
      }
 
-     function addRepTokens(address a, uint weiSum){
+     function addRepTokens(address potentialBorrower, uint weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
-
-          uint repTokens = (weiSum/10);
-          // will throw if called not from here...
-          repToken.issueTokens(a,repTokens);
+          LendingRequest lr = LendingRequest(msg.sender);  
+          // we`ll check is msg.sender is a real our LendingRequest
+          if(lr.borrower()==potentialBorrower && address(this)==lr.creator()){// we`ll take a lr contract and check address a – is he a borrower for this contract?
+               uint repTokens = (weiSum/10);
+               repToken.issueTokens(potentialBorrower,repTokens);               
+          }
      }
 
-     function lockRepTokens(address a, uint weiSum){
+     function lockRepTokens(address potentialBorrower, uint weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
-          uint repTokens = (weiSum/10);
-          repToken.lockTokens(a,repTokens);
+          LendingRequest lr = LendingRequest(msg.sender);  
+          // we`ll check is msg.sender is a real our LendingRequest
+          if(lr.borrower()==potentialBorrower && address(this)==lr.creator()){// we`ll take a lr contract and check address a – is he a borrower for this contract?
+               uint repTokens = (weiSum/10);
+               repToken.lockTokens(potentialBorrower,repTokens);               
+          }
      }
 
-     function unlockRepTokens(address a, uint weiSum){
+     function unlockRepTokens(address potentialBorrower, uint weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
-          uint repTokens = (weiSum/10);
-          repToken.unlockTokens(a,repTokens);
+          LendingRequest lr = LendingRequest(msg.sender);
+          // we`ll check is msg.sender is a real our LendingRequest
+          if(lr.borrower()==potentialBorrower && address(this)==lr.creator()){// we`ll take a lr contract and check address a – is he a borrower for this contract?
+               uint repTokens = (weiSum/10);
+               repToken.unlockTokens(potentialBorrower,repTokens);               
+          }
      }
 
-     function burnRepTokens(address a){
+     function burnRepTokens(address potentialBorrower){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
-          repToken.burnTokens(a);
-     }
-
+          LendingRequest lr = LendingRequest(msg.sender);  
+          // we`ll check is msg.sender is a real our LendingRequest
+          if(lr.borrower()==potentialBorrower && address(this)==lr.creator()){// we`ll take a lr contract and check address a – is he a borrower for this contract?
+               repToken.burnTokens(potentialBorrower);               
+          }
+     }     
 
      function() payable{
           createNewLendingRequest();
@@ -219,6 +232,7 @@ contract Ledger is SafeMath {
 
 contract LendingRequest is SafeMath {
      string public name = "LendingRequest";
+     address public creator = 0x0;
 
      // 0.01 ETH
      uint public lenderFeeAmount   = 10000000000000000;
@@ -227,6 +241,7 @@ contract LendingRequest is SafeMath {
 
      // who deployed Ledger
      address public mainAddress = 0x0;
+
 
      enum State {
           WaitingForData,
@@ -377,6 +392,7 @@ contract LendingRequest is SafeMath {
           mainAddress = mainAddress_;
           whereToSendFee = whereToSendFee_;
           borrower = borrower_;
+          creator = msg.sender;
           // collateral: tokens or ENS domain?
           if      (contractType==0){
                currentType = Type.TokensCollateral;
@@ -450,7 +466,7 @@ contract LendingRequest is SafeMath {
           }
      }
 
-     function checkDomain(){
+     function checkDomain() onlyInState(State.WaitingForTokens){
           // Use 'ens_domain_hash' to check whether this domain is transferred to this address
           AbstractENS ens = AbstractENS(ensRegistryAddress);
           if(ens.owner(ens_domain_hash)==address(this)){

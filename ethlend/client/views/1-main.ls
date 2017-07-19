@@ -173,6 +173,7 @@ get-premium =->
     current-page  = +address-last!
     left-chevron  = a class:"chevron-left arrows #{if (state.get(\page)~=\1) => \disabled }", \‹‹
     right-chevron = a class:"chevron-right arrows #{if state.get(\page)~=(ceiling state.get(\totalReqs)/4) => \disabled }", \››
+    
     count = state.get \totalReqs
     console.log \totalReqs state.get \totalReqs
     if count < 0 => return null
@@ -182,7 +183,9 @@ get-premium =->
     link-arr = []
 
     if pages <= 9 # просто отрисовываем все цифры без стрелочек
-        link-arr = [1 to pages] 
+        link-arr = [1 to pages]
+        left-chevron  = ''
+        right-chevron = '' 
 
     if pages > 9 && current-page <= 5 # стрелочку влево не отрисовываем
         link-arr = [1 to 9]
@@ -190,8 +193,7 @@ get-premium =->
 
     if pages > 9 && current-page > 5 && pages > current-page + 4 # отрисовываем обе стрелочки
         link-arr = [(current-page - 4) to (current-page + 4)]
-        # left-chevron  = a class:'icon item' href:'/main/1', i class:'left chevron icon'
-        # right-chevron = a class:'icon item' href:'/main/'+pages, i class:'right chevron icon'
+
 
     if pages > 9 && current-page > 5 && pages <= current-page + 4 # стрелочку вправо не отрисовываем
         link-arr = [(pages - 8) to pages]

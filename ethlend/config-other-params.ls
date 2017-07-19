@@ -1,5 +1,5 @@
-config.ETH_MAIN_ADDRESS          = \0x9858a55bb3c04db63597b3d4459e35fdd9649046
-config.REP_ADDRESS               = \0x4Dc98E7D90E9a4076ca0fA3e17450a46c6346DdF
+config.ETH_MAIN_ADDRESS          = \0x5f743e204262b5c4ced67ae1121644a6b7ec9bec
+config.REP_ADDRESS               = \0x0e1C9A848C38867Fa75B4f950b0C98FA438c916c
 config.ENS_REG_ADDRESS           = \0x72bF8aCD2b7F729773c77c10F39695F972A45271
 config.TONY_ADDRESS              = \0xb9af8aa42c97f5a1f73c6e1a683c4bf6353b83e7
 config.ETH_MAIN_ADDRESS_LINK     = \https://kovan.etherscan.io/address/ + config.ETH_MAIN_ADDRESS
