@@ -198,7 +198,7 @@ Template.loan_request.events do
             lr.checkTokens(state.get(\address)) goto-success-cb
         if state.get(\lr)?isEns
             # lr.checkDomain(state.get(\address)) goto-success-cb
-            web3.eth.contract(config.LRABI).at(state.get(\address)).checkDomain({from:web3.eth.defaultAccount, gas:4000000, gasPrice:20000000000}, goto-success-cb)
+            web3.eth.contract(config.LRABI).at(state.get(\address)).checkDomain({from:web3.eth.defaultAccount,  gasPrice:20000000000}, goto-success-cb)
 
 
 
@@ -209,8 +209,7 @@ Template.loan_request.events do
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: +lilNum-toStr state.get(\NeededSumByBorrower)
-            # gas:2000000
-            gasPrice:150000000000
+            #             gasPrice:150000000000
         }
         console.log \transact: transact
         
