@@ -450,7 +450,7 @@ contract LendingRequest is SafeMath {
           }
      }
 
-     function checkDomain() returns (State currentState){
+     function checkDomain(){
           // Use 'ens_domain_hash' to check whether this domain is transferred to this address
           AbstractENS ens = AbstractENS(ensRegistryAddress);
           if(ens.owner(ens_domain_hash)==address(this)){
