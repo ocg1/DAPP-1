@@ -33,9 +33,7 @@ contract ReputationTokenInterface {
      function burnTokens(address forAddress) returns (bool success);
      function lockTokens(address forAddress, uint tokenCount) returns (bool success);
      function unlockTokens(address forAddress, uint tokenCount) returns (bool success);
-
-
-
+     function approve(address _spender, uint256 _value) returns (bool success);
 }
 
 contract AbstractENS {
@@ -224,6 +222,12 @@ contract Ledger is SafeMath {
                repToken.burnTokens(potentialBorrower);               
           }
      }     
+
+     function approveRepTokens(address potentialBorrower,uint weiSum) returns (bool success){
+          ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
+          success = repToken.approve(potentialBorrower, weiSum);  
+          return;             
+     } 
 
      function() payable{
           createNewLendingRequest();
@@ -430,12 +434,13 @@ contract LendingRequest is SafeMath {
           ens_domain_hash = ens_domain_hash_;
 
           if(currentType==Type.RepCollateral){
-               ledger.lockRepTokens(borrower, wanted_wei);
-               currentState = State.WaitingForLender;
+               if(ledger.approveRepTokens(borrower, wanted_wei)){
+                    ledger.lockRepTokens(borrower, wanted_wei);
+                    currentState = State.WaitingForLender;
+               }
           } else {
                currentState = State.WaitingForTokens;
           }
-
      }
 
      function cancell() byLedgerMainOrBorrower {
