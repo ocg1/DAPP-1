@@ -303,7 +303,7 @@ input-fields-column =->
         field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
   
     if (state.get(\lr)?isRep)
-        field-array.push c:'lr-WantedWei block-input'   n:'Eth amount'       d:disableQ!, placeholder:'0.00 Eth' type:\number step:0.01, maxi:(+rep/10), mini:0, v:(+rep/10)
+        field-array.push c:'lr-WantedWei block-input'   n:'Eth amount'       d:disableQ!, placeholder:'0.00 Eth' type:\number step:0.01, maxi:(+rep), mini:0, v:(+rep)
   
 
     
