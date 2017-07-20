@@ -200,7 +200,7 @@ contract Ledger is SafeMath {
           LendingRequest lr = LendingRequest(msg.sender);  
           // we`ll check is msg.sender is a real our LendingRequest
           if(lr.borrower()==potentialBorrower && address(this)==lr.creator()){// we`ll take a lr contract and check address a – is he a borrower for this contract?
-               uint repTokens = (weiSum/10);
+               uint repTokens = (weiSum);
                repToken.lockTokens(potentialBorrower,repTokens);               
           }
      }
@@ -210,7 +210,7 @@ contract Ledger is SafeMath {
           LendingRequest lr = LendingRequest(msg.sender);
           // we`ll check is msg.sender is a real our LendingRequest
           if(lr.borrower()==potentialBorrower && address(this)==lr.creator()){// we`ll take a lr contract and check address a – is he a borrower for this contract?
-               uint repTokens = (weiSum/10);
+               uint repTokens = (weiSum);
                repToken.unlockTokens(potentialBorrower,repTokens);               
           }
      }
@@ -603,3 +603,4 @@ contract LendingRequest is SafeMath {
           }
      }
 }
+

@@ -102,6 +102,12 @@ contract ReputationToken is StdToken {
           creator = msg.sender;
      }
 
+     function lockedOf(address _owner) constant returns (uint256) 
+     {
+          return balancesLocked[_owner];
+     }
+     
+
      function changeCreator(address newCreator){
           if(msg.sender!=creator)throw;
 
