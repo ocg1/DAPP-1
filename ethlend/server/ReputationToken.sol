@@ -149,6 +149,17 @@ contract ReputationToken is StdToken {
           return;
      }
 
+     function nonLockedTokensCount(address forAddress) constant returns (uint tokenCount){
+          if ( balancesLocked[forAddress] > balances[forAddress] ){
+               tokenCount = 0;
+               return;
+          } else {
+               tokenCount = balances[forAddress] - balancesLocked[forAddress];
+               return;
+          }
+
+     }
+
      function transferFrom(address, address, uint256) returns (bool success){
           success = false;
           return;

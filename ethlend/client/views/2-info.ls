@@ -23,7 +23,7 @@ template \info -> main_blaze {},
         h4 class:\info-key, "Your reputation"
         p class:'info-value reputation', ''
 
-        h4 class:\info-key, "CRE contract address"
+        h4 class:\info-key, "Credit Token (CRE)"
         p class:\info-value,
             a target:\_blank href:"https://etherscan.io/address/#{config.REP_ADDRESS}", config.REP_ADDRESS
   
@@ -49,7 +49,7 @@ Template.info.created=~>
         $(\.account-link).attr \href "https://etherscan.io/address/#{res}"
 
         get-rep-balance web3.eth.defaultAccount, (err,res)->
-            $(\.reputation).html +bigNum-toStr(res)
+            $(\.reputation).html(+bigNum-toStr(res) + ' Credit Token (CRE)')
             state.set \reputation bigNum-toStr(res)
 
 

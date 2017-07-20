@@ -34,6 +34,7 @@ contract ReputationTokenInterface {
      function lockTokens(address forAddress, uint tokenCount) returns (bool success);
      function unlockTokens(address forAddress, uint tokenCount) returns (bool success);
      function approve(address _spender, uint256 _value) returns (bool success);
+     function nonLockedTokensCount(address forAddress) constant returns (uint tokenCount);
 }
 
 contract AbstractENS {
@@ -225,7 +226,7 @@ contract Ledger is SafeMath {
 
      function approveRepTokens(address potentialBorrower,uint weiSum) returns (bool success){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
-          success = repToken.approve(potentialBorrower, weiSum);  
+          success = repToken.nonLockedTokensCount(potentialBorrower) >= weiSum;
           return;             
      } 
 
