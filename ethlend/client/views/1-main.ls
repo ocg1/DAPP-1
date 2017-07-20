@@ -43,7 +43,7 @@ template \mainTemplate -> main_blaze do
                 img class:\img-dot src:\/img/red_dot.svg alt:''
             h4 class:'card-key font-weight-normal', "Lender" 
             p class:"card-value #{card-class it}", if it.Lender != big-zero => it.Lender else \–––
-        if it?State == 3
+        if it?State == 3 && it.Borrower != web3.eth.defaultAccount
             h4 class:"card-key-inscription" style:'color:black', "Get #{get-premium(it.PremiumWei)}Premium!"
         # if it?State == 3
         #     button class:'card-button bgc-primary fund-button' style:"width:100px;margin-left:70px" id:it?id, 'Fund'
