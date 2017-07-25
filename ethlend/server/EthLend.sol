@@ -59,12 +59,22 @@ contract AbstractENS {
      event NewTTL(bytes32 indexed node, uint64 ttl);
 }
 
+contract Registrar {
+
+     function transfer(bytes32, address){
+          return;
+     } 
+
+}
+
+
 contract Ledger is SafeMath {
      // who deployed Ledger
      address public mainAddress;
      address public whereToSendFee;
      address public repTokenAddress;
      address public ensRegistryAddress;
+     address public registrarAddress;
 
      mapping (address => mapping(uint => address)) lrsPerUser;
      mapping (address => uint) lrsCountPerUser;
@@ -79,11 +89,12 @@ contract Ledger is SafeMath {
           _;
      }
 
-     function Ledger(address whereToSendFee_,address repTokenAddress_,address ensRegistryAddress_){
+     function Ledger(address whereToSendFee_,address repTokenAddress_,address ensRegistryAddress_, address registrarAddress_){
           mainAddress = msg.sender;
           whereToSendFee = whereToSendFee_;
           repTokenAddress = repTokenAddress_;
           ensRegistryAddress = ensRegistryAddress_;
+          registrarAddress = registrarAddress_;
      }
 
      function getRepTokenAddress()constant returns(address out){
@@ -125,7 +136,7 @@ contract Ledger is SafeMath {
           // 2 - create new LR
           // will be in state 'WaitingForData'
 
-          out = new LendingRequest(mainAddress,msg.sender,whereToSendFee,collateralType,ensRegistryAddress);
+          out = new LendingRequest(mainAddress,msg.sender,whereToSendFee,collateralType,ensRegistryAddress,registrarAddress);
 
           // 3 - add to list
           uint currentCount = lrsCountPerUser[msg.sender];
@@ -238,6 +249,7 @@ contract Ledger is SafeMath {
 contract LendingRequest is SafeMath {
      string public name = "LendingRequest";
      address public creator = 0x0;
+     address public registrarAddress;
 
      // 0.01 ETH
      uint public lenderFeeAmount   = 10000000000000000;
@@ -391,11 +403,12 @@ contract LendingRequest is SafeMath {
           _;
      }
 
-     function LendingRequest(address mainAddress_,address borrower_,address whereToSendFee_, int contractType, address ensRegistryAddress_){
+     function LendingRequest(address mainAddress_,address borrower_,address whereToSendFee_, int contractType, address ensRegistryAddress_, address registrarAddress_){
           ledger = Ledger(msg.sender);
 
           mainAddress = mainAddress_;
           whereToSendFee = whereToSendFee_;
+          registrarAddress = registrarAddress_;
           borrower = borrower_;
           creator = msg.sender;
           // collateral: tokens or ENS domain?
@@ -577,7 +590,10 @@ contract LendingRequest is SafeMath {
     
           if(currentType==Type.EnsCollateral){
                AbstractENS ens = AbstractENS(ensRegistryAddress);
+               Registrar registrar = Registrar(registrarAddress);
+
                ens.setOwner(ens_domain_hash,lender);
+               registrar.transfer(ens_domain_hash,lender);
 
           }else if (currentType==Type.RepCollateral){
                ledger.unlockRepTokens(borrower, wanted_wei);
@@ -593,7 +609,10 @@ contract LendingRequest is SafeMath {
      function releaseToBorrower(){
           if(currentType==Type.EnsCollateral){
                AbstractENS ens = AbstractENS(ensRegistryAddress);
+               Registrar registrar = Registrar(registrarAddress);
                ens.setOwner(ens_domain_hash,borrower);
+               registrar.transfer(ens_domain_hash,borrower);
+
           }else if (currentType==Type.RepCollateral){
                ledger.unlockRepTokens(borrower, wanted_wei);
           }else{

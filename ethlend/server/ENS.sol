@@ -53,4 +53,13 @@ contract TestENS is AbstractENS {
      function setOwner(bytes32 node, address o){
           hashToOwner[node] = o;
      } 
+     
+}
+
+contract Registrar {
+
+     function transfer(bytes32, address){
+          return;
+     } 
+
 }

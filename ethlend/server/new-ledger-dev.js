@@ -212,20 +212,27 @@ this.recompileAbi = ()=> {
                          getContractAbi(':SampleToken')(base+'ethlend/server/SampleToken.sol')((err,sampleAbi,sampleBytecode,abiJsonSample)=>{
                               if (err){ console.log('err:::',err); return err }
 
-                              fs.writeFileSync(base+'ethlend/config-abi.ls',   
-                                   `config.LEDGER-ABI = ${JSON.stringify(ledgerAbi)}\n`+
-                                   `config.LR-ABI     = ${JSON.stringify(lrAbi)}\n`+
-                                   `config.ENS-ABI    = ${JSON.stringify(ensAbi)}\n`+
-                                   `config.SAM-ABI    = ${JSON.stringify(ensAbi)}\n`+
-                                   `config.REP-ABI    = ${JSON.stringify(repAbi)}\n\n`+
+                              getContractAbi(':Registrar')(base+'ethlend/server/ENS.sol')((err,registrarAbi,registrarBytecode,abiJsonReg)=>{
+                                   if (err){ console.log('err:::',err); return err }
 
-                                   `config.LEDGER-BCODE = '0x${ledgerBytecode}'\n`+
-                                   `config.LR-BCODE     = '0x${lrBytecode}'\n`+
-                                   `config.ENS-BCODE    = '0x${ensBytecode}'\n`+
-                                   `config.SAM-BCODE    = '0x${repBytecode}'\n`+
-                                   `config.REP-BCODE    = '0x${sampleBytecode}'`                                   
-                              );
-                              console.log('Config at ethlend/config-abi.ls has written');
+
+                                        fs.writeFileSync(base+'ethlend/config-abi.ls',   
+                                             `config.LEDGER-ABI    = ${JSON.stringify(ledgerAbi)}\n`+
+                                             `config.LR-ABI        = ${JSON.stringify(lrAbi)}\n`+
+                                             `config.ENS-ABI       = ${JSON.stringify(ensAbi)}\n`+
+                                             `config.SAM-ABI       = ${JSON.stringify(sampleAbi)}\n`+
+                                             `config.REP-ABI       = ${JSON.stringify(repAbi)}\n`+
+                                             `config.REGISTRAR-ABI = ${JSON.stringify(registrarAbi)}\n\n`+
+
+                                             `config.LEDGER-BCODE    = '0x${ledgerBytecode}'\n`+
+                                             `config.LR-BCODE        = '0x${lrBytecode}'\n`+
+                                             `config.ENS-BCODE       = '0x${ensBytecode}'\n`+
+                                             `config.SAM-BCODE       = '0x${repBytecode}'\n`+
+                                             `config.REP-BCODE       = '0x${sampleBytecode}'\n` +  
+                                             `config.REGISTRAR-BCODE = '0x${registrarBytecode}'\n`                               
+                                        );
+                                   console.log('Config at ethlend/config-abi.ls has written');
+                              });
                          });
                     });
                });
@@ -233,15 +240,19 @@ this.recompileAbi = ()=> {
      });
 };
 
+addresscb =(err,res)=> console.log('transactionHash:',res.transactionHash,'address:',res.address)
 
-this.step.deploySample   =()=> DeploySampleContract(conscb)
-this.step.recompileAbi   =()=> recompileAbi()
-this.step.deployENS      =()=> DeployENS(conscb)
-this.step.deployRep      =()=> DeployRepContract(conscb)
+
+this.step.deploySample    =()=> DeploySampleContract(addresscb)
+
+this.step.recompileAbi    =()=> recompileAbi()
+this.step.deployENS       =()=> DeployENS(addresscb)
+this.step.deployRep       =()=> DeployRepContract(addresscb)
+this.step.deployRegistrar =()=> web3.eth.contract(config.REGISTRARABI).new({ from: config.TONY_ADDRESS, gas: 4005000, gasPrice:150000000000, data: config.REGISTRARBCODE}, addresscb)
 //config-params!
-this.step.deployContract =()=> web3.eth.contract(config.LEDGERABI).new(config.TONY_ADDRESS, config.REP_ADDRESS, config.ENS_REG_ADDRESS, { from: config.TONY_ADDRESS, gas: 4005000, gasPrice:150000000000, data: config.LEDGERBCODE}, (err,res)=>console.log('transactionHash:',res.transactionHash,'address:',res.address))
+this.step.deployContract  =()=> web3.eth.contract(config.LEDGERABI).new(config.TONY_ADDRESS, config.REP_ADDRESS, config.ENS_REG_ADDRESS, config.REGISTRAR_ADDRESS, { from: config.TONY_ADDRESS, gas: 4005000, gasPrice:150000000000, data: config.LEDGERBCODE}, addresscb)
 //config-params!
-this.step.changeCreator  =()=> web3.eth.contract(config.REPABI).at(config.REP_ADDRESS).changeCreator(config.ETH_MAIN_ADDRESS, {from:config.TONY_ADDRESS, gas: 2000000, gasPrice:20000000000}, conscb)
+this.step.changeCreator   =()=> web3.eth.contract(config.REPABI).at(config.REP_ADDRESS).changeCreator(config.ETH_MAIN_ADDRESS, {from:config.TONY_ADDRESS, gas: 2000000, gasPrice:20000000000}, conscb)
 
 
 Meteor.methods({
