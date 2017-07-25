@@ -11,7 +11,6 @@ config.ETH_NODE                  = \http://ethnode.chain.cloud:8545
 config.SMART_CONTRACTS_ENABLED   = true
 config.STANDART_PARAMS           = from:config.TONY_ADDRESS, gas:4005000, gasPrice:150000000000
 
-
 # Ledger(address whereToSendFee_,address repTokenAddress_,address ensRegistryAddress_, address registrarAddress_)
 
 
