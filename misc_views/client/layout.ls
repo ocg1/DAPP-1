@@ -8,6 +8,8 @@ template \layout ->
                 a class:\logo href:\/main/1,
                     img class:\logo-image src:\/img/logo.png alt:'EthLend logo'
                 nav class:\navigation,
+                    D "nav-link-wrapper",
+                        a class:"nav-link js-gitter-toggle-chat-button", "Chat"
                     D "nav-link-wrapper #{if state.get(\selected-class)==\main => \selected  }",
                         a class:\nav-link href:\/main/1, "All Loan Requests"
                     D "nav-link-wrapper #{if state.get(\selected-class)==\funded => \selected  }",
@@ -45,6 +47,18 @@ Template.layout.events do
 
 Template.layout.rendered=->
     console.log web3.eth.defaultAccount
+
+    script = document.createElement 'script'
+    script.setAttribute 'type', 'text/javascript'
+    script.setAttribute 'src', 'https://sidecar.gitter.im/dist/sidecar.v1.js'
+    script.setAttribute 'defer', 'defer'
+    script.setAttribute 'async', 'async'
+    (document.getElementsByTagName 'head').0.appendChild script
+    ((window.gitter = {}).chat = {}).options = {
+        room: 'ethlend/lobby',
+        activationElement: false
+    }
+
     state.set \addr (Router.current!originalUrl |> split \/)
 
     state.set \addr-last (state.get(\addr) |> last )
