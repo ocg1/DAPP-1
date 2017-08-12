@@ -48,6 +48,23 @@ Template.layout.events do
 Template.layout.rendered=->
     console.log web3.eth.defaultAccount
 
+    ((i, s, o, g, r, a, m) ->
+      i.'GoogleAnalyticsObject' = r
+      i[r] = i[r] || ->
+        (i[r].q = i[r].q || []).push arguments
+        return 
+      i[r].l = 1 * new Date
+      a = s.createElement o
+      m = (s.getElementsByTagName o).0
+      a.async = 1
+      a.src = g
+      m.parentNode.insertBefore a, m
+      return ) window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga'
+
+    ga 'create', 'UA-102004013-2', 'auto'
+
+    ga 'send', 'pageview'
+
     script = document.createElement 'script'
     script.setAttribute 'type', 'text/javascript'
     script.setAttribute 'src', 'https://sidecar.gitter.im/dist/sidecar.v1.js'
