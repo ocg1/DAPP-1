@@ -21,9 +21,9 @@ template \layout ->
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             div class:'main-shell', 
-                
-                go-cycle(0, SI(@lookupTemplate \yield))
-
+                if web3?
+                    SI @lookupTemplate \yield
+                else SI @lookupTemplate \no_metamask
 
         footer do
             div class:\footer-nav,
