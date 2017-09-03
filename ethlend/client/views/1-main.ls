@@ -28,22 +28,22 @@ template \mainTemplate -> main_blaze do
             if it.isEns
                 h3 class:'card-header-inscription token-am', 'ENS domain'
 
-        else if it.Borrower == web3?eth?defaultAccount
+        else if it.Borrower?toUpperCase() == web3?eth?defaultAccount?toUpperCase()
             h3 class:\card-header-amount, "Please, set the data"
 
         else h3 class:\card-header-amount, "Data must be set by the Borrower"
 
     div class:\card-body,
-        if web3.eth.defaultAccount == it.Borrower
+        if web3.eth.defaultAccount?toUpperCase() == it.Borrower?toUpperCase()
             img class:\img-dot src:\/img/red_dot.svg alt:''
         h4 class:\card-key, "Borrower"
         p class:"card-value #{card-class it}", it.Borrower
         if it?State != 3  => D \div-lender,
-            if web3.eth.defaultAccount == it.Lender
+            if web3.eth.defaultAccount?toUpperCase() == it.Lender?toUpperCase()
                 img class:\img-dot src:\/img/red_dot.svg alt:''
             h4 class:'card-key font-weight-normal', "Lender" 
             p class:"card-value #{card-class it}", if it.Lender != big-zero => it.Lender else \–––
-        if it?State == 3 && it.Borrower != web3.eth.defaultAccount
+        if it?State == 3 && it.Borrower?toUpperCase() != web3.eth.defaultAccount?toUpperCase()
             h4 class:"card-key-inscription" style:'color:black', "Get #{get-premium(it.PremiumWei)}Premium!"
         # if it?State == 3
         #     button class:'card-button bgc-primary fund-button' style:"width:100px;margin-left:70px" id:it?id, 'Fund'
