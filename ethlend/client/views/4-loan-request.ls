@@ -123,10 +123,10 @@ Template.loan_request.created=->
                     state.set \lr-Lender   &1?Lender
                     state.set \lr-Borrower &1?Borrower
                     state.set \lr-State    &1?State
-                    state.set \IamLender   (state.get(\defaultAccount)==state.get(\lr-Lender))       
+                    state.set \IamLender   (state.get(\defaultAccount)?toUpperCase()==state.get(\lr-Lender)?toUpperCase())       
 
 
-                    state.set \IamBorrower (state.get(\defaultAccount)==state.get(\lr-Borrower))   
+                    state.set \IamBorrower (state.get(\defaultAccount)?toUpperCase()==state.get(\lr-Borrower)?toUpperCase())   
 
                     get-rep-balance (state.get \lr)?Borrower, (err,res)->
                         $('.bor-balance').attr \value, +bigNum-toStr(res)
