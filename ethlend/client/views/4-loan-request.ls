@@ -123,17 +123,17 @@ Template.loan_request.created=->
                     state.set \lr-Lender   &1?Lender
                     state.set \lr-Borrower &1?Borrower
                     state.set \lr-State    &1?State
-                    state.set \IamLender   (state.get(\defaultAccount)?toUpperCase()==state.get(\lr-Lender)?toUpperCase())       
+                    state.set \IamLender   (web3.eth.defaultAccount.toUpperCase()==state.get(\lr-Lender).toUpperCase())       
 
 
-                    state.set \IamBorrower (state.get(\defaultAccount)?toUpperCase()==state.get(\lr-Borrower)?toUpperCase())   
+                    state.set \IamBorrower (web3.eth.defaultAccount.toUpperCase()==state.get(\lr-Borrower).toUpperCase())   
 
                     get-rep-balance (state.get \lr)?Borrower, (err,res)->
                         $('.bor-balance').attr \value, +bigNum-toStr(res)
                         state.set \bor-balance bigNum-toStr(res)
 
 Template.loan_request.rendered =->
-    $(\.set-data).attr \disabled, \disabled
+    # $(\.set-data).attr \disabled, \disabled
     if bigNum-toStr(state.get(\lr)?WantedWei)   !=\0 =>        $('.lr-WantedWei').attr \value,                  bigNum-toStr state.get(\lr)?WantedWei
     if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
     if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
