@@ -21,14 +21,9 @@ template \layout ->
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             div class:'main-shell', 
-                (fetcher =(iter)~> 
-                    # console.log \iter: iter
-                    if iter > 5 => Router.go Router.current().originalUrl
-                    if (typeof web3 == \undefined)
-                        window.setTimeout (~> fetcher iter + 1), 400 
-                    SI @lookupTemplate \yield)(0)                    
-
-                # fetcher 0
+                if web3?
+                    SI @lookupTemplate \yield
+                else SI @lookupTemplate \no_metamask
 
         footer do
             div class:\footer-nav,
@@ -92,8 +87,6 @@ Template.layout.rendered=->
     
 
 # check-web=(eld, nom)~>
-
-
 
 
 go-cycle=(iterator, eld)~> 
