@@ -21,9 +21,9 @@ template \layout ->
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             div class:'main-shell', 
-                if web3?
-                    SI @lookupTemplate \yield
-                else SI @lookupTemplate \no_metamask
+                
+                SI @lookupTemplate \yield
+
 
         footer do
             div class:\footer-nav,
@@ -88,6 +88,8 @@ Template.layout.rendered=->
 
 # check-web=(eld, nom)~>
 
+Template.layout.rendered=->
+    if !web3? => Router.go \/no_metamask
 
 go-cycle=(iterator, eld)~> 
     unless web3?

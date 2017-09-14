@@ -1,5 +1,5 @@
-template \no_metamask -> main_blaze no_metamask!
-
+template \noMetamask -> main_blaze no_metamask!
+Router.route \noMetamask, path: \/no_metamask
 
 @no_metamask=-> div style:'padding:100px' class:\container ,
 		h1 style:'font-size:50px; display:block', 'No Metamask'
