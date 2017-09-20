@@ -586,7 +586,7 @@ contract LendingRequest is SafeMath {
           currentState = State.Default; 
      }
 
-     function releaseToLender(){
+     function releaseToLender() internal {
     
           if(currentType==Type.EnsCollateral){
                AbstractENS ens = AbstractENS(ensRegistryAddress);
@@ -606,7 +606,7 @@ contract LendingRequest is SafeMath {
           ledger.burnRepTokens(borrower);
      }
 
-     function releaseToBorrower(){
+     function releaseToBorrower() internal {
           if(currentType==Type.EnsCollateral){
                AbstractENS ens = AbstractENS(ensRegistryAddress);
                Registrar registrar = Registrar(registrarAddress);
