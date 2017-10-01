@@ -90,6 +90,16 @@ Template.layout.rendered=->
 
 Template.layout.rendered=->
     if !web3? => Router.go \/no_metamask
+    script = document.createElement 'script'
+    script.setAttribute 'type', 'text/javascript'
+    script.setAttribute 'src', 'https://sidecar.gitter.im/dist/sidecar.v1.js'
+    script.setAttribute 'defer', 'defer'
+    script.setAttribute 'async', 'async'
+    (document.getElementsByTagName 'head').0.appendChild script
+    ((window.gitter = {}).chat = {}).options = {
+        room: 'ethlend/lobby',
+        activationElement: false
+    }
 
 go-cycle=(iterator, eld)~> 
     unless web3?
