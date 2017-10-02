@@ -96,10 +96,12 @@ contract ReputationToken is StdToken {
      string public symbol = "CRE";
 
      address public creator = 0x0;
+     address public ledger = 0x0;
      mapping(address => uint256) balancesLocked;
 
      function ReputationToken(){
           creator = msg.sender;
+          ledger = msg.sender;
      }
 
      function lockedOf(address _owner) constant returns (uint256) 
@@ -114,8 +116,14 @@ contract ReputationToken is StdToken {
           creator = newCreator;
      }
 
-     function issueTokens(address forAddress, uint tokenCount) returns (bool success){
+     function changeLedger(address newLedger){
           if(msg.sender!=creator)throw;
+
+          ledger = newLedger;
+     }
+
+     function issueTokens(address forAddress, uint tokenCount) returns (bool success){
+          if(msg.sender!=ledger)throw;
           
           if(tokenCount==0) {
                success = false;
@@ -130,7 +138,7 @@ contract ReputationToken is StdToken {
      }
 
      function burnTokens(address forAddress) returns (bool success){
-          if(msg.sender!=creator)throw;
+          if(msg.sender!=ledger)throw;
 
           allSupply-=balances[forAddress];
 
@@ -140,7 +148,7 @@ contract ReputationToken is StdToken {
      }
 
      function lockTokens(address forAddress, uint tokenCount) returns (bool success){
-          if(msg.sender!=creator) throw;
+          if(msg.sender!=ledger) throw;
           if(balances[forAddress]-balancesLocked[forAddress]<tokenCount) throw;
           balancesLocked[forAddress]+=tokenCount;
           success = true;
@@ -148,7 +156,7 @@ contract ReputationToken is StdToken {
      }
 
      function unlockTokens(address forAddress, uint tokenCount) returns (bool success){
-          if(msg.sender!=creator) throw;
+          if(msg.sender!=ledger) throw;
           if(balancesLocked[forAddress]<tokenCount) throw;
           balancesLocked[forAddress]-=tokenCount;
           success = true;
