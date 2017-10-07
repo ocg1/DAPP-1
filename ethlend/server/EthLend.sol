@@ -175,44 +175,48 @@ contract Ledger is SafeMath {
      function addRepTokens(address _potentialBorrower, uint _weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
           LendingRequest lr = LendingRequest(msg.sender);  
+
           // we`ll check is msg.sender is a real our LendingRequest
-          if(lr.borrower()==_potentialBorrower && address(this)==lr.creator()){
-               // we`ll take a lr contract and check address a – is he a borrower for this contract?
-               uint repTokens = (_weiSum/10);
-               repToken.issueTokens(_potentialBorrower,repTokens);               
-          }
+          require((lr.borrower()==_potentialBorrower) && (address(this)==lr.creator()));
+
+          // we`ll take a lr contract and check address a – is he a borrower for this contract?
+          uint repTokens = (_weiSum/10);
+          repToken.issueTokens(_potentialBorrower,repTokens);               
      }
 
      function lockRepTokens(address _potentialBorrower, uint _weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
           LendingRequest lr = LendingRequest(msg.sender);  
+
           // we`ll check is msg.sender is a real our LendingRequest
-          if(lr.borrower()==_potentialBorrower && address(this)==lr.creator()){
-               // we`ll take a lr contract and check address a – is he a borrower for this contract?
-               uint repTokens = (_weiSum);
-               repToken.lockTokens(_potentialBorrower,repTokens);               
-          }
+          require((lr.borrower()==_potentialBorrower) && (address(this)==lr.creator()));
+
+          // we`ll take a lr contract and check address a – is he a borrower for this contract?
+          uint repTokens = (_weiSum);
+          repToken.lockTokens(_potentialBorrower,repTokens);               
      }
 
      function unlockRepTokens(address _potentialBorrower, uint _weiSum){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
           LendingRequest lr = LendingRequest(msg.sender);
+
           // we`ll check is msg.sender is a real our LendingRequest
-          if(lr.borrower()==_potentialBorrower && address(this)==lr.creator()){
-               // we`ll take a lr contract and check address a – is he a borrower for this contract?
-               uint repTokens = (_weiSum);
-               repToken.unlockTokens(_potentialBorrower,repTokens);               
-          }
+          require((lr.borrower()==_potentialBorrower) && (address(this)==lr.creator()));
+
+          // we`ll take a lr contract and check address a – is he a borrower for this contract?
+          uint repTokens = (_weiSum);
+          repToken.unlockTokens(_potentialBorrower,repTokens);               
      }
 
      function burnRepTokens(address _potentialBorrower){
           ReputationTokenInterface repToken = ReputationTokenInterface(repTokenAddress);
           LendingRequest lr = LendingRequest(msg.sender);  
+
           // we`ll check is msg.sender is a real our LendingRequest
-          if(lr.borrower()==_potentialBorrower && address(this)==lr.creator()){
-               // we`ll take a lr contract and check address a – is he a borrower for this contract?
-               repToken.burnTokens(_potentialBorrower);               
-          }
+          require((lr.borrower()==_potentialBorrower) && (address(this)==lr.creator()));
+
+          // we`ll take a lr contract and check address a – is he a borrower for this contract?
+          repToken.burnTokens(_potentialBorrower);               
      }     
 
      function approveRepTokens(address _potentialBorrower, uint _weiSum) returns (bool success){
