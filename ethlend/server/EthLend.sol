@@ -1,26 +1,30 @@
 pragma solidity ^0.4.16;
 
-contract SafeMath {
-     function safeMul(uint a, uint b) internal returns (uint) {
-          uint c = a * b;
-          assert(a == 0 || c / a == b);
-          return c;
-     }
 
-     function safeSub(uint a, uint b) internal returns (uint) {
-          assert(b <= a);
-          return a - b;
-     }
+library SafeMath {
+  function mul(uint256 a, uint256 b) internal constant returns (uint256) {
+    uint256 c = a * b;
+    assert(a == 0 || c / a == b);
+    return c;
+  }
 
-     function safeAdd(uint a, uint b) internal returns (uint) {
-          uint c = a + b;
-          assert(c>=a && c>=b);
-          return c;
-     }
+  function div(uint256 a, uint256 b) internal constant returns (uint256) {
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
+    uint256 c = a / b;
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+    return c;
+  }
 
-     function assert(bool assertion) internal {
-          if (!assertion) throw;
-     }
+  function sub(uint256 a, uint256 b) internal constant returns (uint256) {
+    assert(b <= a);
+    return a - b;
+  }
+
+  function add(uint256 a, uint256 b) internal constant returns (uint256) {
+    uint256 c = a + b;
+    assert(c >= a);
+    return c;
+  }
 }
 
 contract ERC20Token {
@@ -68,7 +72,7 @@ contract Registrar {
 }
 
 
-contract Ledger is SafeMath {
+contract Ledger {
      // who deployed Ledger
      address public mainAddress;
      address public whereToSendFee;
@@ -246,7 +250,8 @@ contract Ledger is SafeMath {
      }
 }
 
-contract LendingRequest is SafeMath {
+contract LendingRequest {
+     using SafeMath for uint256;
      string public name = "LendingRequest";
      address public creator = 0x0;
      address public registrarAddress;
@@ -519,7 +524,7 @@ contract LendingRequest is SafeMath {
      }
 
      function waitingForLender()payable onlyInState(State.WaitingForLender){
-          if(msg.value<safeAdd(wanted_wei,lenderFeeAmount)){
+          if(msg.value < wanted_wei.add(lenderFeeAmount)){
                throw;
           }
 
@@ -547,7 +552,7 @@ contract LendingRequest is SafeMath {
      // 
      // anyone can call this (not only the borrower)
      function waitingForPayback()payable onlyInState(State.WaitingForPayback){
-          if(msg.value<safeAdd(wanted_wei,premium_wei)){
+          if(msg.value < wanted_wei.add(premium_wei)){
                throw;
           }
           // ETH is sent back to lender in full with premium!!!
@@ -562,14 +567,14 @@ contract LendingRequest is SafeMath {
 
      // How much should lender send
      function getNeededSumByLender()constant returns(uint out){
-          uint total = safeAdd(wanted_wei,lenderFeeAmount);
+          uint total = wanted_wei.add(lenderFeeAmount);
           out = total;
           return;
      }
 
      // How much should borrower return to release tokens
      function getNeededSumByBorrower()constant returns(uint out){
-          uint total = safeAdd(wanted_wei,premium_wei);
+          uint total = wanted_wei.add(premium_wei);
           out = total;
           return;
      }
