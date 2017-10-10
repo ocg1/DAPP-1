@@ -373,38 +373,32 @@ contract LendingRequest {
      }
 
      modifier onlyByLedger(){
-          if(Ledger(msg.sender)!=ledger)
-               throw;
+          require(Ledger(msg.sender) == ledger);
           _;
      }
 
      modifier onlyByMain(){
-          if(msg.sender!=mainAddress)
-               throw;
+          require(msg.sender == mainAddress);
           _;
      }
 
      modifier byLedgerOrMain(){
-          if((msg.sender!=mainAddress) && (Ledger(msg.sender)!=ledger))
-               throw;
+          require(msg.sender == mainAddress || Ledger(msg.sender) == ledger);
           _;
      }
 
      modifier byLedgerMainOrBorrower(){
-          if((msg.sender!=mainAddress) && (Ledger(msg.sender)!=ledger) && (msg.sender!=borrower))
-               throw;
+          require(msg.sender == mainAddress || Ledger(msg.sender) == ledger || msg.sender == borrower);
           _;
      }
 
      modifier onlyByLender(){
-          if(msg.sender!=lender)
-               throw;
+          require(msg.sender == lender);
           _;
      }
 
      modifier onlyInState(State state){
-          if(currentState!=state)
-               throw;
+          require(currentState == state);
           _;
      }
 
