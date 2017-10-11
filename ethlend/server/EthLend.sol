@@ -118,11 +118,11 @@ contract Ledger {
           // 1 - send Fee to wherToSendFee 
           uint feeAmount = borrowerFeeAmount;
           if(msg.value<feeAmount){
-               throw;
+               revert();
           }
 
           if(!whereToSendFee.call.gas(200000).value(feeAmount)()){
-               throw;
+               revert();
           }
 
           // 2 - create new LR
@@ -406,7 +406,7 @@ contract LendingRequest {
           }else if(contractType==2){
                currentType = Type.RepCollateral;
           } else {
-               throw;
+               revert();
           }
 
           ensRegistryAddress = ensRegistryAddress_;
@@ -447,7 +447,7 @@ contract LendingRequest {
      function cancell() byLedgerMainOrBorrower {
           // 1 - check current state
           if((currentState!=State.WaitingForData) && (currentState!=State.WaitingForLender))
-               throw;
+               revert();
 
           if(currentState==State.WaitingForLender){
                // return tokens back to Borrower
@@ -459,7 +459,7 @@ contract LendingRequest {
      // Should check if tokens are 'trasferred' to this contracts address and controlled
      function checkTokens()byLedgerMainOrBorrower onlyInState(State.WaitingForTokens){
           if(currentType!=Type.TokensCollateral){
-               throw;
+               revert();
           }
 
           ERC20Token token = ERC20Token(token_smartcontract_address);
@@ -507,12 +507,12 @@ contract LendingRequest {
 
      function waitingForLender()payable onlyInState(State.WaitingForLender){
           if(msg.value < wanted_wei.add(lenderFeeAmount)){
-               throw;
+               revert();
           }
 
           // send platform fee first
           if(!whereToSendFee.call.gas(200000).value(lenderFeeAmount)()){
-               throw;
+               revert();
           }
 
           // if you sent this -> you are the lender
@@ -521,7 +521,7 @@ contract LendingRequest {
           // ETH is sent to borrower in full
           // Tokens are kept inside of this contract
           if(!borrower.call.gas(200000).value(wanted_wei)()){
-               throw;
+               revert();
           }
 
           currentState = State.WaitingForPayback;
@@ -535,11 +535,11 @@ contract LendingRequest {
      // anyone can call this (not only the borrower)
      function waitingForPayback()payable onlyInState(State.WaitingForPayback){
           if(msg.value < wanted_wei.add(premium_wei)){
-               throw;
+               revert();
           }
           // ETH is sent back to lender in full with premium!!!
           if(!lender.call.gas(2000000).value(msg.value)()){
-               throw;
+               revert();
           }
 
           releaseToBorrower(); // tokens are released back to borrower
@@ -565,7 +565,7 @@ contract LendingRequest {
      // anyone can call this (not only the lender)
      function requestDefault()onlyInState(State.WaitingForPayback){
           if(now < (start + days_to_lend * 1 days)){
-               throw;
+               revert();
           }
 
           releaseToLender(); // tokens are released to the lender        
