@@ -121,9 +121,7 @@ contract Ledger {
                revert();
           }
 
-          if(!whereToSendFee.call.gas(200000).value(feeAmount)()){
-               revert();
-          }
+          whereToSendFee.transfer(feeAmount);
 
           // 2 - create new LR
           // will be in state 'WaitingForData'
@@ -511,18 +509,14 @@ contract LendingRequest {
           }
 
           // send platform fee first
-          if(!whereToSendFee.call.gas(200000).value(lenderFeeAmount)()){
-               revert();
-          }
+          whereToSendFee.transfer(lenderFeeAmount);
 
           // if you sent this -> you are the lender
           lender = msg.sender;     
 
           // ETH is sent to borrower in full
           // Tokens are kept inside of this contract
-          if(!borrower.call.gas(200000).value(wanted_wei)()){
-               revert();
-          }
+          borrower.transfer(wanted_wei);
 
           currentState = State.WaitingForPayback;
 
@@ -538,9 +532,7 @@ contract LendingRequest {
                revert();
           }
           // ETH is sent back to lender in full with premium!!!
-          if(!lender.call.gas(2000000).value(msg.value)()){
-               revert();
-          }
+          lender.transfer(msg.value);
 
           releaseToBorrower(); // tokens are released back to borrower
           ledger.addRepTokens(borrower,wanted_wei);
