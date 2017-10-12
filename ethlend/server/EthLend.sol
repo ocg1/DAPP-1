@@ -490,10 +490,12 @@ contract LendingRequest {
      // If someone is sending at least 'wanted_wei' amount of money in WaitingForPayback state
      // -> then it means it's a Borrower returning money back. 
      function() payable {
-          if(currentState==State.WaitingForLender){
+          if(currentState == State.WaitingForLender){
                waitingForLender();
-          }else if(currentState==State.WaitingForPayback){
+          } else if(currentState == State.WaitingForPayback){
                waitingForPayback();
+          } else {
+               revert(); //In any other state, do not accept Ethers
           }
      }
 
