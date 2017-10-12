@@ -75,7 +75,7 @@ contract Ledger {
      mapping (uint => address) lrs;
 
      // 0.01 ETH
-     uint public borrowerFeeAmount = 10000000000000000;
+     uint public borrowerFeeAmount = 0.01 ether;
 
      modifier byAnyone(){
           _;
@@ -126,7 +126,7 @@ contract Ledger {
           // 2 - create new LR
           // will be in state 'WaitingForData'
 
-          out = new LendingRequest(mainAddress,msg.sender,whereToSendFee,collateralType,ensRegistryAddress,registrarAddress);
+          out = new LendingRequest(msg.sender,collateralType);
 
           // 3 - add to list
           uint currentCount = lrsCountPerUser[msg.sender];
@@ -243,7 +243,7 @@ contract LendingRequest {
      address public registrarAddress;
 
      // 0.01 ETH
-     uint public lenderFeeAmount   = 10000000000000000;
+     uint public lenderFeeAmount   = 0.01 ether;
      
      Ledger ledger;
 
@@ -388,26 +388,27 @@ contract LendingRequest {
           _;
      }
 
-     function LendingRequest(address mainAddress_,address borrower_,address whereToSendFee_, int contractType, address ensRegistryAddress_, address registrarAddress_){
+     function LendingRequest(address _borrower, int _collateralType){
+          creator = msg.sender;
           ledger = Ledger(msg.sender);
 
-          mainAddress = mainAddress_;
-          whereToSendFee = whereToSendFee_;
-          registrarAddress = registrarAddress_;
-          borrower = borrower_;
-          creator = msg.sender;
+          borrower = _borrower;
+          mainAddress = ledger.mainAddress();
+          whereToSendFee = ledger.whereToSendFee();
+          registrarAddress = ledger.registrarAddress();
+          ensRegistryAddress = ledger.ensRegistryAddress();
+                    
           // collateral: tokens or ENS domain?
-          if      (contractType==0){
+          if (_collateralType == 0){
                currentType = Type.TokensCollateral;
-          }else if(contractType==1){
+          } else if(_collateralType == 1){
                currentType = Type.EnsCollateral;
-          }else if(contractType==2){
+          } else if(_collateralType == 2){
                currentType = Type.RepCollateral;
           } else {
                revert();
           }
-
-          ensRegistryAddress = ensRegistryAddress_;
+          
      }
 
      function changeLedgerAddress(address new_)onlyByLedger{
