@@ -1,22 +1,30 @@
 pragma solidity ^0.4.16;
 
-contract SafeMath {
-     function safeMul(uint a, uint b) internal returns (uint) {
-          uint c = a * b;
-          assert(a == 0 || c / a == b);
-          return c;
-     }
 
-     function safeSub(uint a, uint b) internal returns (uint) {
-          assert(b <= a);
-          return a - b;
-     }
+library SafeMath {
+  function mul(uint256 a, uint256 b) internal constant returns (uint256) {
+    uint256 c = a * b;
+    assert(a == 0 || c / a == b);
+    return c;
+  }
 
-     function safeAdd(uint a, uint b) internal returns (uint) {
-          uint c = a + b;
-          assert(c>=a && c>=b);
-          return c;
-     }
+  function div(uint256 a, uint256 b) internal constant returns (uint256) {
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
+    uint256 c = a / b;
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+    return c;
+  }
+
+  function sub(uint256 a, uint256 b) internal constant returns (uint256) {
+    assert(b <= a);
+    return a - b;
+  }
+
+  function add(uint256 a, uint256 b) internal constant returns (uint256) {
+    uint256 c = a + b;
+    assert(c >= a);
+    return c;
+  }
 }
 
 contract ERC20Token {
@@ -49,6 +57,7 @@ contract Registrar {
      } 
 }
 
+
 contract Ledger is SafeMath {
 // Fields:
      address public mainAddress = 0x0;        // who deployed Ledger
@@ -64,7 +73,8 @@ contract Ledger is SafeMath {
      mapping (uint => address) lrs;
 
      // 0.01 ETH
-     uint public borrowerFeeAmount = 0.01 * 1 ether; 
+     uint public borrowerFeeAmount = 0.01 ether;
+
 
      modifier byAnyone(){
           _;
@@ -106,12 +116,16 @@ contract Ledger is SafeMath {
      function newLr(int _collateralType)payable byAnyone returns(address out){
           // 1 - send Fee to wherToSendFee 
           uint feeAmount = borrowerFeeAmount;
-          require(msg.value>=feeAmount);
+          if(msg.value<feeAmount){
+               revert();
+          }
 
           whereToSendFee.transfer(feeAmount);
 
-          // 2 - create new LR (in 'WaitingForData' state)
-          out = new LendingRequest(mainAddress,msg.sender,whereToSendFee,_collateralType,ensRegistryAddress,registrarAddress);
+          // 2 - create new LR
+          // will be in state 'WaitingForData'
+
+          out = new LendingRequest(msg.sender,collateralType);
 
           // 3 - add to list
           uint currentCount = lrsCountPerUser[msg.sender];
@@ -230,8 +244,8 @@ contract Ledger is SafeMath {
      }
 }
 
-contract LendingRequest is SafeMath {
-// Fields:
+contract LendingRequest {
+     using SafeMath for uint256;
      // who deployed Ledger
      address public mainAddress = 0x0;
      string public name = "LendingRequest";
@@ -239,7 +253,7 @@ contract LendingRequest is SafeMath {
      address public registrarAddress = 0x0;
 
      // 0.01 ETH
-     uint public lenderFeeAmount   = 0.01 * 1 ether;
+     uint public lenderFeeAmount   = 0.01 ether;
      
      Ledger ledger;
 
@@ -347,57 +361,55 @@ contract LendingRequest is SafeMath {
      }
 
      modifier onlyByLedger(){
-          require(Ledger(msg.sender)==ledger);
+          require(Ledger(msg.sender) == ledger);
           _;
      }
 
      modifier onlyByMain(){
-          require(msg.sender==mainAddress);
+          require(msg.sender == mainAddress);
           _;
      }
 
      modifier byLedgerOrMain(){
-          require((msg.sender==mainAddress) || (Ledger(msg.sender)==ledger));
+          require(msg.sender == mainAddress || Ledger(msg.sender) == ledger);
           _;
      }
 
      modifier byLedgerMainOrBorrower(){
-          require((msg.sender==mainAddress) || (Ledger(msg.sender)==ledger) || (msg.sender==borrower));
+          require(msg.sender == mainAddress || Ledger(msg.sender) == ledger || msg.sender == borrower);
           _;
      }
 
      modifier onlyByLender(){
-          require(msg.sender==lender);
+          require(msg.sender == lender);
           _;
      }
 
      modifier onlyInState(State state){
-          require(currentState==state);
+          require(currentState == state);
           _;
      }
 
-// Methods:
-     function LendingRequest(address _mainAddress,address _borrower,address _whereToSendFee, int _contractType, address _ensRegistryAddress, address _registrarAddress){
+     function LendingRequest(address _borrower, int _collateralType){
+          creator = msg.sender;
           ledger = Ledger(msg.sender);
 
-          mainAddress = _mainAddress;
-          whereToSendFee = _whereToSendFee;
-          registrarAddress = _registrarAddress;
           borrower = _borrower;
-          creator = msg.sender;
-
+          mainAddress = ledger.mainAddress();
+          whereToSendFee = ledger.whereToSendFee();
+          registrarAddress = ledger.registrarAddress();
+          ensRegistryAddress = ledger.ensRegistryAddress();
+                    
           // collateral: tokens or ENS domain?
-          if (_contractType==0){
+          if (_collateralType == 0){
                currentType = Type.TokensCollateral;
-          }else if(_contractType==1){
+          } else if(_collateralType == 1){
                currentType = Type.EnsCollateral;
-          }else if(_contractType==2){
+          } else if(_collateralType == 2){
                currentType = Type.RepCollateral;
           } else {
                revert();
           }
-
-          ensRegistryAddress = _ensRegistryAddress;
      }
 
      function changeLedgerAddress(address new_)onlyByLedger{
@@ -475,10 +487,12 @@ contract LendingRequest is SafeMath {
      // If someone is sending at least 'wanted_wei' amount of money in WaitingForPayback state
      // -> then it means it's a Borrower returning money back. 
      function() payable {
-          if(currentState==State.WaitingForLender){
+          if(currentState == State.WaitingForLender){
                waitingForLender();
-          }else if(currentState==State.WaitingForPayback){
+          } else if(currentState == State.WaitingForPayback){
                waitingForPayback();
+          } else {
+               revert(); //In any other state, do not accept Ethers
           }
      }
 
@@ -490,7 +504,9 @@ contract LendingRequest is SafeMath {
      }
 
      function waitingForLender()payable onlyInState(State.WaitingForLender){
-          require(msg.value>=safeAdd(wanted_wei,lenderFeeAmount));
+          if(msg.value < wanted_wei.add(lenderFeeAmount)){
+               revert();
+          }
 
           // send platform fee first
           whereToSendFee.transfer(lenderFeeAmount);
@@ -512,7 +528,9 @@ contract LendingRequest is SafeMath {
      // 
      // anyone can call this (not only the borrower)
      function waitingForPayback()payable onlyInState(State.WaitingForPayback){
-          require(msg.value>=safeAdd(wanted_wei,premium_wei));
+          if(msg.value < wanted_wei.add(premium_wei)){
+               revert();
+          }
 
           // ETH is sent back to lender in full with premium!!!
           lender.transfer(msg.value);
@@ -524,14 +542,14 @@ contract LendingRequest is SafeMath {
 
      // How much should lender send
      function getNeededSumByLender()constant returns(uint out){
-          uint total = safeAdd(wanted_wei,lenderFeeAmount);
+          uint total = wanted_wei.add(lenderFeeAmount);
           out = total;
           return;
      }
 
      // How much should borrower return to release tokens
      function getNeededSumByBorrower()constant returns(uint out){
-          uint total = safeAdd(wanted_wei,premium_wei);
+          uint total = wanted_wei.add(premium_wei);
           out = total;
           return;
      }
